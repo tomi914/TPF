@@ -92,12 +92,12 @@ void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORR
 	
 	int i, j;
 	char direction = 'R'; 	//	R:right - L:left
-	int lengthRow = (ALIEN_COLS * ALIEN_SIZE_X) + (JUMP_SIZE * (ALIEN_COLS-1))// largo de la fila en la definicion utilizada
+	int lengthRow = (ALIEN_COLS * ALIEN_SIZE_X) + (JUMP_SIZE * (ALIEN_COLS-1)); // largo de la fila en la definicion utilizada
 	
 	while(1){
 		switch (direction){ // La idea es que varíe el movimiento según vaya hacia la derecha o hacia la izquierda
 			case 'R': // caso DERECHA
-				while((aliens[0][0].coord.coordX + lengthRow) != DISPLAY_LENGTH-1){	//para no chocar con el borde derecho*/
+				while((aliens[0][0].coord.coordX + lengthRow) < DISPLAY_LENGTH-1){	//para no chocar con el borde derecho*/
 					for(i=ALIEN_ROWS-1;i>=0;i--){ 
 						for(j=ALIEN_COLS-1;j>=0;j--){ 
 							aliens[i][j].coord.coordX += JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la DERECHA
@@ -107,7 +107,7 @@ void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORR
 				direction = 'L'; // caso IZQUIERDA
 			break;
 			case 'L':
-				while((aliens[ALIEN_ROWS-1][ALIEN_COLS-1].coord.coordX - lengthRow) != 1){	//para no chocar con el borde*/
+				while((aliens[ALIEN_ROWS-1][ALIEN_COLS-1].coord.coordX - lengthRow) > 1){	//para no chocar con el borde*/
 					for(i=ALIEN_ROWS-1;i>=0;i--){
 						for(j=0;j<ALIEN_ROWS;j++){
 							aliens[i][j].coord.coordX -= JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la IZQUIERDA
@@ -119,7 +119,6 @@ void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORR
 		}
 	}
 }
-
 
 		X--X--X--X--X
 		X--X--X--X--X
