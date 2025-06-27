@@ -1,14 +1,19 @@
 #include<stdbool.h>
 #include<stdint.h>
-#include<pthread.h>
+#include<stdlib.h>
+#include<stdio.h>
 
 #define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 5  // Cantidad de COLUMNAS de ALIENS.
-#define DISPLAY_HIGH 16	// ALTURA del display (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_LENGTH 16 // LARGO del display (Como depende del display (front-end), lo definimos en el make) 
-#define ALIEN_SIZE_X 1 // Cuantos PIXELES ocupa un ALIEN a lo LARGO (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_SIZE_Y 1 // Cuantos PIXELES ocupa un ALIEN a lo ALTO (Como depende del display (front-end), lo definimos en el make)
-#define JUMP_SIZE 1	// Define el salto de movimiento en cada "clock" (Como depende del display (front-end), lo definimos en el make)
+#define DISPLAY_HIGH 16	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define DISPLAY_LENGTH 16 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
+#define ALIEN_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define ALIEN_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define JUMP_SIZE_X 1	// Define en coordenadas el salto de movimiento en cada "clock" (Como depende del display (front-end), lo definimos en el make)
+#define JUMP_SIZE_Y 1	// Define en coordenadas el salto de movimiento en cada "clock" (Como depende del display (front-end), lo definimos en el make)
+#define DISPLAY_MARGIN_X 1	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
+#define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
+#define ALIEN_ROW_LENGTH ((ALIEN_COLS * ALIEN_SIZE_X) + (JUMP_SIZE * (ALIEN_COLS-1)))	//Ancho de la fila de aliens (en coordenadas)
 
 typedef struct{ // Almacena las coordenadas 
 	uint16_t coordX;
@@ -60,19 +65,18 @@ void colisionCheck(void);
 void scoreTracker(void); 	//10-20-30-random 
 
 
-int main(void){
-	
-//defino aliens para probar
-	alien_t aliens[ALIEN_ROWS][ALIEN_COLS]; // Se define una matriz que contendrá la cantidad de aliens de largo y ancho que se desee.
+//creo que esta bien, chequear con los muchachos. 
+void initializeAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
+
 	int i, j;
 	
-	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila en especifico
-		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna
-			aliens[i][j].alive = true; // 
-			aliens[i][j].coord.coordX = j * 2;  // base X
-			aliens[i][j].coord.coordY = i;      // base Y
+	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
+		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
+			aliens[i][j].alive = true; // todos arrancan vivos
+			aliens[i][j].coord.coordX = j * JUMP_SIZE + DISPLAY_MARGIN_X;  	// seteo coordenadas en X con el espaciado definido en JUMP_SIZE
+			aliens[i][j].coord.coordY = i * JUMP_SIZE + DISPLAY_MARGIN_Y; 	 // seteo coordenadas en Y con el espaciado definido en JUMP_SIZE
 			if(i == 0){
-		    	aliens[i][j].type = 'A';
+		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
 		    }
 		    else if(i < 3){
 		    	aliens[i][j].type = 'B';
@@ -82,22 +86,17 @@ int main(void){
 		    }
 		}
 	}
-	
-	alienMove();
-	
-	return 0;	
 }
 
-void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORRECTA DETECCIÓN DE BORDES. SI ES POSIBLE OPTIMIZAR!!!!
+void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORRECTA DETECCIÓN DE BORDES. SI ES POSIBLE OPTIMIZAR!!!!
 	
 	int i, j;
 	char direction = 'R'; 	//	R:right - L:left
-	int lengthRow = (ALIEN_COLS * ALIEN_SIZE_X) + (JUMP_SIZE * (ALIEN_COLS-1)); // largo de la fila en la definicion utilizada
 	
 	while(1){
 		switch (direction){ // La idea es que varíe el movimiento según vaya hacia la derecha o hacia la izquierda
 			case 'R': // caso DERECHA
-				while((aliens[0][0].coord.coordX + lengthRow) < DISPLAY_LENGTH-1){	//para no chocar con el borde derecho*/
+				while((aliens[0][0].coord.coordX + ALIEN_ROW_LENGTH) < DISPLAY_LENGTH-DISPLAY_MARGIN_X){	//para no chocar con el borde derecho*/
 					for(i=ALIEN_ROWS-1;i>=0;i--){ 
 						for(j=ALIEN_COLS-1;j>=0;j--){ 
 							aliens[i][j].coord.coordX += JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la DERECHA
@@ -107,7 +106,7 @@ void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORR
 				direction = 'L'; // caso IZQUIERDA
 			break;
 			case 'L':
-				while((aliens[ALIEN_ROWS-1][ALIEN_COLS-1].coord.coordX - lengthRow) > 1){	//para no chocar con el borde*/
+				while((aliens[ALIEN_ROWS-1][ALIEN_COLS-1].coord.coordX - ALIEN_ROW_LENGTH) > DISPLAY_MARGIN_X){	//para no chocar con el borde*/
 					for(i=ALIEN_ROWS-1;i>=0;i--){
 						for(j=0;j<ALIEN_ROWS;j++){
 							aliens[i][j].coord.coordX -= JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la IZQUIERDA
@@ -120,25 +119,28 @@ void alienMove(void){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORR
 	}
 }
 
-		X--X--X--X--X
-		X--X--X--X--X
-		X--X--X--X--X
-		X--X--X--X--X
-		X--X--X--X--X
-
-				X--X--X--X--X
-				X--X--X--X--X
-				X--X--X--X--X
-				X--X--X--X--X
-				X--X--X--X--X
-
-						X--X--X--X--X
-						X--X--X--X--X
-						X--X--X--X--X
-						X--X--X--X--X
-						X--X--X--X--X
-
-
+void alienMove(void){ 
+	
+	//HABRIA QUE VER SI NO CONVIENE QUE SEAN GLOBALES PARA CUANDO SE REINICIA LA PARTIDA --- CREO QUE SI
+	static char direction = 1; 	//	1:right // -1:left
+	//estas dos variables son la referencia para ubicar las entidades 
+	static int offsetX = 0;
+	static int offsetY = 0;
+	//como accedo a las coordenadas reales de un alien?
+	//coordenadas reales = alien[i][j].coord.coordX + offsetX
+	
+	if(direction==1 && ((offsetX + ALIEN_ROW_LENGTH) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+		direction = -1; 		//cambio de direccion
+		offsetY += JUMP_SIZE_Y;	//salto abajo
+	}	
+	else if(direction==-1 && (offsetX <= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+		direction = 1; 		//cambio de direccion
+		offsetY += JUMP_SIZE_Y;	//salto abajo
+	}
+	else{
+		offsetX += JUMP_SIZE_X * direction;		//suma o resta dependiendo de hacia donde tiene que ir
+	}
+}
 
 
 
