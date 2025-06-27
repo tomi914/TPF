@@ -3,68 +3,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-#define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
-#define ALIEN_COLS 5  // Cantidad de COLUMNAS de ALIENS.
-#define DISPLAY_HIGH 16	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_LENGTH 16 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
-#define ALIEN_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define JUMP_SIZE_X 1	// Define en coordenadas el salto de movimiento en cada "clock" (Como depende del display (front-end), lo definimos en el make)
-#define JUMP_SIZE_Y 1	// Define en coordenadas el salto de movimiento en cada "clock" (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_MARGIN_X 1	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define ALIEN_ROW_LENGTH ((ALIEN_COLS * ALIEN_SIZE_X) + (JUMP_SIZE * (ALIEN_COLS-1)))	//Ancho de la fila de aliens (en coordenadas)
+alienBlock_t aliensBlock = {0, 0, 1, 0, ALIEN_COLS - 1};	//inicializo los datos del bloque de aliens chequear coordX y coordY
 
-typedef struct{ // Almacena las coordenadas 
-	uint16_t coordX;
-	uint16_t coordY;
-}coord_t;
-
-typedef struct{ //Almacena las estadisticas de este juego y los anteriores.
-	uint32_t score;
-	uint16_t level;
-	//ranking?
-}stats_t;
-
-/*   VER SI ES NECESARIO
-typedef struct{
-	bool pause;
-	bool restart;
-	bool exit; 
-}menu_t;
-*/
-
-//entidades y objetos
- 
-typedef struct{ // Almacena la información general de toodos los ALIENS.
-	bool alive;
-	char type;
-	coord_t coord; 
-}alien_t;
-
-typedef struct{ // Almacena la información general de los ESCUDOS (los tratamos como escuditos)
-	bool built; 
-	coord_t coord; 
-}shield_t;
-
-typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
-	uint8_t health; 
-	coord_t coord;
-}player_t;
-
-typedef struct{ // Almacena la información general de las BALAS
-	char type; 
-	coord_t coord; 
-}bullet_t;
-
-void playerShoot(void); //Función que 
-void playerMove(void);  //recibe para donde ir
-void alienShoot(void);  //
-void alienMove(void);   //
-void colisionCheck(void); 
-void scoreTracker(void); 	//10-20-30-random 
-
-
+//las imagenes tienen distinto tamaño por tipo de alien, corregir la función
 //creo que esta bien, chequear con los muchachos. 
 void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
 
@@ -73,43 +14,84 @@ void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punt
 	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
 		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
 			aliens[i][j].alive = true; // todos arrancan vivos
-			aliens[i][j].coord.coordX = j * JUMP_SIZE + DISPLAY_MARGIN_X;  	// seteo coordenadas en X con el espaciado definido en JUMP_SIZE
-			aliens[i][j].coord.coordY = i * JUMP_SIZE + DISPLAY_MARGIN_Y; 	 // seteo coordenadas en Y con el espaciado definido en JUMP_SIZE
+			//aliens[i][j].coord.coordX = j * JUMP_SIZE + DISPLAY_MARGIN_X;  	// seteo coordenadas en X con el espaciado definido en JUMP_SIZE
+			//aliens[i][j].coord.coordY = i * JUMP_SIZE + DISPLAY_MARGIN_Y; 	 // seteo coordenadas en Y con el espaciado definido en JUMP_SIZE
 			if(i == 0){
 		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
+		    	aliens[i][j].coord.coordX = j * A_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;	//chequear que este bien visualmente
+		    	aliens[i][j].coord.coordY = i * A_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
 		    }
 		    else if(i < 3){
 		    	aliens[i][j].type = 'B';
+		    	aliens[i][j].coord.coordX = j * B_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;
+		    	aliens[i][j].coord.coordY = i * B_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
 		    }
 		    else{
 		    	aliens[i][j].type = 'C';
+		    	aliens[i][j].coord.coordX = j * C_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;
+		    	aliens[i][j].coord.coordY = i * C_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
 		    }
 		}
 	}
 }
 
-//creo que esta bien, chequear con los muchachos. 
-void alienMove(void){ 
+void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){ 
+
+	uint8_t alienColAlive = 0; 
+	uint8_t i; 
 	
-	//HABRIA QUE VER SI NO CONVIENE QUE SEAN GLOBALES PARA CUANDO SE REINICIA LA PARTIDA --- CREO QUE SI
-	static char direction = 1; 	//	1:right // -1:left
-	//estas dos variables son la referencia para ubicar las entidades 
-	static int offsetX = 0;
-	static int offsetY = 0;
-	//como accedo a las coordenadas reales de un alien?
-	//coordenadas reales = alien[i][j].coord.coordX + offsetX
+	//analizo unicamente la columna del extremo izquierdo
+	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
+		if(aliens[i][aliensBlock.firstColAlive].alive){
+			alienColAlive++; 
+		}
+	}
+	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
+		aliensBlock.firstColAlive++; 		//actualizo la primera columna que tenga aliens vivos
+	}
 	
-	if(direction==1 && ((offsetX + ALIEN_ROW_LENGTH) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
-		direction = -1; 		//cambio de direccion
-		offsetY += JUMP_SIZE_Y;	//salto abajo
+	alienColAlive = 0; 
+	
+	//analizo unicamente la columna del extremo derecho
+	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
+		if(aliens[i][aliensBlock.lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
+			alienColAlive++; 
+		}
+	}
+	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
+		aliensBlock.lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
+	}
+	
+	//chequeo de cambio de nivel
+	if(aliensBlock.firstColAlive>aliensBlock.lastColAlive){
+		//se sube de nivel porque todos los aliens estan muertos
+	}
+	
+	//hay que ver con que ALIEN_..._SIZE_X y que ..._INIT_SIZE_X definimos esta variable
+	//(creo que puede ser con cualquiera y DISPLAY_MARGIN_X absorbe el error)
+	int alienRowLength = (aliensBlock.lastColAlive - aliensBlock.firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;	//se almacena cuantas coord de largo tiene c/fila
+	
+	//hago movimientos
+	if(aliensBlock.direction==1 && ((aliensBlock.coordX + alienRowLength) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+		aliensBlock.direction = -1; 		//cambio de direccion
+		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
 	}	
-	else if(direction==-1 && (offsetX <= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
-		direction = 1; 		//cambio de direccion
-		offsetY += JUMP_SIZE_Y;	//salto abajo
+	else if(aliensBlock.direction==-1 && (aliensBlock.coordX <= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+		aliensBlock.direction = 1; 		//cambio de direccion
+		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
 	}
 	else{
-		offsetX += JUMP_SIZE_X * direction;		//suma o resta dependiendo de hacia donde tiene que ir
+		aliensBlock.coordX += JUMP_SIZE_X * aliensBlock.direction;		//suma o resta dependiendo de hacia donde tiene que ir
 	}
+}
+
+//creo que esta bien, chequear con los muchachos. 
+void resetAliensBlock(void){
+	aliensBlock.coordX = 0;
+    aliensBlock.coordY = 0;
+    aliensBlock.direction = 1;
+    aliensBlock.firstColAlive = 0;
+    aliensBlock.lastColAlive = ALIEN_COLS - 1;
 }
 
 //creo que esta bien, chequear con los muchachos. 
