@@ -27,6 +27,7 @@ int main() {
 	float shotY=y;
 	float speedShot = 10.0; //velocidad de la nave
 	bool shooting = false;
+	float shotX;
 
 	ALLEGRO_BITMAP *sprite_original = al_load_bitmap("imagen.png"); //subo imagen nave
 	ALLEGRO_BITMAP *sprite_escalado = al_create_bitmap(playerW, playerH); //la reescala y printea
@@ -68,25 +69,19 @@ int main() {
         }
 
 
-        if (keys[ALLEGRO_KEY_RIGHT] && x<=screenH) x += speed;
+		if (keys[ALLEGRO_KEY_LEFT]){
+			playermove(-1, player);
+		}//establezco limite de movimiento de nave y velocidad
+		if (keys[ALLEGRO_KEY_RIGHT]){
+			playermove(1, player);
+		}
         
-        float shotX;
-            
-       if (keys[ALLEGRO_KEY_UP] && !shooting) {
-			shooting = true;
-			shotY = y;
-			shotX = x - shotW / 2;  // fijar X en el momento del disparo
-		}
-			
-			// Actualizar estado
-		if (keys[ALLEGRO_KEY_ESCAPE]) running = false; //si aprieto escape, para el program. usar esto para menu!!!
-        if (keys[ALLEGRO_KEY_LEFT] && x>=playerW/2) x -= speed; //establezco limite de movimiento de nave y velocidad
-
-		// Actualizar disparo
-		if (shooting) {
-			shotY -= speedShot;
-			if (shotY < 0) shooting = false;
-		}
+        if(keys[ALLEGRO_KEY_UP]){
+        	playerShot(shooting, bullet, player);
+        }
+        
+        
+        
     
         al_clear_to_color(al_map_rgb(0, 0, 0));
         al_draw_bitmap(sprite_escalado, x-playerW/2, y, 0); //dibuja la nave
@@ -104,9 +99,6 @@ int main() {
     al_destroy_event_queue(queue);
     return 0;
 }
-
-
-
 
 
 

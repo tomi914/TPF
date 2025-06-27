@@ -103,12 +103,32 @@ void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria 
 	
 }
 
-//TERMINAR
-void playerMove(/*algo que indique direccion*/, player_t * player){		//revisar que seria necesario que ingrese (coordIn serian las coord leidas en el teclado o joystick)
-	
-	player->coord.coordX += JUMP_SIZE_X;	//ver si es para la izquierda o derecha
-	
+//revisar logica y compatibilidad
+
+
+void playerMove(int dire, player_t * player){
+	if(dire<0 && player->coord.coordX>=0/*ver bien los limites*/){
+		player->coord.coordX -= JUMP_SIZE_X;
+	}
+	if(dire>0 && player.coord.coordX<(DISPLAY_LENGTH-PLAYER_SIZE_W)/*ver bien los lim*/){
+		player->coord.coordX += JUMP_SIZE_X;
+	}
 }
+
+void playerShoot(bool shooting, bullet_t * bullet, player_t * player){
+	if (!shooting) {
+			shooting = true;
+			bullet->coord.coordY = player->coord.coordY;
+			bullet->coord.coordX = player->coord.coordX - SHOT_SIZE_W / 2;  // fijar X en el momento del disparo
+		}
+	if (shooting) {
+			shotY -= speedShot;
+			if (shotY < 0) {
+				shooting = false;
+				}
+		}
+}
+
 
 
 
