@@ -66,7 +66,7 @@ void scoreTracker(void); 	//10-20-30-random
 
 
 //creo que esta bien, chequear con los muchachos. 
-void initializeAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
+void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
 
 	int i, j;
 	
@@ -88,37 +88,7 @@ void initializeAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe u
 	}
 }
 
-void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){ // ¡¡¡¡FALTA HACER QUE BAJEN LAS FILAS Y CHEQUEAR CORRECTA DETECCIÓN DE BORDES. SI ES POSIBLE OPTIMIZAR!!!!
-	
-	int i, j;
-	char direction = 'R'; 	//	R:right - L:left
-	
-	while(1){
-		switch (direction){ // La idea es que varíe el movimiento según vaya hacia la derecha o hacia la izquierda
-			case 'R': // caso DERECHA
-				while((aliens[0][0].coord.coordX + ALIEN_ROW_LENGTH) < DISPLAY_LENGTH-DISPLAY_MARGIN_X){	//para no chocar con el borde derecho*/
-					for(i=ALIEN_ROWS-1;i>=0;i--){ 
-						for(j=ALIEN_COLS-1;j>=0;j--){ 
-							aliens[i][j].coord.coordX += JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la DERECHA
-						}
-					}
-				}
-				direction = 'L'; // caso IZQUIERDA
-			break;
-			case 'L':
-				while((aliens[ALIEN_ROWS-1][ALIEN_COLS-1].coord.coordX - ALIEN_ROW_LENGTH) > DISPLAY_MARGIN_X){	//para no chocar con el borde*/
-					for(i=ALIEN_ROWS-1;i>=0;i--){
-						for(j=0;j<ALIEN_ROWS;j++){
-							aliens[i][j].coord.coordX -= JUMP_SIZE;	// Avanzamos cada columna de aliens lo que indica JUMP_SIZE hacia la IZQUIERDA
-						}
-					}
-				}
-				direction = 'R';
-			break;
-		}
-	}
-}
-
+//creo que esta bien, chequear con los muchachos. 
 void alienMove(void){ 
 	
 	//HABRIA QUE VER SI NO CONVIENE QUE SEAN GLOBALES PARA CUANDO SE REINICIA LA PARTIDA --- CREO QUE SI
@@ -142,6 +112,21 @@ void alienMove(void){
 	}
 }
 
+//creo que esta bien, chequear con los muchachos. 
+void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria hacer? 
+	
+	player->health = 3;
+	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
+	player->coord.coordY = /*depende la interfaz*/;
+	
+}
+
+//TERMINAR
+void playerMove(/*algo que indique direccion*/, player_t * player){		//revisar que seria necesario que ingrese (coordIn serian las coord leidas en el teclado o joystick)
+	
+	player->coord.coordX += JUMP_SIZE_X;	//ver si es para la izquierda o derecha
+	
+}
 
 
 
