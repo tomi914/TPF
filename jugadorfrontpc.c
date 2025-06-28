@@ -17,34 +17,39 @@ int main() {
     }
 
 
-	const int playerW = 64; //tamano jugador
+/*	const int playerW = 64; //tamano jugador
 	const int playerH = 64;
     float x = screenW / 2.0; //donde arranca la nave (medio) en x
-    float y = screenH - 100; //donde arranca la nave en y
+	float y = screenH - 100; //donde arranca la nave en y
     float speed = 5.0; //velocidad de la nave
     const int shotW = 10; //tamano de disparo
 	const int shotH = 20;
 	float shotY=y;
 	float speedShot = 10.0; //velocidad de la nave
 	bool shooting = false;
-	float shotX;
+	float shotX;*/
+	player_t player;
+	bullet_t playerBullet;
+	player.coord.coordY=/*definir*/;
+	player.coord.coordX=DISPLAY_LENGTH/2-PLAYER_SIZE_X/2;
+	
 
 	ALLEGRO_BITMAP *sprite_original = al_load_bitmap("imagen.png"); //subo imagen nave
-	ALLEGRO_BITMAP *sprite_escalado = al_create_bitmap(playerW, playerH); //la reescala y printea
+	ALLEGRO_BITMAP *sprite_escalado = al_create_bitmap(PLAYER_SIZE_X, PLAYER_SIZE_Y); //la reescala y printea
 	al_set_target_bitmap(sprite_escalado);
 	al_draw_scaled_bitmap(sprite_original,
 		                  0, 0, al_get_bitmap_width(sprite_original), al_get_bitmap_height(sprite_original),
-		                  0, 0, playerW, playerH,
+		                  0, 0, PLAYER_SIZE_X, PLAYER_SIZE_Y,
 		                  0);
 	al_set_target_backbuffer(al_get_current_display());
 	
 	 ALLEGRO_BITMAP *sprite_original2 = al_load_bitmap("imagen2.png"); //sube la img de disparo
 
-			ALLEGRO_BITMAP *sprite_shot_escalado = al_create_bitmap(shotW, shotH); //la reescala y printea
+			ALLEGRO_BITMAP *sprite_shot_escalado = al_create_bitmap(BULLET_SIZE_X, BULLET_SIZE_Y); //la reescala y printea
 			al_set_target_bitmap(sprite_shot_escalado);
 			al_draw_scaled_bitmap(sprite_original2,
 				              0, 0, al_get_bitmap_width(sprite_original2), al_get_bitmap_height(sprite_original2),
-				              0, 0, shotW, shotH,
+				              0, 0, BULLET_SIZE_X, BULLET_SIZE_Y,
 				              0);
 			al_set_target_backbuffer(al_get_current_display());
 	//si tomy hace los png esto no es necesario
@@ -56,6 +61,7 @@ int main() {
 
     bool running = true; //indica si el programa debe seguir corriendo
     bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
+    bool tryShoot;
 
     while (running) {
         ALLEGRO_EVENT ev;
@@ -69,24 +75,24 @@ int main() {
         }
 
 
-		if (keys[ALLEGRO_KEY_LEFT]){
-			playermove(-1, player);
-		}//establezco limite de movimiento de nave y velocidad
-		if (keys[ALLEGRO_KEY_RIGHT]){
-			playermove(1, player);
+		if (keys[ALLEGRO_KEY_LEFT]){//llamo a funcion playerMove para ir a la izq
+			playerMove(-1, &player);
+		}
+		if (keys[ALLEGRO_KEY_RIGHT]){//llamo a funcion playerMove para ir a la der
+			playerMove(1, &player);
 		}
         
-        if(keys[ALLEGRO_KEY_UP]){
-        	playerShot(shooting, bullet, player);
+        if(keys[ALLEGRO_KEY_UP]){//llamo a funcion playerShoot para disparar
+        	tryShoot = true;
         }
         
-        
+        playerShoot(&shooting, &bulletPlayer, &player);
         
     
         al_clear_to_color(al_map_rgb(0, 0, 0));
-        al_draw_bitmap(sprite_escalado, x-playerW/2, y, 0); //dibuja la nave
+        al_draw_bitmap(sprite_escalado, player->coord.coordX, player->coord.coordY, 0); //dibuja la nave
         if (shooting)
-			al_draw_bitmap(sprite_shot_escalado, shotX, shotY, 0); //dibuja el disparo
+			al_draw_bitmap(sprite_shot_escalado, bullet->coord.coordX, bullet->coord.coordY, 0); //dibuja el disparo
         al_flip_display();
         al_rest(0.01);  // pequeña pausa
     }
