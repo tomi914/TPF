@@ -1,9 +1,10 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
-
+#include <stdio.h>
 
 int main() {
     if (!al_init()) {
+    	fprintf(stderr, "failed to initialize allegro!\n");
         return -1;
     }
     al_install_keyboard();
@@ -29,30 +30,44 @@ int main() {
 	bool shooting = false;
 	float shotX;*/
 	player_t player;
+	alien_t alien;
 	bullet_t playerBullet;
-	player.coord.coordY=/*definir*/;
+	bullet_t alienBullet;
+	char img[20];
+	int i;
+	int jump;
+	
+	
+	player.coord.coordY=DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
 	player.coord.coordX=DISPLAY_LENGTH/2-PLAYER_SIZE_X/2;
 	
-
-	ALLEGRO_BITMAP *sprite_original = al_load_bitmap("imagen.png"); //subo imagen nave
-	ALLEGRO_BITMAP *sprite_escalado = al_create_bitmap(PLAYER_SIZE_X, PLAYER_SIZE_Y); //la reescala y printea
-	al_set_target_bitmap(sprite_escalado);
-	al_draw_scaled_bitmap(sprite_original,
-		                  0, 0, al_get_bitmap_width(sprite_original), al_get_bitmap_height(sprite_original),
-		                  0, 0, PLAYER_SIZE_X, PLAYER_SIZE_Y,
-		                  0);
-	al_set_target_backbuffer(al_get_current_display());
+	alien.coord.Y
+	alien.coord.X
 	
-	 ALLEGRO_BITMAP *sprite_original2 = al_load_bitmap("imagen2.png"); //sube la img de disparo
+	for (i=0; i<9; i++){
+		sprintf(img, "img%d.png", i);
+		image[i]= al_load_bitmap(*img);
+	}
 
-			ALLEGRO_BITMAP *sprite_shot_escalado = al_create_bitmap(BULLET_SIZE_X, BULLET_SIZE_Y); //la reescala y printea
-			al_set_target_bitmap(sprite_shot_escalado);
-			al_draw_scaled_bitmap(sprite_original2,
-				              0, 0, al_get_bitmap_width(sprite_original2), al_get_bitmap_height(sprite_original2),
-				              0, 0, BULLET_SIZE_X, BULLET_SIZE_Y,
-				              0);
-			al_set_target_backbuffer(al_get_current_display());
-	//si tomy hace los png esto no es necesario
+
+
+
+
+	
+	
+
+
+/*    al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0);
+
+
+
+    // Actualiza la pantalla
+    al_flip_display();
+
+*/
+
+
+
 
 
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
@@ -90,7 +105,24 @@ int main() {
         
     
         al_clear_to_color(al_map_rgb(0, 0, 0));
-        al_draw_bitmap(sprite_escalado, player->coord.coordX, player->coord.coordY, 0); //dibuja la nave
+        al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
+        
+        
+        
+        if (jump){//imprimo la segunda variante de los aliens
+        
+        al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0);
+        
+        
+        
+        } else {
+        
+        
+        }
+        
+        
+        
+        
         if (shooting)
 			al_draw_bitmap(sprite_shot_escalado, bullet->coord.coordX, bullet->coord.coordY, 0); //dibuja el disparo
         al_flip_display();

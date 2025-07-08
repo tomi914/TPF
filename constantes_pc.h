@@ -18,7 +18,7 @@
 #define JUMP_SIZE_Y 20			//salto para los movimientos
 #define DISPLAY_MARGIN_X 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define PLAYER_SIZE_X 3 //VER
-#define PLAYER_SIZE_Y 2
-#define BULLET_SIZE_X 1
-#define BULLET_SIZE_Y 1
+#define PLAYER_SIZE_X 50//VER
+#define PLAYER_SIZE_Y 56
+#define BULLET_SIZE_X 5
+#define BULLET_SIZE_Y 20
