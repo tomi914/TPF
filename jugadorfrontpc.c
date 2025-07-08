@@ -9,11 +9,9 @@ int main() {
     }
     al_install_keyboard();
     al_init_image_addon();
-    const int screenW = 850;
-    const int screenH = 850;
-    ALLEGRO_DISPLAY *display = al_create_display(screenW, screenH); //crea display
+    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGHT, DISPLAY_HIGH); //crea display
     if (!display) {
-       
+        fprintf(stderr, "failed to create display!\n");
         return -1;
     }
 
@@ -36,40 +34,32 @@ int main() {
 	char img[20];
 	int i;
 	int jump;
-	
-	
+	int fil, col;
 	player.coord.coordY=DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
 	player.coord.coordX=DISPLAY_LENGTH/2-PLAYER_SIZE_X/2;
-	
-	alien.coord.Y
-	alien.coord.X
-	
+	alien.coord.Y=
+	alien.coord.X=
 	for (i=0; i<9; i++){
 		sprintf(img, "img%d.png", i);
 		image[i]= al_load_bitmap(*img);
 	}
-
-
-
-
-
-	
-	
-
-
-/*    al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0);
-
-
-
-    // Actualiza la pantalla
-    al_flip_display();
-
-*/
-
-
-
-
-
+        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
+        		if (fil<1){
+        			for (col=0; col<ALIEN_COLS; col++){
+		    		al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+		    		}
+		   		} else if (fil<3){
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		} else {
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		}
+		   	}
+		    jump=0;
+		    al_flip_display();
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
     al_register_event_source(queue, al_get_keyboard_event_source()); //registra teclado y display como fuentes de eventos
     al_register_event_source(queue, al_get_display_event_source(display));
@@ -77,6 +67,9 @@ int main() {
     bool running = true; //indica si el programa debe seguir corriendo
     bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
     bool tryShoot;
+    bool shooting;
+
+
 
     while (running) {
         ALLEGRO_EVENT ev;
@@ -101,7 +94,7 @@ int main() {
         	tryShoot = true;
         }
         
-        playerShoot(&shooting, &bulletPlayer, &player);
+        playerShoot(&tryshoot, &bulletPlayer, &player); //meter en el backend el try
         
     
         al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -109,25 +102,54 @@ int main() {
         
         
         
+        
+        
+        
+        
+        if (playerBullet.active){// cambiar en el back lo de player con shooting
+			al_draw_bitmap(img[8], bullet->coord.coordX, bullet->coord.coordY, 0);
+			} //dibuja el disparo
+        al_flip_display();
+        al_rest(0.01);  // pequeña pausa
+        
+        
+        //PONER TIEMPO
+        
+        
         if (jump){//imprimo la segunda variante de los aliens
         
-        al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0);
+        	for (){
+        		if (
+		    al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+		    }
+		    jump=0;
+		    al_flip_display();
+        
+        
         
         
         
         } else {
         
-        
+        	for (){
+		    al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+		    }
+		    jump=1;
+		    al_flip_display();
         }
         
         
         
         
-        if (shooting)
-			al_draw_bitmap(sprite_shot_escalado, bullet->coord.coordX, bullet->coord.coordY, 0); //dibuja el disparo
-        al_flip_display();
-        al_rest(0.01);  // pequeña pausa
+        
+        
+        
+        
     }
+    
+    
+    
+    
 
     al_destroy_bitmap(sprite_escalado);
     al_destroy_bitmap(sprite_shot_escalado);
