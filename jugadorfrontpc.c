@@ -15,20 +15,8 @@ int main() {
         return -1;
     }
 
-
-/*	const int playerW = 64; //tamano jugador
-	const int playerH = 64;
-    float x = screenW / 2.0; //donde arranca la nave (medio) en x
-	float y = screenH - 100; //donde arranca la nave en y
-    float speed = 5.0; //velocidad de la nave
-    const int shotW = 10; //tamano de disparo
-	const int shotH = 20;
-	float shotY=y;
-	float speedShot = 10.0; //velocidad de la nave
-	bool shooting = false;
-	float shotX;*/
 	player_t player;
-	alien_t alien;
+	alien_t alien[55];
 	bullet_t playerBullet;
 	bullet_t alienBullet;
 	char img[20];
@@ -37,29 +25,36 @@ int main() {
 	int fil, col;
 	player.coord.coordY=DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
 	player.coord.coordX=DISPLAY_LENGTH/2-PLAYER_SIZE_X/2;
+	
+	//ver como inicializar aliens con sus coord
 	alien.coord.Y=
 	alien.coord.X=
+	
+	
 	for (i=0; i<9; i++){
 		sprintf(img, "img%d.png", i);
 		image[i]= al_load_bitmap(*img);
 	}
-        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
+        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar las coord de los aliens ??
         		if (fil<1){
         			for (col=0; col<ALIEN_COLS; col++){
-		    		al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+		    		al_draw_bitmap(image[0], player->coord.coordX, player->coord.coordY, 0);
 		    		}
 		   		} else if (fil<3){
 			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+						al_draw_bitmap(image[2], player->coord.coordX, player->coord.coordY, 0);
 						}
 		   		} else {
 			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
+						al_draw_bitmap(image[4], player->coord.coordX, player->coord.coordY, 0);
 						}
 		   		}
 		   	}
 		    jump=0;
+		    al_draw_bitmap(image[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial 
 		    al_flip_display();
+		    
+		    
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
     al_register_event_source(queue, al_get_keyboard_event_source()); //registra teclado y display como fuentes de eventos
     al_register_event_source(queue, al_get_display_event_source(display));
@@ -67,9 +62,6 @@ int main() {
     bool running = true; //indica si el programa debe seguir corriendo
     bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
     bool tryShoot;
-    bool shooting;
-
-
 
     while (running) {
         ALLEGRO_EVENT ev;
@@ -94,20 +86,15 @@ int main() {
         	tryShoot = true;
         }
         
-        playerShoot(&tryshoot, &bulletPlayer, &player); //meter en el backend el try
+        playerShoot(&tryshoot, &bulletPlayer, &player); //meter en el backend el try y cambiar lo de bullet alive
         
     
         al_clear_to_color(al_map_rgb(0, 0, 0));
-        al_draw_bitmap(img[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
-        
-        
-        
-        
-        
+        al_draw_bitmap(image[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
         
         
         if (playerBullet.active){// cambiar en el back lo de player con shooting
-			al_draw_bitmap(img[8], bullet->coord.coordX, bullet->coord.coordY, 0);
+			al_draw_bitmap(image[8], bullet->coord.coordX, bullet->coord.coordY, 0);
 			} //dibuja el disparo
         al_flip_display();
         al_rest(0.01);  // pequeña pausa
@@ -118,43 +105,49 @@ int main() {
         
         if (jump){//imprimo la segunda variante de los aliens
         
-        	for (){
-        		if (
-		    al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
-		    }
+       
+        		for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
+        		if (fil<1){
+        			for (col=0; col<ALIEN_COLS; col++){
+		    		al_draw_bitmap(image[0], player->coord.coordX, player->coord.coordY, 0);
+		    		}
+		   		} else if (fil<3){
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(image[2], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		} else {
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(image[4], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		}
+		   	}
 		    jump=0;
 		    al_flip_display();
-        
-        
-        
-        
-        
+
         } else {
         
-        	for (){
-		    al_draw_bitmap(img[], player->coord.coordX, player->coord.coordY, 0);
-		    }
+        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
+        		if (fil<1){
+        			for (col=0; col<ALIEN_COLS; col++){
+		    		al_draw_bitmap(image[1], player->coord.coordX, player->coord.coordY, 0);
+		    		}
+		   		} else if (fil<3){
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(image[3], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		} else {
+			   		for (col=0; col<ALIEN_COLS; col++){
+						al_draw_bitmap(image[5], player->coord.coordX, player->coord.coordY, 0);
+						}
+		   		}
+		   	}
 		    jump=1;
 		    al_flip_display();
         }
-        
-        
-        
-        
-        
-        
-        
-        
     }
-    
-    
-    
-    
-
-    al_destroy_bitmap(sprite_escalado);
-    al_destroy_bitmap(sprite_shot_escalado);
-    al_destroy_bitmap(sprite_original);
-    al_destroy_bitmap(sprite_shot_escalado);
+   	for (i=0; i<9; i++){
+		al_destroy_bitmap(image[i]);
+	}
     al_destroy_display(display);
     al_destroy_event_queue(queue);
     return 0;
@@ -191,6 +184,19 @@ int main() {
 		    }
 		    
      */
+
+/*	const int playerW = 64; //tamano jugador
+	const int playerH = 64;
+    float x = screenW / 2.0; //donde arranca la nave (medio) en x
+	float y = screenH - 100; //donde arranca la nave en y
+    float speed = 5.0; //velocidad de la nave
+    const int shotW = 10; //tamano de disparo
+	const int shotH = 20;
+	float shotY=y;
+	float speedShot = 10.0; //velocidad de la nave
+	bool shooting = false;
+	float shotX;*/
+
 
 
 
