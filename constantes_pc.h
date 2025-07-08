@@ -18,6 +18,7 @@
 #define JUMP_SIZE_Y 20			//salto para los movimientos
 #define DISPLAY_MARGIN_X 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
+<<<<<<< HEAD
 #define PLAYER_SIZE_X 3 //VER
 #define PLAYER_SIZE_Y 2
 #define BULLET_SIZE_X 1
@@ -25,3 +26,9 @@
 #define NUM_SHIELDS 4	//cantidad de escudos 
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 50 //cuantas coordenadas hay de espaciado entre cada escudo
+=======
+#define PLAYER_SIZE_X 50//VER
+#define PLAYER_SIZE_Y 56
+#define BULLET_SIZE_X 5
+#define BULLET_SIZE_Y 20
+>>>>>>> f6f492a272a2578b4dc95749e2c6d65e50bb2354
