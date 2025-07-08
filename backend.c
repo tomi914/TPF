@@ -3,7 +3,12 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-alienBlock_t aliensBlock = {0, 0, 1, 0, ALIEN_COLS - 1};	//inicializo los datos del bloque de aliens chequear coordX y coordY
+//inicializar en el front: 
+//	- alienBlock_t aliensBlock
+//	- alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]
+// 	- shield_t * shields[NUM_SHIELDS]
+//	- bullet_t * bulletPlayer
+//	- bullet_t * bulletAlien
 
 //las imagenes tienen distinto tamaño por tipo de alien, corregir la función
 //creo que esta bien, chequear con los muchachos. 
@@ -35,7 +40,29 @@ void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punt
 	}
 }
 
-void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){ 
+void initShieldsArray(shield_t * shields[NUM_SHIELDS]){	//recibe un puntero al arreglo de escudos definido en el front
+
+	int i; 
+	
+	shields[0]->coord.coordX = MARGIN_X + SHIELD_INIT_X_JUMP/2; //ubico el primer escudo, dejo el margen + la mitad de los saltos 
+	
+	for(i=0;i<NUM_SHIELDS;i++){
+		shields[i]->health = 15; 	//le seteo la cantidad de vidas
+		shields[i]->coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
+		shields[i]->coord.coordX += (SHIELD_INIT_X_JUMP * i); 
+	}
+}
+
+//creo que esta bien, chequear con los muchachos. 
+void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria hacer? 
+	
+	player->health = 3;
+	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
+	player->coord.coordY = /*depende la interfaz*/;
+	
+}
+
+void blockMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){ 
 
 	uint8_t alienColAlive = 0; 
 	uint8_t i; 
@@ -72,11 +99,13 @@ void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){
 	int alienRowLength = (aliensBlock.lastColAlive - aliensBlock.firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;	//se almacena cuantas coord de largo tiene c/fila
 	
 	//hago movimientos
-	if(aliensBlock.direction==1 && ((aliensBlock.coordX + alienRowLength) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+	//en borde derecho: comparo coordX del bloque + coordX de la primera fila viva + largo del bloque con el largo del display menos el margen
+	//en borde izquierdo: comparo coordX del bloque + coordX de la primera fila viva con el margen 
+	if(aliensBlock.direction==1 && ((aliens[0][aliensBlock.firstColAlive].coord.coordX + alienRowlength + aliensBlock.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
 		aliensBlock.direction = -1; 		//cambio de direccion
 		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
 	}	
-	else if(aliensBlock.direction==-1 && (aliensBlock.coordX <= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+	else if(aliensBlock.direction==-1 && ((aliens[0][aliensBlock.firstColAlive].coord.coordX + aliensBlock.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
 		aliensBlock.direction = 1; 		//cambio de direccion
 		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
 	}
@@ -86,25 +115,32 @@ void alienMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){
 }
 
 //creo que esta bien, chequear con los muchachos. 
-void resetAliensBlock(void){
-	aliensBlock.coordX = 0;
-    aliensBlock.coordY = 0;
+void initAliensBlock(alienBlock_t aliensBlock){
+	aliensBlock.coordX = MARGIN_X;
+    aliensBlock.coordY = MARGIN_Y;
     aliensBlock.direction = 1;
     aliensBlock.firstColAlive = 0;
     aliensBlock.lastColAlive = ALIEN_COLS - 1;
+    aliensBlock.lastRowAlive = ALIEN_ROWS - 1; 
 }
 
-//creo que esta bien, chequear con los muchachos. 
-void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria hacer? 
+void collisionDetect(void){
+	//aca van las funciones que chequean todas las colisiones posibles
+}
+
+void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){	//chequea bala del jugador con todos los aliens
+
+	int i, j; 
 	
-	player->health = 3;
-	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
-	player->coord.coordY = /*depende la interfaz*/;
+	for(i=(aliensBlock.lastRowAlive); i>=0 ; i++){	//recorro filas de aliens desde abajo hacia arriba
+		for(j=aliensblock.firstColAlive; i>=0 ; i++){	//recorro filas de aliens desde abajo hacia arriba
+			
+		}
+	}
 	
 }
 
 //revisar logica y compatibilidad
-
 
 void playerMove(int dire, player_t * player){
 	if(dire<0 && player->coord.coordX>=0/*ver bien los limites*/){

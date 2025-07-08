@@ -23,3 +23,6 @@
 #define PLAYER_SIZE_Y 2
 #define BULLET_SIZE_X 1
 #define BULLET_SIZE_Y 1
+#define NUM_SHIELDS 4	//cantidad de escudos 
+#define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
+#define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
