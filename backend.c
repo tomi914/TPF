@@ -132,9 +132,18 @@ void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], a
 
 	int i, j; 
 	
-	for(i=(aliensBlock.lastRowAlive); i>=0 ; i++){	//recorro filas de aliens desde abajo hacia arriba
-		for(j=aliensblock.firstColAlive; i>=0 ; i++){	//recorro filas de aliens desde abajo hacia arriba
-			
+	for(i=(aliensBlock.lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
+		for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
+			if(aliens[i][j].alive){	//verifico que el alien este vivo, sino no comparo coordenadas
+				//chequeo que este dentro del rango del alien en X (usamos tipo B porque es el tamaño intermedio).
+				if((aliens[i][j].coord.coordX + aliensBlock.coordX <= bullet->coord.coordX) && (bullet->coord.coordX <= (aliens[i][j].coord.coordX + aliensBlock.coordX + ALIEN_B_SIZE_X))){
+					if((aliens[i][j].coord.coordY + aliensBlock.coordY <= bullet->coord.coordY) && (bullet->coord.coordY <= (aliens[i][j].coord.coordY + aliensBlock.coordY + ALIEN_B_SIZE_Y))){
+						aliens[i][j].alive = false; 
+						bullet->active = false; 
+						return;
+					}
+				}
+			}
 		}
 	}
 	
