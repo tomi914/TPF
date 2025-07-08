@@ -30,5 +30,7 @@
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
 #define BULLET_SIZE_X 5
-#define BULLET_SIZE_Y 20
+#define BULLET_SIZE_Y 20 
+#define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
+#define SPEED_BULLET_ALLIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
 >>>>>>> f6f492a272a2578b4dc95749e2c6d65e50bb2354
