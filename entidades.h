@@ -47,4 +47,5 @@ typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
 typedef struct{ // Almacena la información general de las BALAS
 	char type; 
 	coord_t coord;
+	bool active; // Nos indica si la bala existe o no.
 }bullet_t;
