@@ -12,8 +12,8 @@
 
 //creo que esta bien, chequear con los muchachos. 
 void initAliensBlock(alienBlock_t * aliensBlock){
-	aliensBlock->coord.coordX = MARGIN_X;
-    aliensBlock->coord.coordY = MARGIN_Y;
+	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
+    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y;
     aliensBlock->direction = 1;
     aliensBlock->firstColAlive = 0;
     aliensBlock->lastColAlive = ALIEN_COLS - 1;
