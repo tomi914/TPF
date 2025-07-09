@@ -11,13 +11,13 @@
 //	- bullet_t * bulletAlien
 
 //creo que esta bien, chequear con los muchachos. 
-void initAliensBlock(alienBlock_t aliensBlock){
-	aliensBlock.coordX = MARGIN_X;
-    aliensBlock.coordY = MARGIN_Y;
-    aliensBlock.direction = 1;
-    aliensBlock.firstColAlive = 0;
-    aliensBlock.lastColAlive = ALIEN_COLS - 1;
-    aliensBlock.lastRowAlive = ALIEN_ROWS - 1; 
+void initAliensBlock(alienBlock_t * aliensBlock){
+	aliensBlock->coordX = MARGIN_X;
+    aliensBlock->coordY = MARGIN_Y;
+    aliensBlock->direction = 1;
+    aliensBlock->firstColAlive = 0;
+    aliensBlock->lastColAlive = ALIEN_COLS - 1;
+    aliensBlock->lastRowAlive = ALIEN_ROWS - 1; 
 }
 
 //al inicializar las coordenadas hay que tomar en cuenta el tamaño que ocupa cada alien y no solo los saltos
@@ -33,33 +33,34 @@ void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punt
 			
 			if(i == 0){
 		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
-		    	aliens[i][j].coord.coordX = j * A_INIT_JUMP_SIZE_X;	//chequear que este bien visualmente
-		    	aliens[i][j].coord.coordY = i * A_INIT_JUMP_SIZE_Y;
+		    	aliens[i][j].coord.coordX = j * (ALIEN_A_SIZE_X + A_INIT_JUMP_SIZE_X);	//chequear que este bien visualmente
+		    	aliens[i][j].coord.coordY = i * (ALIEN_A_SIZE_Y + A_INIT_JUMP_SIZE_Y);
 		    }
 		    else if(i < 3){
 		    	aliens[i][j].type = 'B';
-		    	aliens[i][j].coord.coordX = j * B_INIT_JUMP_SIZE_X;
-		    	aliens[i][j].coord.coordY = i * B_INIT_JUMP_SIZE_Y;
+		    	aliens[i][j].coord.coordX = j * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordY = i * (ALIEN_B_SIZE_Y + B_INIT_JUMP_SIZE_Y);
 		    }
 		    else{
 		    	aliens[i][j].type = 'C';
-		    	aliens[i][j].coord.coordX = j * C_INIT_JUMP_SIZE_X;
-		    	aliens[i][j].coord.coordY = i * C_INIT_JUMP_SIZE_Y;
+		    	aliens[i][j].coord.coordX = j * (ALIEN_C_SIZE_X + C_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordY = i * (ALIEN_C_SIZE_Y + C_INIT_JUMP_SIZE_Y);
 		    }
 		}
 	}
 }
 
-void initShieldsArray(shield_t * shields[NUM_SHIELDS]){	//recibe un puntero al arreglo de escudos definido en el front
+void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arreglo de escudos definido en el front
 
 	int i; 
 	
-	shields[0]->coord.coordX = MARGIN_X + SHIELD_INIT_X_JUMP/2; //ubico el primer escudo, dejo el margen + la mitad de los saltos 
-	
 	for(i=0;i<NUM_SHIELDS;i++){
-		shields[i]->health = 15; 	//le seteo la cantidad de vidas
-		shields[i]->coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
-		shields[i]->coord.coordX += (SHIELD_INIT_X_JUMP * i); 
+		shields[i].health = 15; 	//le seteo la cantidad de vidas
+		shields[i].coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
+		shields[i].coord.coordX = MARGIN_X + SHIELD_INIT_X_JUMP/2 + (SHIELD_INIT_X_JUMP * i); 
+		shields[i].sizeX = SHIELD_INIT_SIZE_X;
+		shields[i].sizeY = SHIELD_INIT_SIZE_Y;
+		
 	}
 }
 
@@ -72,55 +73,55 @@ void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria 
 	
 }
 
-void blockMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){ 
+void blockMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
 
 	uint8_t alienColAlive = 0; 
 	uint8_t i; 
 	
 	//analizo unicamente la columna del extremo izquierdo
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock.firstColAlive].alive){
+		if(aliens[i][aliensBlock->firstColAlive].alive){
 			alienColAlive++; 
 		}
 	}
 	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
-		aliensBlock.firstColAlive++; 		//actualizo la primera columna que tenga aliens vivos
+		aliensBlock->firstColAlive++; 		//actualizo la primera columna que tenga aliens vivos
 	}
 	
 	alienColAlive = 0; 
 	
 	//analizo unicamente la columna del extremo derecho
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock.lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
+		if(aliens[i][aliensBlock->lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
 			alienColAlive++; 
 		}
 	}
 	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
-		aliensBlock.lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
+		aliensBlock->lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
 	}
 	
 	//chequeo de cambio de nivel
-	if(aliensBlock.firstColAlive>aliensBlock.lastColAlive){
+	if(aliensBlock->firstColAlive>aliensBlock->lastColAlive){
 		//se sube de nivel porque todos los aliens estan muertos
 	}
 	
 	//hay que ver con que ALIEN_..._SIZE_X y que ..._INIT_SIZE_X definimos esta variable
 	//(creo que puede ser con cualquiera y DISPLAY_MARGIN_X absorbe el error)
-	int alienRowLength = (aliensBlock.lastColAlive - aliensBlock.firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;	//se almacena cuantas coord de largo tiene c/fila
+	int alienRowLength = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;	//se almacena cuantas coord de largo tiene c/fila
 	
 	//hago movimientos
 	//en borde derecho: comparo coordX del bloque + coordX de la primera fila viva + largo del bloque con el largo del display menos el margen
 	//en borde izquierdo: comparo coordX del bloque + coordX de la primera fila viva con el margen 
-	if(aliensBlock.direction==1 && ((aliens[0][aliensBlock.firstColAlive].coord.coordX + alienRowlength + aliensBlock.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
-		aliensBlock.direction = -1; 		//cambio de direccion
-		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
+	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + alienRowlength + aliensBlock->coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+		aliensBlock->direction = -1; 		//cambio de direccion
+		aliensBlock->coordY += JUMP_SIZE_Y;	//salto abajo
 	}	
-	else if(aliensBlock.direction==-1 && ((aliens[0][aliensBlock.firstColAlive].coord.coordX + aliensBlock.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
-		aliensBlock.direction = 1; 		//cambio de direccion
-		aliensBlock.coordY += JUMP_SIZE_Y;	//salto abajo
+	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+		aliensBlock->direction = 1; 		//cambio de direccion
+		aliensBlock->coordY += JUMP_SIZE_Y;	//salto abajo
 	}
 	else{
-		aliensBlock.coordX += JUMP_SIZE_X * aliensBlock.direction;		//suma o resta dependiendo de hacia donde tiene que ir
+		aliensBlock->coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
 	}
 }
 
@@ -147,18 +148,18 @@ void collisionDetect(void){
 }
 
 //chequea bala del jugador con todos los aliens
-void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){	
+void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){	
 
 	int i, j; 
 	
 	if(bullet->active){	//verifico que la bala del jugador este activa
-		for(i=(aliensBlock.lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
-			for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
+		for(i=(aliensBlock->lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
+			for(j=aliensBlock->firstColAlive; j<=aliensBlock->lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
 				if(aliens[i][j].alive){	//verifico que el alien este vivo
 				
 					//creo variables intermedias por claridad
-					uint16_t alienX = aliens[i][j].coord.coordX + aliensBlock.coordX;
-					uint16_t alienY = aliens[i][j].coord.coordY + aliensBlock.coordY;
+					uint16_t alienX = aliens[i][j].coord.coordX + aliensBlock->coordX;
+					uint16_t alienY = aliens[i][j].coord.coordY + aliensBlock->coordY;
 					uint16_t bulletX = bullet->coord.coordX;
 					uint16_t bulletY = bullet->coord.coordY;
 					
@@ -197,19 +198,19 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 }
 
 //chequea colision entre aliens y escudos
-void collisionAS(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t aliensBlock){
+void collisionAS(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock){
 
 	int j, k; 
 	
 	//solo analizamos la colision con la ultima fila viva, no con las otras
-	for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){
+	for(j=aliensBlock->firstColAlive; j<=aliensBlock->lastColAlive ; j++){
 		for(k=0; k<NUM_SHIELDS; k++){
 			
-			if(aliens[aliensBlock.lastRowAlive][j]. alive && shields[k].health){//verifico que el alien este vivo y que el escudo tambien
+			if(aliens[aliensBlock->lastRowAlive][j]. alive && shields[k].health){//verifico que el alien este vivo y que el escudo tambien
 			
 				//variables intermedias para mejor comprension
-				uint16_t alienX = aliens[aliensBlock.lastRowAlive][j].coord.coordX + aliensBlock.coordX;
-				uint16_t alienY = aliens[aliensBlock.lastRowAlive][j].coord.coordY + aliensBlock.coordY;
+				uint16_t alienX = aliens[aliensBlock->lastRowAlive][j].coord.coordX + aliensBlock->coordX;
+				uint16_t alienY = aliens[aliensBlock->lastRowAlive][j].coord.coordY + aliensBlock->coordY;
 				uint16_t shieldX = shields[k].coord.coordX;
 				uint16_t shieldW = shields[k].sizeX;
 				uint16_t shieldY = shields[k].coord.coordY;
@@ -219,11 +220,37 @@ void collisionAS(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NU
 					shields[k].health -= 2; //ver cuanto conviene decrementar las vidas luego 
 				}	
 			}		
-		}	
+		}
+	}	
 }
 
+//solo se usa en la pc, no en la raspberry
 void shieldsUpdate(shield_t * shields[NUM_SHIELDS]){
 	//esta funcion analiza la vida que le queda a cada escudo y actualiza su tamaño
+	int k; 
+	
+	for(k=0; k<NUM_SHIELDS; k++){
+		if(shields[k].health > 12){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 9){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 6){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 3){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else{
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+	}
 }
 
 //revisar logica y compatibilidad
