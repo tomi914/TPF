@@ -259,27 +259,25 @@ void playerMove(int dire, player_t * player){
 	if(dire<0 && player->coord.coordX>=0/*ver bien los limites*/){
 		player->coord.coordX -= JUMP_SIZE_X; //definir si el jump va a ser el mismo q los aliens
 	}
-	if(dire>0 && player.coord.coordX<(DISPLAY_LENGTH-PLAYER_SIZE_W)/*ver bien los lim*/){
+	if(dire>0 && player->coord.coordX<(DISPLAY_LENGTH-PLAYER_SIZE_X)/*ver bien los lim*/){
 		player->coord.coordX += JUMP_SIZE_X;
 	}
 }
 
-void playerShoot(bool * shooting, bullet_t * bullet, player_t * player){
+void playerShoot(bullet_t * bullet, player_t * player){
 	static bool tryShoot = false;
-	if (tryShoot && !(*shooting)) {
-			*shooting = true;
+	if (tryShoot && !(bullet->active)) {
+			bullet->active = true;
 			tryShoot = false;
 			bullet->coord.coordY = player->coord.coordY;
-			bullet->coord.coordX = player->coord.coordX - SHOT_SIZE_W / 2;  // fijar X en el momento del disparo
+			bullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;  // fijar X en el momento del disparo
 		}
-	if (*shooting) {
-			bullet->coord.coordY -= speedShot;//definir speed
+	if (bullet->active) {
+			bullet->coord.coordY -= SPEED_BULLET_PLAYER;//definir speed
 			if (bullet->coord.coordY < 0) {
-				*shooting = false;
+				bullet->active = false;
 				}
 		}
 }
-
-
 
 
