@@ -253,6 +253,64 @@ void shieldsUpdate(shield_t * shields[NUM_SHIELDS]){
 	}
 }
 
+/* 
+Función que elige que alien va a ser el que va a disparar.
+ - Elije el que tenga su coordenada en X mas cerca del jugador.
+ - Elije el que esta más abajo dentro de una columna.
+*/
+alien_t * selectAlienShooter (alien_t * alien[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * alienBlock, player_t * player){
+	
+	alien_t * bestCandidate == NULL; //Almacena la dirección de memoria del alien que es el mejor candidato a disparar.
+	int minDistX = DISPLAY_LENGTH; //Almacena la mínima distancia en X entre un alien y el player. Se incializa con una distancia más grande que cualquier otra posible.
+
+	for (int col = alienBlock->firstColAlive; col <= alienBlock->lastColAlive; col++){
+		bool found = false; //Flag para dejar de buscar en una columna una vez que el alien se encontró.
+
+		for (int row = alienBlock->lastRowAlive; row >= 0 && found == false; row--){
+			if (alien[row][col] != NULL && alien[row][col]->alive == true){
+				//Se almacenan las coordenadas en X desde el alien y del player.
+				int alienX = alien[row][col]->coord.coordX;
+				int playerX = player->coord.coordX;
+
+				//Se almacena la distancia entre el alien y el player.
+				int distX = abs(alienX-playerX); //abs() pertenece a <stdlib.h>
+
+				//Se analiza si el actual alien es la mejor opción.
+				if (distX < minDistX){
+					minDistX = distX; //Nueva mínima distancia.
+					bestCandidate = alien[row][col]; //Nuevo mejor candidato para disparar.
+				}
+
+				found = true; //Se encontró el alien vivo de más abajo en esta columna.
+			}
+
+		}
+	}
+	return bestCandidate; //En caso de que no queden más aliens, se devuelve NULL.
+}
+
+/* 
+Función que define cómo va a a disparar el alien 
+*/
+void alienShoot (bullet_t * bullet, alien_t * alien, int level){ 
+	
+	if (bullet->active == false){ //Si NO hay bala activa, crear una nueva.
+		bullet->active = true;
+		bullet->coord.coordY = alien->coord.coordY; // Dispara desde la parte mas alta del alien (lo atraviesa).
+		bullet->coord.coordX = alien->coord.coordX + ALIEN_B_SIZE_X/2; // Dispara desde el centro en X del alien (le sumo la mitad del largo del alien B, que es el de tamaño intermedio).
+	}
+  
+	// Si está activa la muevo en x;
+	if (bullet->active == true){
+		bullet->coord.coordY += SPEED_BULLET_ALIEN(level);
+
+		// Si se sale del display, desactivo la bala.
+		if (bullet->coord.coordY > DISPLAY_HIGH - DISPLAY_MARGIN_Y){
+			bullet->active = false;
+		}
+	}
+}
+
 //revisar logica y compatibilidad
 
 void playerMove(int dire, player_t * player){
