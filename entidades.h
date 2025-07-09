@@ -1,6 +1,5 @@
 typedef struct {
-	uint16_t coordX;
-	uint16_t coordY;
+	coord_t coord;
 	int8_t direction;
 	uint8_t firstColAlive;
 	uint8_t lastColAlive;
