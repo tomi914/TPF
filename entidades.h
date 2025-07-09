@@ -1,6 +1,6 @@
 typedef struct {
-	int coordX;
-	int coordY;
+	uint16_t coordX;
+	uint16_t coordY;
 	int8_t direction;
 	uint8_t firstColAlive;
 	uint8_t lastColAlive;
@@ -28,6 +28,8 @@ typedef struct{ //Almacena las estadisticas de este juego y los anteriores.
 typedef struct{ // Almacena la información general de los ESCUDOS
 	uint8_t health; 
 	coord_t coord; 
+	uint16_t sizeX;		//tiene tamaño variable porque cuando se daña, se achica
+	uint16_t sizeY;
 }shield_t;
 
 typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
@@ -36,7 +38,6 @@ typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
 }player_t;
 
 typedef struct{ // Almacena la información general de las BALAS 
-	bool active; 
 	coord_t coord;
 	bool active; // Nos indica si la bala existe o no.
 }bullet_t;

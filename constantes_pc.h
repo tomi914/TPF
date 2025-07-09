@@ -14,23 +14,25 @@
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
+#define INIT_ALIENS_MARGIN_X 60	//margen para donde arrancan los aliens
+#define INIT_ALIENS_MARGIN_Y 40	//margen para donde arrancan los aliens
 #define JUMP_SIZE_X	20			//salto para los movimientos
 #define JUMP_SIZE_Y 20			//salto para los movimientos
 #define DISPLAY_MARGIN_X 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-<<<<<<< HEAD
 #define PLAYER_SIZE_X 3 //VER
 #define PLAYER_SIZE_Y 2
 #define BULLET_SIZE_X 1
 #define BULLET_SIZE_Y 1
 #define NUM_SHIELDS 4	//cantidad de escudos 
+#define SHIELD_INIT_SIZE_X 60	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 50 //cuantas coordenadas hay de espaciado entre cada escudo
-=======
+//agregar tmb a constantes_pi.h
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
 #define BULLET_SIZE_X 5
 #define BULLET_SIZE_Y 20 
 #define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
-#define SPEED_BULLET_ALLIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
->>>>>>> f6f492a272a2578b4dc95749e2c6d65e50bb2354
+#define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...

@@ -10,8 +10,19 @@
 //	- bullet_t * bulletPlayer
 //	- bullet_t * bulletAlien
 
-//las imagenes tienen distinto tamaño por tipo de alien, corregir la función
 //creo que esta bien, chequear con los muchachos. 
+void initAliensBlock(alienBlock_t aliensBlock){
+	aliensBlock.coordX = MARGIN_X;
+    aliensBlock.coordY = MARGIN_Y;
+    aliensBlock.direction = 1;
+    aliensBlock.firstColAlive = 0;
+    aliensBlock.lastColAlive = ALIEN_COLS - 1;
+    aliensBlock.lastRowAlive = ALIEN_ROWS - 1; 
+}
+
+//al inicializar las coordenadas hay que tomar en cuenta el tamaño que ocupa cada alien y no solo los saltos
+//creo que sería = (i*INIT_JUMP_SIZE)+((i-1)*ALIEN_SIZE)+DISPLAY_MARGIN 
+//HAY QUE CORREGIRLA
 void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
 
 	int i, j;
@@ -19,22 +30,21 @@ void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punt
 	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
 		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
 			aliens[i][j].alive = true; // todos arrancan vivos
-			//aliens[i][j].coord.coordX = j * JUMP_SIZE + DISPLAY_MARGIN_X;  	// seteo coordenadas en X con el espaciado definido en JUMP_SIZE
-			//aliens[i][j].coord.coordY = i * JUMP_SIZE + DISPLAY_MARGIN_Y; 	 // seteo coordenadas en Y con el espaciado definido en JUMP_SIZE
+			
 			if(i == 0){
 		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
-		    	aliens[i][j].coord.coordX = j * A_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;	//chequear que este bien visualmente
-		    	aliens[i][j].coord.coordY = i * A_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
+		    	aliens[i][j].coord.coordX = j * A_INIT_JUMP_SIZE_X;	//chequear que este bien visualmente
+		    	aliens[i][j].coord.coordY = i * A_INIT_JUMP_SIZE_Y;
 		    }
 		    else if(i < 3){
 		    	aliens[i][j].type = 'B';
-		    	aliens[i][j].coord.coordX = j * B_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;
-		    	aliens[i][j].coord.coordY = i * B_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
+		    	aliens[i][j].coord.coordX = j * B_INIT_JUMP_SIZE_X;
+		    	aliens[i][j].coord.coordY = i * B_INIT_JUMP_SIZE_Y;
 		    }
 		    else{
 		    	aliens[i][j].type = 'C';
-		    	aliens[i][j].coord.coordX = j * C_INIT_JUMP_SIZE_X + DISPLAY_MARGIN_X;
-		    	aliens[i][j].coord.coordY = i * C_INIT_JUMP_SIZE_Y + DISPLAY_MARGIN_Y;
+		    	aliens[i][j].coord.coordX = j * C_INIT_JUMP_SIZE_X;
+		    	aliens[i][j].coord.coordY = i * C_INIT_JUMP_SIZE_Y;
 		    }
 		}
 	}
@@ -58,7 +68,7 @@ void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria 
 	
 	player->health = 3;
 	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
-	player->coord.coordY = /*depende la interfaz*/;
+	player->coord.coordY = INIT_PLAYER_Y;
 	
 }
 
@@ -114,39 +124,106 @@ void blockMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBloc
 	}
 }
 
-//creo que esta bien, chequear con los muchachos. 
-void initAliensBlock(alienBlock_t aliensBlock){
-	aliensBlock.coordX = MARGIN_X;
-    aliensBlock.coordY = MARGIN_Y;
-    aliensBlock.direction = 1;
-    aliensBlock.firstColAlive = 0;
-    aliensBlock.lastColAlive = ALIEN_COLS - 1;
-    aliensBlock.lastRowAlive = ALIEN_ROWS - 1; 
+/*	verifica superposicion de rectangulos
+	A y B entidades a analizar
+	X e Y coordenadas reales de las entidades
+	W y H Width y High tamaño de las entidades
+	devuelve 1 si hay superposicion, sino 0 
+*/
+char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16_t AY, uint16_t AH, uint16_t BY, uint16_t BH){
+	if(	AX <= BX + BW
+	&&	BX <= AX + AW
+	&&	AY <= BY + BH
+	&&	BY <= AY + AH){
+		return 1;
+	}
+	else{
+		return 0; 
+	}
 }
 
 void collisionDetect(void){
 	//aca van las funciones que chequean todas las colisiones posibles
 }
 
-void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){	//chequea bala del jugador con todos los aliens
+//chequea bala del jugador con todos los aliens
+void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t aliensBlock){	
 
 	int i, j; 
 	
-	for(i=(aliensBlock.lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
-		for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
-			if(aliens[i][j].alive){	//verifico que el alien este vivo, sino no comparo coordenadas
-				//chequeo que este dentro del rango del alien en X (usamos tipo B porque es el tamaño intermedio).
-				if((aliens[i][j].coord.coordX + aliensBlock.coordX <= bullet->coord.coordX) && (bullet->coord.coordX <= (aliens[i][j].coord.coordX + aliensBlock.coordX + ALIEN_B_SIZE_X))){
-					if((aliens[i][j].coord.coordY + aliensBlock.coordY <= bullet->coord.coordY) && (bullet->coord.coordY <= (aliens[i][j].coord.coordY + aliensBlock.coordY + ALIEN_B_SIZE_Y))){
+	if(bullet->active){	//verifico que la bala del jugador este activa
+		for(i=(aliensBlock.lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
+			for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
+				if(aliens[i][j].alive){	//verifico que el alien este vivo
+				
+					//creo variables intermedias por claridad
+					uint16_t alienX = aliens[i][j].coord.coordX + aliensBlock.coordX;
+					uint16_t alienY = aliens[i][j].coord.coordY + aliensBlock.coordY;
+					uint16_t bulletX = bullet->coord.coordX;
+					uint16_t bulletY = bullet->coord.coordY;
+					
+					//chequeo superposicion de rectangulos, si hay, desactivo la bala y mato al alien
+					if(rectangleOverlap(alienX, ALIEN_B_SIZE_X, bulletX, BULLET_SIZE_X,
+                     					alienY, ALIEN_B_SIZE_Y, bulletY, BULLET_SIZE_Y)){
 						aliens[i][j].alive = false; 
 						bullet->active = false; 
 						return;
+						
 					}
 				}
 			}
 		}
+	}	
+}
+
+//chequea bala del jugador con bala de alien
+void collisionBB(bullet_t * bulletP , bullet_t * bulletA){	
+
+	if(bulletP->active && bulletA->active){	//veo si las dos balas estan activas
+		//creo variables intermedias por claridad
+		uint16_t bulletPX = bulletP->coord.coordX;
+		uint16_t bulletPY = bulletP->coord.coordY;
+		uint16_t bulletAX = bulletA->coord.coordX;
+		uint16_t bulletAY = bulletA->coord.coordY;
+		
+		//chequeo superposicion de rectangulos, si hay, desactivo las balas
+		if(rectangleOverlap(bulletAX, BULLET_SIZE_X,bulletPX, BULLET_SIZE_X,
+         					bulletAY, BULLET_SIZE_Y, bulletPY, BULLET_SIZE_Y)){
+			bulletA->active = false; 
+			bulletP->active = false; 
+			return;
+		}
 	}
+}
+
+//chequea colision entre aliens y escudos
+void collisionAS(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t aliensBlock){
+
+	int j, k; 
 	
+	//solo analizamos la colision con la ultima fila viva, no con las otras
+	for(j=aliensBlock.firstColAlive; j<=aliensBlock.lastColAlive ; j++){
+		for(k=0; k<NUM_SHIELDS; k++){
+			
+			if(aliens[aliensBlock.lastRowAlive][j]. alive && shields[k].health){//verifico que el alien este vivo y que el escudo tambien
+			
+				//variables intermedias para mejor comprension
+				uint16_t alienX = aliens[aliensBlock.lastRowAlive][j].coord.coordX + aliensBlock.coordX;
+				uint16_t alienY = aliens[aliensBlock.lastRowAlive][j].coord.coordY + aliensBlock.coordY;
+				uint16_t shieldX = shields[k].coord.coordX;
+				uint16_t shieldW = shields[k].sizeX;
+				uint16_t shieldY = shields[k].coord.coordY;
+				uint16_t shieldH = shields[k].sizeY;
+				
+				if(rectangleOverlap(alienX, ALIEN_B_SIZE_X, shieldX, shieldW, alienY, ALIEN_B_SIZE_Y, shieldY, shieldH)){
+					shields[k].health -= 2; //ver cuanto conviene decrementar las vidas luego 
+				}	
+			}		
+		}	
+}
+
+void shieldsUpdate(shield_t * shields[NUM_SHIELDS]){
+	//esta funcion analiza la vida que le queda a cada escudo y actualiza su tamaño
 }
 
 //revisar logica y compatibilidad
