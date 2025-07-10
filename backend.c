@@ -11,7 +11,7 @@
 //	- bullet_t * bulletAlien
 
 //creo que esta bien, chequear con los muchachos. 
-void initAliensBlock(alienBlock_t * aliensBlock){
+void initAliensBlock(aliensBlock_t * aliensBlock){//probado en allegro
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
     aliensBlock->coord.coordY = DISPLAY_MARGIN_Y;
     aliensBlock->direction = 1;
@@ -21,27 +21,25 @@ void initAliensBlock(alienBlock_t * aliensBlock){
     aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
 }
 
-void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
-
-	int i, j;
-	
+void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
+	int i, j;//probado en allegro
 	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
 		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
 			aliens[i][j].alive = true; // todos arrancan vivos
 			
 			if(i == 0){
 		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
-		    	aliens[i][j].coord.coordX = j * (ALIEN_A_SIZE_X + A_INIT_JUMP_SIZE_X);	//chequear que este bien visualmente
+		    	aliens[i][j].coord.coordX = A_INIT_JUMP_SIZE_X/2 + j * (ALIEN_A_SIZE_X + A_INIT_JUMP_SIZE_X);	//chequear que este bien visualmente y calcular bien los saltos
 		    	aliens[i][j].coord.coordY = i * (ALIEN_A_SIZE_Y + A_INIT_JUMP_SIZE_Y);
 		    }
 		    else if(i < 3){
 		    	aliens[i][j].type = 'B';
-		    	aliens[i][j].coord.coordX = j * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordX = B_INIT_JUMP_SIZE_X/2 + j * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X);
 		    	aliens[i][j].coord.coordY = i * (ALIEN_B_SIZE_Y + B_INIT_JUMP_SIZE_Y);
 		    }
 		    else{
 		    	aliens[i][j].type = 'C';
-		    	aliens[i][j].coord.coordX = j * (ALIEN_C_SIZE_X + C_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordX = C_INIT_JUMP_SIZE_X/2 + j * (ALIEN_C_SIZE_X + C_INIT_JUMP_SIZE_X);
 		    	aliens[i][j].coord.coordY = i * (ALIEN_C_SIZE_Y + C_INIT_JUMP_SIZE_Y);
 		    }
 		}
@@ -50,7 +48,7 @@ void initAliensArray(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punt
 
 void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arreglo de escudos definido en el front
 
-	int i; 
+	int i; //probado en allegro
 	
 	for(i=0;i<NUM_SHIELDS;i++){
 		shields[i].health = 15; 	//le seteo la cantidad de vidas
@@ -63,15 +61,15 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 }
 
 //creo que esta bien, chequear con los muchachos. 
-void initPlayer(player_t * player){		//OPCIONAL: JUGAR DE A DOS, como se podria hacer? 
+void initPlayer(player_t * player){		//probado en allegro
 	
 	player->health = 3;
 	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
-	player->coord.coordY = INIT_PLAYER_Y;
+	player->coord.coordY = DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
 	
 }
 
-void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
 	
 	uint8_t alienColAlive = 0;
 	uint8_t alienRowAlive = 0; 
@@ -79,7 +77,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO FIRSTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->firstColAlive].alive){
+		if(aliens[i][aliensBlock->firstColAlive]->alive){
 			alienColAlive++; 
 		}
 	}
@@ -91,7 +89,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
+		if(aliens[i][aliensBlock->lastColAlive]->alive){	//si nunca entra al if, alienColAlive queda en 0
 			alienColAlive++; 
 		}
 	}
@@ -104,7 +102,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTROWALIVE
 	for(j = 0; j < ALIEN_COLS; i++) { // recorro cada fila
-		if(aliens[aliensBlock->lastRowAlive][j].alive){
+		if(aliens[aliensBlock->lastRowAlive][j]->alive){
 			alienRowAlive++; 
 		}
 	}
@@ -113,7 +111,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	}
 }
 
-void blockMove(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
+void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ 
 		
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
 		aliensBlock->direction = -1; 		//cambio de direccion
@@ -367,7 +365,7 @@ void alienShoot (bullet_t * bullet, alien_t * alien, int level){
 
 //revisar logica y compatibilidad REVISADO
 
-void playerMove(int dire, player_t * player){
+void playerMove(int dire, player_t * player){//probado en allegro
 	if(dire<0 && player->coord.coordX>PLAYER_SIZE_X/2+SPEED_PLAYER/*ver bien los limites*/){
 		player->coord.coordX -= SPEED_PLAYER; 
 	}
@@ -376,8 +374,7 @@ void playerMove(int dire, player_t * player){
 	}
 }
 
-
-void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
+void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {//probado en allegro
     if (*tryShoot && !playerBullet->active) {
        *tryShoot = false;
         playerBullet->active = true;
