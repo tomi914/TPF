@@ -40,3 +40,9 @@ typedef struct {
 	uint8_t lastRowAlive;
 	uint16_t width;
 }aliensBlock_t;
+
+typedef struct{ // Almacena la información general del ovni.
+	bool alive; //Indica si el ovni está vivo o no.
+	bool visible; //Indica si el ovni está visible en pantalla o no.
+	coord_t coord;
+}ovni_t;
