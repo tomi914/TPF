@@ -1,16 +1,16 @@
 #define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 11  // Cantidad de COLUMNAS de ALIENS.
-#define DISPLAY_HIGH 800	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_LENGTH 800 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
+#define DISPLAY_HIGH 1000	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define DISPLAY_LENGTH 1000 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
 #define ALIEN_A_SIZE_X 50 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_A_SIZE_Y 51 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_B_SIZE_X 56 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_B_SIZE_Y 41 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_C_SIZE_X 60 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_C_SIZE_Y 40 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define A_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
+#define A_INIT_JUMP_SIZE_X 20	// Salto necesario para inicializar centrados los aliens
 #define A_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
-#define B_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
+#define B_INIT_JUMP_SIZE_X 14	// Salto necesario para inicializar centrados los aliens
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
