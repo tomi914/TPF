@@ -4,8 +4,8 @@
 #include<stdio.h>
 
 #include "entidades.h"
-#include "backend.h"
 #include "constantes_pi.h"
+#include "backend.h"
 
 //inicializar en el front: 
 //	- alienBlock_t aliensBlock
@@ -66,4 +66,97 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot){
     if(speed<=-1){
         speed = 0;
     }
+}
+
+void initAliensBlock(alienBlock_t * aliensBlock){//probado en allegro
+	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
+    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y;
+    aliensBlock->direction = 1;
+    aliensBlock->firstColAlive = 0;
+    aliensBlock->lastColAlive = ALIEN_COLS - 1;
+    aliensBlock->lastRowAlive = ALIEN_ROWS - 1; 
+    aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
+}
+
+//Inicializo el array de aliens
+void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
+	int i, j;//probado en allegro
+	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
+		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
+			aliens[i][j].alive = true; // todos arrancan vivos
+			
+			if(i == 0){
+		    	aliens[i][j].type = 'A';		//en allegro cada tipo corresponde a una imagen diferente
+		    	aliens[i][j].coord.coordX = A_INIT_JUMP_SIZE_X/2 + j * (ALIEN_A_SIZE_X + A_INIT_JUMP_SIZE_X);	//chequear que este bien visualmente y calcular bien los saltos
+		    	aliens[i][j].coord.coordY = i * (ALIEN_A_SIZE_Y + A_INIT_JUMP_SIZE_Y);
+		    }
+		    else if(i < 3){
+		    	aliens[i][j].type = 'B';
+		    	aliens[i][j].coord.coordX = B_INIT_JUMP_SIZE_X/2 + j * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordY = i * (ALIEN_B_SIZE_Y + B_INIT_JUMP_SIZE_Y);
+		    }
+		    else{
+		    	aliens[i][j].type = 'C';
+		    	aliens[i][j].coord.coordX = C_INIT_JUMP_SIZE_X/2 + j * (ALIEN_C_SIZE_X + C_INIT_JUMP_SIZE_X);
+		    	aliens[i][j].coord.coordY = i * (ALIEN_C_SIZE_Y + C_INIT_JUMP_SIZE_Y);
+		    }
+		}
+	}
+}
+
+void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+	
+	uint8_t alienColAlive = 0;
+	uint8_t alienRowAlive = 0; 
+	uint8_t i, j; 
+	
+	//ACTUALIZO FIRSTCOLALIVE
+	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
+		if(aliens[i][aliensBlock->firstColAlive]->alive){
+			alienColAlive++; 
+		}
+	}
+	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
+		aliensBlock->firstColAlive++; 		//actualizo la primera columna que tenga aliens vivos
+	}
+	
+	alienColAlive = 0; 
+	
+	//ACTUALIZO LASTCOLALIVE
+	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
+		if(aliens[i][aliensBlock->lastColAlive]->alive){	//si nunca entra al if, alienColAlive queda en 0
+			alienColAlive++; 
+		}
+	}
+	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
+		aliensBlock->lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
+	}
+
+	//ACTUALIZO WIDTH
+	aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
+	
+	//ACTUALIZO LASTROWALIVE
+	for(j = 0; j < ALIEN_COLS; i++) { // recorro cada fila
+		if(aliens[aliensBlock->lastRowAlive][j]->alive){
+			alienRowAlive++; 
+		}
+	}
+	if(!alienRowAlive){			//si esa fila ya no tiene aliens vivos
+		aliensBlock->lastRowAlive--; 		
+	}
+}
+
+void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
+		
+	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+		aliensBlock->direction = -1; 		//cambio de direccion
+		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+	}	
+	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+		aliensBlock->direction = 1; 		//cambio de direccion
+		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+	}
+	else{
+		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
+	}
 }
