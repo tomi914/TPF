@@ -174,9 +174,9 @@ char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16
 }
 
 //analiza todas las colisiones
-void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock, player_t * player, stats_t * gameStats){
+void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow){
 	if(bulletP->active){
-		collisionBA(bulletP, aliens, aliensBlock, gameStats); //bullet vs aliens
+		collisionBA(bulletP, aliens, aliensBlock, gameStats, printedRow); //bullet vs aliens
 		collisionBB(bulletP, bulletA); //bullet vs bullet
 		collisionBO(bulletP, ovni, gameStats); //bullet vs ovni
 	}
@@ -186,31 +186,40 @@ void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[AL
 }
 
 //chequea bala del jugador con todos los aliens
-void collisionBA(bullet_t * bullet, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, stats_t * gameStats) {	
+//ver si en necesario analzar si por separado en Y cuando baja (baja de a una fila)
+void collisionBA(bullet_t * bullet, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, stats_t * gameStats, uint8_t printedRow) {	
 
 	for (int row = aliensBlock->lastRowAlive; row >= 0; row--) { // Recorro filas desde abajo hacia arriba
 		for (int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive; col++) { // Recorro columnas activas
 			if (aliens[row][col].alive) { // Verifico que el alien esté vivo
 				
 				// Variables intermedias por claridad
-				uint16_t alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX;
+				uint16_t alienX; 
 				uint16_t alienY = aliens[row][col].coord.coordY + aliensBlock->coord.coordY;
 				uint16_t bulletX = bullet->coord.coordX;
 				uint16_t bulletY = bullet->coord.coordY;
 				
+				//distingo si esa fila ya se movio o no
+				if(row >= printedRow){	
+					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX;
+				}else{	//si todavia no se imprimio la fila desplazada, comparo con las coordenadas anteriores
+					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX - JUMP_SIZE_X;
+				}
+				
 				// Chequeo superposición de rectángulos
 				if (rectangleOverlap(alienX, ALIEN_B_SIZE_X, bulletX, BULLET_SIZE_X, alienY, ALIEN_B_SIZE_Y, bulletY, BULLET_SIZE_Y)){
+					
 					aliens[row][col].alive = false; 
 					bullet->active = false;
 					
 					// Asigno puntos
 					if (gameStats != NULL){
-					        switch (aliens[row][col].type){
-					                case 'A': gameStats->actualScore += POINTS_ALIEN_A; break;
-					                case 'B': gameStats->actualScore += POINTS_ALIEN_B; break;
-					                case 'C': gameStats->actualScore += POINTS_ALIEN_C; break;
-					                default: break;
-					        }
+				        switch (aliens[row][col].type){
+			                case 'A': gameStats->actualScore += POINTS_ALIEN_A; break;
+			                case 'B': gameStats->actualScore += POINTS_ALIEN_B; break;
+			                case 'C': gameStats->actualScore += POINTS_ALIEN_C; break;
+			                default: break;
+				        }
 					}
 					return;
 				}
