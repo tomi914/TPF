@@ -11,26 +11,31 @@
 #include "./libs/joydisp/joydrv.h" 
 #include "./libs/joydisp/disdrv.h"
 #include "entidades.h"
-#include "backend.h"
 #include "constantes_pi.h"
+#include "backend.h"
 
 //PROTOTIPOS FUNCIONES
 int getDir(joyinfo_t* joy); //si se mueve a la izq o a la der
 bool getShoot(joyinfo_t* joy); //disparo
-int getPause(joyinfo_t* joy, clock_t* last); //pausa
+bool getPause(joyinfo_t* joy, clock_t* last); //pausa
 
 //VARIABLES GLOBALES
 player_t player;
 bullet_t pBullet;
+alienBlock_t block;
+alien_t alien [5][5];
 
 int main(void){
 	joyinfo_t info;
 	joy_init();
-    //clock_t clk = clock();
-    int i;
+    clock_t clk = clock();
+    int i, j;
     bool shoot;
     
     initPlayer(&player);
+    initAliensBlock(&block);
+    initAliensArray(alien);
+    
 
 	dcoord_t myPoint;
 
@@ -38,10 +43,29 @@ int main(void){
 
     while(1){
         disp_clear();
+        if(getPause(&info, &clk)){
+            while(!getPause(&info, &clk)){
+                myPoint.x = 15;
+                myPoint.y = 15;
+                disp_write(myPoint, D_ON);
+                disp_update();
+            }
+        }
+        /*updateAliensBlock(&alien, &block);
+        blockMove(alien, &block);*/
+        for(i=0; i<5; i++){
+            for(j=0; j<5; j++){
+                if(alien[i][j].alive){
+                    myPoint.x = alien[i][j].coord.coordX;
+                    myPoint.y = alien[i][j].coord.coordY;
+                    disp_write(myPoint, D_ON);
+                }
+            }
+        }
         playerMove(getDir(&info), &player);
         for(i=0; i<3; i++){
+            myPoint.x = player.coord.coordX + i;
             myPoint.y = player.coord.coordY;
-            myPoint.x = player.coord.coordX + i; 
             disp_write(myPoint, D_ON);
         }
         shoot = getShoot(&info);
@@ -82,7 +106,7 @@ bool getShoot(joyinfo_t* joy){
     return 0;
 }
 
-int getPause(joyinfo_t* joy, clock_t* last){
+bool getPause(joyinfo_t* joy, clock_t* last){
     static int pressing = 0;
     static int click = 0;
     *joy = joy_read();
@@ -100,13 +124,16 @@ int getPause(joyinfo_t* joy, clock_t* last){
         click++;
         usleep(10000);
     }
-    if(((double)(clock()-*last)/CLOCKS_PER_SEC)>=0.5 && click){
-        int state = click;
-        click = 0;
+    if((((double)(clock()-*last)/CLOCKS_PER_SEC)>=0.5 && click) || click == 2){
         pressing = 0;
-        return state;
+        if(click == 2){
+            click = 0;
+            return true;
+        } 
+        click = 0;
+        return false;
     }
-    return 0;
+    return false;
 }
 
 /*int getPress(joyinfo_t* joy, clock_t* last){ //cuenta la cantidad de clicks en un intervalo de tiempo a partir de un click
