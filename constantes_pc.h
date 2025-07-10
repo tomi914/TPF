@@ -37,9 +37,16 @@
 
 #define MARGIN_X 30//margen para los escudos
 
+//Ovni
 #define OVNI_SIZE_X 70
 #define OVNI_SIZE_Y 30
 #define INIT_OVNI_MARGIN_X 0
 #define INIT_OVNI_MARGIN_Y 40
 #define SPEED_OVNI //¿que la velocidad del ovni DEPENDA del NIVEL?
 #define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
+
+//Puntajes
+#define PUNTOS_ALIEN_A 10
+#define PUNTOS_ALIEN_B 20
+#define PUNTOS_ALIEN_C 30
+#define PUNTOS_NIVEL (100*(level))
