@@ -26,11 +26,12 @@ int main() {
 
 	player_t player;//creo todas las variables necesarias
 	ALLEGRO_BITMAP *image[9];
-	alien_t aliens[5][11];
+	alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
 	aliensBlock_t aliensBlock;
 	bullet_t playerBullet;
 	bullet_t alienBullet;
 	shield_t shields[NUM_SHIELDS];
+	stats_t gameStats;
 	char img[20];
 	int i, j;
 	
@@ -52,6 +53,7 @@ int main() {
 	initAliensBlock(&aliensBlock);//inicializo el bloque de aliens
 	initAliensArray(aliens);//inicializo todos los aliens		    
 	initShieldsArray(shields);//inicializo los 4 escudos
+	initGameStats(&gameStats);
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
     al_register_event_source(queue, al_get_keyboard_event_source()); //registra teclado y display como fuentes de eventos
     al_register_event_source(queue, al_get_display_event_source(display));
@@ -60,11 +62,10 @@ int main() {
     
     
     // Variables necesarias (declarar fuera del loop principal si no lo hiciste ya)
-double tiempoUltimoMovimientoAliens = 0;
-const double DELAY_MOV_ALIENS = 0.8;      // Cada cuánto se mueve el bloque de aliens
-double tiempoUltimaFila = 0;
-int ultFilaImprimir = -1;                 // -1 si no estamos imprimiendo fila por fila
-const double DELAY_FILA = 0.5;           // Delay visual entre filas (para efecto)
+	double timeLastMovAlien = 0;//tiempos para el movimiento de los aliens
+	double timeLastRow = 0;
+	int lastRowToPrint = -1;                 // -1 si no estamos imprimiendo fila por fila
+
 
     
     
@@ -95,110 +96,86 @@ const double DELAY_FILA = 0.5;           // Delay visual entre filas (para efect
 		}
 			playerShoot(&playerBullet, &player, &tryShoot);//llamo a funcion de disparo
 		
-        al_clear_to_color(al_map_rgb(0, 0, 0));//limpia la pantalla
-       // al_draw_filled_rectangle(player.coord.coordX-PLAYER_SIZE_X, player.coord.coordY, player.coord.coordX-PLAYER_SIZE_X, player.coord.coordY+PLAYER_SIZE_Y, al_map_rgb(0, 0, 0));
-        //al_draw_filled_rectangle(40, 10, 500, 200, al_map_rgb(0, 0, 0));
-        //al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0));
-        
-        
-        
-      /*  al_draw_bitmap(image[7], player.coord.coordX-PLAYER_SIZE_X/2, player.coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
-         
-        if (playerBullet.active){
-			al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);
-			} //dibuja el disparo*/
-      
-       /* for(i = 0; i < ALIEN_ROWS; i++) { 
-			for(j = 0; j < ALIEN_COLS; j++) { 
-				if(i == 0){
-					al_draw_bitmap(image[0], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-				}
-				else if(i < 3){
-					al_draw_bitmap(image[2], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-				}
-				else{
-					al_draw_bitmap(image[4], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-				}
-			}
-		}*/
-	
-	/*	for(j = 0; j < NUM_SHIELDS; j++) { 
-			al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);
-		}
-			*/
+              
+		            
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+	for (j = 0; j < NUM_SHIELDS; j++) {
+		al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);//imprime escudos
+	}
+	al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0);//imprime la nave y sus movimientos 
+	if (playerBullet.active) {
+		al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//imprime el disparo
+	}
+	double actualTime = al_get_time(); //hace un control del tiempo
+
+
+
+
+
+	// 🚀 INICIAR MOVIMIENTO DE FILAS SI TOCA MOVER EL BLOQUE
+	if (lastRowToPrint == -1 && actualTime - timeLastMovAlien >= DELAY_START) {
+		lastRowToPrint = ALIEN_ROWS - 1; // empezamos desde la fila de abajo
+		timeLastRow = actualTime;
+		timeLastMovAlien = actualTime;
+	}
+
+	// ⏳ AVANZAMOS UNA FILA HACIA ARRIBA CADA DELAY_FILA
+	if (lastRowToPrint >= 0 && actualTime - timeLastRow >= DELAY_ROW) {
+	   if (lastRowToPrint == 0) {
+		// Última fila que salta: no alteramos su frame visual
 		
-	
-	
+		blockMove(aliens, &aliensBlock);
+		lastRowToPrint = -1;
+	} else if (lastRowToPrint > 0 && lastRowToPrint < ALIEN_ROWS) {
+		// Fila intermedia: alternamos frame normalmente
+		alienFrameFila[lastRowToPrint] = !alienFrameFila[lastRowToPrint];
+		lastRowToPrint--;
+		timeLastRow = actualTime;
+	}
 
+	}
 
-           
-                
-                
-                
-                
-                
-                
-                
-// 🧼 LIMPIAR LA PANTALLA
-al_clear_to_color(al_map_rgb(0, 0, 0));
+	// 🧟‍♂️ DIBUJAR ALIENS — todas las filas visibles SIEMPRE
+	for (i = 0; i < ALIEN_ROWS; i++) {
+		for (j = 0; j < ALIEN_COLS; j++) {
+		    if (!aliens[i][j].alive) continue;
 
-// 🛡️ DIBUJAR ESCUDOS
-for (j = 0; j < NUM_SHIELDS; j++) {
-    al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);
-}
+		    int offsetX = aliensBlock.coord.coordX;
 
-// 🚀 DIBUJAR NAVE
-al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0);
+		    // Si estamos en animación, y esta fila aún no se imprimió en este frame, simulamos que no se movió
+		    if (lastRowToPrint >= 0 && i > lastRowToPrint) {
+		        offsetX += JUMP_SIZE_X * aliensBlock.direction;
+		    }
 
-// 💥 DIBUJAR DISPARO
-if (playerBullet.active) {
-    al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);
-}
+		    int drawX = offsetX + aliens[i][j].coord.coordX;
+		    int drawY = aliensBlock.coord.coordY + aliens[i][j].coord.coordY;
 
-// ⏱️ CONTROL DE TIEMPO
-double tiempoActual = al_get_time();
+			if (i > 2) {
+				al_draw_bitmap(alienFrameFila[i] ? image[5] : image[4], drawX, drawY, 0); // Alien tipo C
+			} else if (i > 0) {
+				al_draw_bitmap(alienFrameFila[i] ? image[3] : image[2], drawX, drawY, 0); // Alien tipo B
+			} else {
+				al_draw_bitmap(alienFrameFila[i] ? image[1] : image[0], drawX, drawY, 0); // Alien tipo A
+			}
+		
+		}
+	}
 
-// 🚀 INICIAR MOVIMIENTO DE FILAS SI TOCA MOVER EL BLOQUE
-if (ultFilaImprimir == -1 && tiempoActual - tiempoUltimoMovimientoAliens >= DELAY_MOV_ALIENS) {
-    ultFilaImprimir = ALIEN_ROWS - 1; // empezamos desde la fila de abajo
-    tiempoUltimaFila = tiempoActual;
-    tiempoUltimoMovimientoAliens = tiempoActual;
-}
+	// 🔁 MOSTRAR TODO
+	al_flip_display();
 
-// ⏳ AVANZAMOS UNA FILA HACIA ARRIBA CADA DELAY_FILA
-if (ultFilaImprimir >= 0 && tiempoActual - tiempoUltimaFila >= DELAY_FILA) {
-   if (ultFilaImprimir == 0) {
-    // Última fila que salta: no alteramos su frame visual
-    
-    blockMove(aliens, &aliensBlock);
-    ultFilaImprimir = -1;
-} else if (ultFilaImprimir > 0 && ultFilaImprimir < ALIEN_ROWS) {
-    // Fila intermedia: alternamos frame normalmente
-    alienFrameFila[ultFilaImprimir] = !alienFrameFila[ultFilaImprimir];
-    ultFilaImprimir--;
-    tiempoUltimaFila = tiempoActual;
-}
+/*
 
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+	for (j = 0; j < NUM_SHIELDS; j++) {
+		al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);//imprime escudos
+	}
+	al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0);//imprime la nave y sus movimientos 
+	if (playerBullet.active) {
+		al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//imprime el disparo
+	}
 
-
-
-
-}
-
-// 🧟‍♂️ DIBUJAR ALIENS — todas las filas visibles SIEMPRE
-for (i = 0; i < ALIEN_ROWS; i++) {
-    for (j = 0; j < ALIEN_COLS; j++) {
-        if (!aliens[i][j].alive) continue;
-
-        int offsetX = aliensBlock.coord.coordX;
-
-        // Si estamos en animación, y esta fila aún no se imprimió en este frame, simulamos que no se movió
-        if (ultFilaImprimir >= 0 && i > ultFilaImprimir) {
-            offsetX += JUMP_SIZE_X * aliensBlock.direction;
-        }
-
-        int drawX = offsetX + aliens[i][j].coord.coordX;
-        int drawY = aliensBlock.coord.coordY + aliens[i][j].coord.coordY;
+*/
 
 
 
@@ -206,68 +183,22 @@ for (i = 0; i < ALIEN_ROWS; i++) {
 
 
 
-if (i > 2) {
-    al_draw_bitmap(alienFrameFila[i] ? image[5] : image[4], drawX, drawY, 0); // Alien tipo C
-} else if (i > 0) {
-    al_draw_bitmap(alienFrameFila[i] ? image[3] : image[2], drawX, drawY, 0); // Alien tipo B
-} else {
-    al_draw_bitmap(alienFrameFila[i] ? image[1] : image[0], drawX, drawY, 0); // Alien tipo A
-}
 
-        
-        
-        
-    }
-}
 
-// 🔁 MOSTRAR TODO
-al_flip_display();
 
+
+
+
+
+
+
+
+
+		//collisionBA(playerBullet, aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock, gameStats, uint8_t printedRow);
 			
-			
-			
-			
-			
-		//al_flip_display();
-		//frameCount++;
+		
 		al_rest(0.01);
-			/*
-        if (jump){//imprimo las variantes de los aliens
-        
-			for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
-				for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
-					if(i == 0){
-						al_draw_bitmap(image[0], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-					else if(i < 3){
-						al_draw_bitmap(image[2], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-					else{
-						al_draw_bitmap(image[4], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-				}
-			}
-			jump=0;
-			al_flip_display();
-
-        } else {
-			for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
-				for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
-					if(i == 0){
-						al_draw_bitmap(image[1], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-					else if(i < 3){
-						al_draw_bitmap(image[3], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-					else{
-						al_draw_bitmap(image[5], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
-					}
-				}
-			}
-			jump=1;
-			al_flip_display();//todos arrancan vivos
-			}*/
-    
+	
     }
    	for (i=0; i<9; i++){
 		al_destroy_bitmap(image[i]);
@@ -276,9 +207,6 @@ al_flip_display();
     al_destroy_event_queue(queue);
     return 0;
 }
-
-
-
 
 
 

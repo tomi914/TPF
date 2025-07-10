@@ -34,9 +34,7 @@
 #define BULLET_SIZE_Y 15
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 #define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
-
 #define MARGIN_X 30//margen para los escudos
-
 //Ovni
 #define OVNI_SIZE_X 70
 #define OVNI_SIZE_Y 30
@@ -44,9 +42,11 @@
 #define INIT_OVNI_MARGIN_Y 40
 #define SPEED_OVNI //¿que la velocidad del ovni DEPENDA del NIVEL?
 #define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
-
 //Puntajes 
 #define POINTS_ALIEN_A 10
 #define POINTS_ALIEN_B 20
 #define POINTS_ALIEN_C 30
 #define LEVEL_POINTS(level) (100*(level))
+
+#define DELAY_START 2 //cuanto tarda en arrancar el mov de aliens
+#define DELAY_ROW 0.5 //cuanto tarda en moverse cada fila
