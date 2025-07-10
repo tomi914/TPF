@@ -19,6 +19,8 @@ typedef struct{ //Almacena las estadisticas de este juego y los anteriores.
 typedef struct{ // Almacena la información general de los ESCUDOS
 	uint8_t health; 
 	coord_t coord; 
+	uint8_t sizeX;
+	uint8_t sizeY;
 }shield_t;
 
 typedef struct{ // Almacena la información general del JUGADOR (nave espacial)

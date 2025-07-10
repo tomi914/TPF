@@ -1,6 +1,6 @@
 #define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 11  // Cantidad de COLUMNAS de ALIENS.
-#define DISPLAY_HIGH 1000	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define DISPLAY_HIGH 800	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define DISPLAY_LENGTH 1000 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
 #define ALIEN_A_SIZE_X 50 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_A_SIZE_Y 51 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
@@ -25,7 +25,7 @@
 #define SHIELD_INIT_SIZE_X 60	//tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP 50 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SHIELD_INIT_X_JUMP 200 //cuantas coordenadas hay de espaciado entre cada escudo
 //agregar tmb a constantes_pi.h
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
@@ -34,6 +34,8 @@
 #define BULLET_SIZE_Y 15
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 #define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
+
+#define MARGIN_X 30//margen para los escudos
 
 #define OVNI_SIZE_X 70
 #define OVNI_SIZE_Y 30
