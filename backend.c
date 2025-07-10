@@ -5,12 +5,13 @@
 
 //inicializar en el front: 
 //	- alienBlock_t aliensBlock
-//	- alien_t * aliens[ALIEN_ROWS][ALIEN_COLS]
-// 	- shield_t * shields[NUM_SHIELDS]
-//	- bullet_t * bulletPlayer
-//	- bullet_t * bulletAlien
+//	- alien_t aliens[ALIEN_ROWS][ALIEN_COLS]
+// 	- shield_t shields[NUM_SHIELDS]
+//	- bullet_t bulletPlayer
+//	- bullet_t bulletAlien
+//	- stats_t gameStats
 
-//creo que esta bien, chequear con los muchachos. 
+//Inicializo el bloque de aliens
 void initAliensBlock(aliensBlock_t * aliensBlock){//probado en allegro
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
     aliensBlock->coord.coordY = DISPLAY_MARGIN_Y;
@@ -21,6 +22,7 @@ void initAliensBlock(aliensBlock_t * aliensBlock){//probado en allegro
     aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
 }
 
+//Inicializo el array de aliens
 void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
 	int i, j;//probado en allegro
 	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
@@ -46,6 +48,7 @@ void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punter
 	}
 }
 
+//Inicializo los escudos
 void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arreglo de escudos definido en el front
 
 	int i; //probado en allegro
@@ -60,7 +63,7 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 	}
 }
 
-//creo que esta bien, chequear con los muchachos. 
+//Inicializo el jugador
 void initPlayer(player_t * player){		//probado en allegro
 	
 	player->health = 3;
@@ -69,6 +72,13 @@ void initPlayer(player_t * player){		//probado en allegro
 	
 }
 
+//Inicializo las estadisticas del juego
+void initGameStats(stats_t * gameStats){
+	gameStats->actualScore = 0;
+	gameStats->level = 1; 
+}
+
+//Actualizo los datos del bloque de aliens 
 void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
 	
 	uint8_t alienColAlive = 0;
@@ -95,8 +105,8 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t *
 	}
 	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
 		aliensBlock->lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
-	}	
-	
+	}
+
 	//ACTUALIZO WIDTH
 	aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
 	
@@ -111,6 +121,25 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t *
 	}
 }
 
+//Verifico si tengo que pasar al siguiente nivel
+//creo que no hace falta pasarle las balas, ya deberian estar desactivadas
+void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats){
+	
+	//verifico si murieron todos para volver a inicializar todo, creo que con esto alcanza
+	if(aliensBlock->firstColAlive > aliensBlock->lastColAlive){
+		initAliensBlock(aliensBlock);
+		initAliensArray(aliens);
+		initPlayer(player);
+		initShieldsArray(shields);
+		
+		gameStats->actualScore += LEVEL_POINTS(gameStats->level);
+		gameStats->level++;
+	}
+	
+}
+
+//Muevo el bloque de aliens
+//HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
 void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ 
 		
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
@@ -177,9 +206,9 @@ void collisionBA(bullet_t * bullet, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], al
 					// Asigno puntos
 					if (gameStats != NULL){
 					        switch (aliens[row][col].type){
-					                case 'A': gameStats->actualScore += 10; break;
-					                case 'B': gameStats->actualScore += 20; break;
-					                case 'C': gameStats->actualScore += 30; break;
+					                case 'A': gameStats->actualScore += POINTS_ALIEN_A; break;
+					                case 'B': gameStats->actualScore += POINTS_ALIEN_B; break;
+					                case 'C': gameStats->actualScore += POINTS_ALIEN_C; break;
 					                default: break;
 					        }
 					}
@@ -253,7 +282,7 @@ void collisionBP (bullet_t * bullet, player_t * player){
 			player->health--; //le saco una vida
 			bullet->active = false; 
 			
-			if(!(player->health)){	//si se quedo sin 
+			if(!(player->health)){	//si se quedo sin vidas
 				//lamo a funcion de gameover
 			}
 		}
@@ -289,27 +318,28 @@ void collisionAP (player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], a
 
 const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
 
-void collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t * gameStats)
-{
-        if (bullet->active && ovni->visible && ovni->alive)
-        {
-                // Variables intermedias por claridad
-                uint16_t ovniX = ovni->coord.coordX;
+void collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t * gameStats){
+
+    if (bullet->active && ovni->visible && ovni->alive){
+    
+        // Variables intermedias por claridad
+        uint16_t ovniX = ovni->coord.coordX;
 		uint16_t ovniY = ovni->coord.coordY;
 		uint16_t bulletX = bullet->coord.coordX;
 		uint16_t bulletY = bullet->coord.coordY;
-				
-                // Chequeo superposición de rectangulos
-                if (rectangleOverlap(ovniX, OVNI_SIZE_X, bulletX, BULLET_SIZE_X, ovniY, OVNI_SIZE_Y, bulletY, BULLET_SIZE_Y)){
-                        bullet->active = false;
-                        ovni->visible = false;
-                        ovni->alive = false;
-                        
-                        if (gameStats != NULL && player != NULL){
-                                gameStats->actualScore += puntosOvni[BULLET_INDEX(player->bulletsFired)];
-                        }
-                }
+			
+        // Chequeo superposición de rectangulos
+        if (rectangleOverlap(ovniX, OVNI_SIZE_X, bulletX, BULLET_SIZE_X, ovniY, OVNI_SIZE_Y, bulletY, BULLET_SIZE_Y)){
+            
+            bullet->active = false;
+            ovni->visible = false;
+            ovni->alive = false;
+            
+            if (gameStats != NULL && player != NULL){
+                    gameStats->actualScore += puntosOvni[BULLET_INDEX(player->bulletsFired)];
+            }
         }
+    }
 }
 
 //solo se usa en la pc, no en la raspberry
@@ -371,7 +401,6 @@ alien_t * selectAlienShooter (alien_t * alien[ALIEN_ROWS][ALIEN_COLS], alienBloc
 
 				found = true; //Se encontró el alien vivo de más abajo en esta columna.
 			}
-
 		}
 	}
 	return bestCandidate; //En caso de que no queden más aliens, se devuelve NULL.

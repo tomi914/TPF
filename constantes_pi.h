@@ -32,3 +32,5 @@
 #define SHIELD_INIT_SIZE_Y 2	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
+#define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...

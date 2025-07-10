@@ -45,8 +45,8 @@
 #define SPEED_OVNI //¿que la velocidad del ovni DEPENDA del NIVEL?
 #define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
 
-//Puntajes
-#define PUNTOS_ALIEN_A 10
-#define PUNTOS_ALIEN_B 20
-#define PUNTOS_ALIEN_C 30
-#define PUNTOS_NIVEL (100*(level))
+//Puntajes 
+#define POINTS_ALIEN_A 10
+#define POINTS_ALIEN_B 20
+#define POINTS_ALIEN_C 30
+#define LEVEL_POINTS(level) (100*(level))
