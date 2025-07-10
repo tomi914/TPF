@@ -1,16 +1,16 @@
 #define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 11  // Cantidad de COLUMNAS de ALIENS.
 #define DISPLAY_HIGH 800	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_LENGTH 800 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
+#define DISPLAY_LENGTH 1000 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
 #define ALIEN_A_SIZE_X 50 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_A_SIZE_Y 51 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_B_SIZE_X 56 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_B_SIZE_Y 41 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_C_SIZE_X 60 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_C_SIZE_Y 40 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define A_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
+#define A_INIT_JUMP_SIZE_X 20	// Salto necesario para inicializar centrados los aliens
 #define A_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
-#define B_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
+#define B_INIT_JUMP_SIZE_X 14	// Salto necesario para inicializar centrados los aliens
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
@@ -21,19 +21,32 @@
 #define DISPLAY_MARGIN_X 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
-#define PLAYER_SIZE_X 3 //VER
-#define PLAYER_SIZE_Y 2
-#define BULLET_SIZE_X 1
-#define BULLET_SIZE_Y 1
 #define NUM_SHIELDS 4	//cantidad de escudos 
 #define SHIELD_INIT_SIZE_X 60	//tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP 50 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SHIELD_INIT_X_JUMP 200 //cuantas coordenadas hay de espaciado entre cada escudo
 //agregar tmb a constantes_pi.h
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
+#define SPEED_PLAYER 10
 #define BULLET_SIZE_X 5
-#define BULLET_SIZE_Y 20 
-#define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
+#define BULLET_SIZE_Y 15
+#define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 #define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
+
+#define MARGIN_X 30//margen para los escudos
+
+//Ovni
+#define OVNI_SIZE_X 70
+#define OVNI_SIZE_Y 30
+#define INIT_OVNI_MARGIN_X 0
+#define INIT_OVNI_MARGIN_Y 40
+#define SPEED_OVNI //¿que la velocidad del ovni DEPENDA del NIVEL?
+#define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
+
+//Puntajes
+#define PUNTOS_ALIEN_A 10
+#define PUNTOS_ALIEN_B 20
+#define PUNTOS_ALIEN_C 30
+#define PUNTOS_NIVEL (100*(level))
