@@ -3,7 +3,7 @@ typedef struct{ // Almacena las coordenadas
 	uint16_t coordY;
 }coord_t;
 
-typedef struct{ // Almacena la información general de toodos los ALIENS.
+typedef struct{ // Almacena la información general de todos los ALIENS.
 	bool alive;
 	char type;
 	coord_t coord; 
@@ -11,9 +11,9 @@ typedef struct{ // Almacena la información general de toodos los ALIENS.
 }alien_t;
 
 typedef struct{ //Almacena las estadisticas de este juego y los anteriores.
-	uint32_t score;
+	uint32_t actualScore;
+	uint32_t highestScores[10];
 	uint16_t level;
-	//ranking?
 }stats_t;
 
 typedef struct{ // Almacena la información general de los ESCUDOS
@@ -26,6 +26,7 @@ typedef struct{ // Almacena la información general de los ESCUDOS
 typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
 	uint8_t health; 
 	coord_t coord;
+	int bulletsFired; // Cuando inciemos el juego, debe arrancar en 0.
 }player_t;
 
 typedef struct{ // Almacena la información general de las BALAS  
