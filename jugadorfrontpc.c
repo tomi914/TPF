@@ -7,6 +7,7 @@
 #include <allegro5/allegro_primitives.h>
 
 
+
 int main() {
     if (!al_init()) {
     	fprintf(stderr, "failed to initialize allegro!\n");//verifico que se haya iniciado bien allegro
@@ -59,16 +60,11 @@ int main() {
     al_register_event_source(queue, al_get_display_event_source(display));
     bool running = true; //indica si el programa debe seguir corriendo
     bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
-    
-    
     // Variables necesarias (declarar fuera del loop principal si no lo hiciste ya)
 	double timeLastMovAlien = 0;//tiempos para el movimiento de los aliens
 	double timeLastRow = 0;
 	int lastRowToPrint = -1;                 // -1 si no estamos imprimiendo fila por fila
 
-
-    
-    
     
     while (running) {//programa
         ALLEGRO_EVENT ev;
@@ -123,7 +119,7 @@ int main() {
 	if (lastRowToPrint >= 0 && actualTime - timeLastRow >= DELAY_ROW) {
 	   if (lastRowToPrint == 0) {
 		// Última fila que salta: no alteramos su frame visual
-		
+		alienFrameFila[0] = !alienFrameFila[0];
 		blockMove(aliens, &aliensBlock);
 		lastRowToPrint = -1;
 	} else if (lastRowToPrint > 0 && lastRowToPrint < ALIEN_ROWS) {
@@ -164,34 +160,6 @@ int main() {
 	// 🔁 MOSTRAR TODO
 	al_flip_display();
 
-/*
-
-	al_clear_to_color(al_map_rgb(0, 0, 0));
-	for (j = 0; j < NUM_SHIELDS; j++) {
-		al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);//imprime escudos
-	}
-	al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0);//imprime la nave y sus movimientos 
-	if (playerBullet.active) {
-		al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//imprime el disparo
-	}
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 		//collisionBA(playerBullet, aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock, gameStats, uint8_t printedRow);
@@ -207,10 +175,6 @@ int main() {
     al_destroy_event_queue(queue);
     return 0;
 }
-
-
-
-
 
 
 
