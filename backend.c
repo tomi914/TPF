@@ -393,3 +393,34 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
         }
     }
 }
+
+/* Se incializa el OVNI como no visible al inicio, y se prepara el temporizador para su primera aparición. */
+void initOvni(ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
+    ovni->visible = false; // El OVNI arranca invisible.
+    ovni->alive = true;
+    *LastOvniDespawnTime = currentTime; //Se comienza a contar desde el instante actual, para que luego aparezca el ovni.
+}
+
+/* Gestiona el movimiento y la reaparición del OVNI, fijandose si paso el tiempo de espera para la aparición (OVNI_SPAWN_INTERVAL -es constante-).
+  -'lastOvniDespawnTime' marca el momento en que el OVNI dejó de ser visible (desapareció o fue destruido). Este valor es el punto de inicio para el "cooldown" o tiempo de espera antes de la próxima aparición del OVNI.
+*/
+void updateOvni (ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
+  if (ovni->visible == false){ //Si el ovni no esta visible en pantalla
+    if (currentTime - *LastOvniDespawnTime >= OVNI_SPAWN_INTERVAL) { //Si paso un tiempo definido luego de la ultima desaparición, se lo hace aparecer.
+      ovni->visible = true;
+      ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y; //Le asigno una coordenada en Y un poco por debajo del márgen de arriba del display.
+      ovni->coord.coordX = DISPLAY_LENGTH - DISPLAY_MARGIN_Y - INIT_OVNI_MARGIN_X; //Le asigno una coordenada en X un poco más a la izquierda del márgen de a la derecha del display.
+    }
+  }
+  
+  // Si está visible en pantalla lo muevo en x;
+  if (ovni->visible == true){
+    ovni->coord.coordX -= SPEED_OVNI;
+  
+    // Si se sale del display, lo pongo como invisible.
+    if (ovni->coord.coordX + OVNI_SIZE_X < DISPLAY_MARGIN_X){
+      ovni->visible = false;
+      *LastOvniDespawnTime = currentTime; //Se almacena el tiempo en el que el ovni desaparece
+    }
+  }
+}
