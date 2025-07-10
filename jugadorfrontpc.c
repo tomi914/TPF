@@ -1,6 +1,11 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<stdlib.h>
+#include <allegro5/allegro_primitives.h>
+
 
 
 int main() {
@@ -10,6 +15,10 @@ int main() {
     }
     al_install_keyboard();
     al_init_image_addon();
+    if (!al_init_primitives_addon()) {
+        fprintf(stderr, "failed to initialize primitives!\n");
+        return -1;
+    }
     ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGTH, DISPLAY_HIGH); //crea display
     if (!display) {
         fprintf(stderr, "failed to create display!\n");//verifico que se haya creado bien el display
@@ -27,6 +36,8 @@ int main() {
 	int i, j;
 	int jump=1;
 	bool tryShoot=false;
+	int frameCount = 0;
+
 	
 	for (i = 0; i < 9; i++) {//subo todas las imagenes
 		sprintf(img, "img%d.png", i);
@@ -73,13 +84,19 @@ int main() {
 			playerShoot(&playerBullet, &player, &tryShoot);//llamo a funcion de disparo
 		
         al_clear_to_color(al_map_rgb(0, 0, 0));//limpia la pantalla
+       // al_draw_filled_rectangle(player.coord.coordX-PLAYER_SIZE_X, player.coord.coordY, player.coord.coordX-PLAYER_SIZE_X, player.coord.coordY+PLAYER_SIZE_Y, al_map_rgb(0, 0, 0));
+        //al_draw_filled_rectangle(40, 10, 500, 200, al_map_rgb(0, 0, 0));
+        //al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgb(0, 0, 0));
+        
+        
+        
         al_draw_bitmap(image[7], player.coord.coordX-PLAYER_SIZE_X/2, player.coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
          
         if (playerBullet.active){
 			al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);
 			} //dibuja el disparo
       
-        for(i = 0; i < ALIEN_ROWS; i++) { 
+       /* for(i = 0; i < ALIEN_ROWS; i++) { 
 			for(j = 0; j < ALIEN_COLS; j++) { 
 				if(i == 0){
 					al_draw_bitmap(image[0], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
@@ -91,19 +108,52 @@ int main() {
 					al_draw_bitmap(image[4], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
 				}
 			}
-		}
+		}*/
 		jump=0;
 		for(j = 0; j < NUM_SHIELDS; j++) { 
 			al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);
 		}
 			
-			
-			
-			
+		
+	
+		frameCount++;
+
+		if (frameCount % 10 == 0) {
+			blockMove(aliens, &aliensBlock); // solo se mueve cada 10 frames
+		}
+		 for(i = ALIEN_ROWS-1; i >=0; i--) { 
+		 
+		 
+		 
+		 
+			for(j = ALIEN_COLS-1; j >=0; j--) { 
+			    //int offsetX = (i * 3) * sin(frameCount * 0.1);  // efecto de ola o delay
+				//int drawX = aliens[i][j].coord.coordX + offsetX;
+				//int drawY = aliens[i][j].coord.coordY;
+				if(i > 2){
+				// al_draw_filled_rectangle(aliensBlock.coord.coordX+aliens[i][0].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, aliensBlock.coord.coordX+aliens[i][11].coord.coordX+ALIEN_C_SIZE_X, aliensBlock.coord.coordY+aliens[i][j].coord.coordY+ALIEN_C_SIZE_Y, al_map_rgb(0, 0, 0));
+					al_draw_bitmap(image[4], aliensBlock.coord.coordX+aliens[i][j].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, 0);
+				}
+				else if(i > 0 && i<=2){
+				 //al_draw_filled_rectangle(aliensBlock.coord.coordX+aliens[i][0].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, aliensBlock.coord.coordX+aliens[i][11].coord.coordX+ALIEN_B_SIZE_X, aliensBlock.coord.coordY+aliens[i][j].coord.coordY+ALIEN_B_SIZE_Y, al_map_rgb(0, 0, 0));
+					al_draw_bitmap(image[2], aliensBlock.coord.coordX+aliens[i][j].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, 0);
+				}
+				else{
+					//al_draw_filled_rectangle(aliensBlock.coord.coordX+aliens[i][0].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, aliensBlock.coord.coordX+aliens[i][11].coord.coordX+ALIEN_A_SIZE_X, aliensBlock.coord.coordY+aliens[i][j].coord.coordY+ALIEN_A_SIZE_Y, al_map_rgb(0, 0, 0));
+					al_draw_bitmap(image[0], aliensBlock.coord.coordX+aliens[i][j].coord.coordX, aliensBlock.coord.coordY+aliens[i][j].coord.coordY, 0);
+				}
+			}
+		    
 			
 			
 			al_flip_display();
-			al_rest(0.01);
+		}
+			
+			
+			
+		//al_flip_display();
+		//frameCount++;
+		al_rest(0.01);
 			/*
         if (jump){//imprimo las variantes de los aliens
         
@@ -149,6 +199,7 @@ int main() {
     al_destroy_event_queue(queue);
     return 0;
 }
+
 
 
 
