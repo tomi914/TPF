@@ -2,78 +2,63 @@
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 
+
 int main() {
     if (!al_init()) {
-    	fprintf(stderr, "failed to initialize allegro!\n");
+    	fprintf(stderr, "failed to initialize allegro!\n");//verifico que se haya iniciado bien allegro
         return -1;
     }
     al_install_keyboard();
     al_init_image_addon();
-    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGHT, DISPLAY_HIGH); //crea display
+    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGTH, DISPLAY_HIGH); //crea display
     if (!display) {
-        fprintf(stderr, "failed to create display!\n");
+        fprintf(stderr, "failed to create display!\n");//verifico que se haya creado bien el display
         return -1;
     }
 
-	player_t player;
-	alien_t alien[55];
+	player_t player;//creo todas las variables necesarias
+	ALLEGRO_BITMAP *image[9];
+	alien_t aliens[5][11];
+	aliensBlock_t aliensBlock;
 	bullet_t playerBullet;
 	bullet_t alienBullet;
+	shield_t shields[NUM_SHIELDS];
 	char img[20];
-	int i;
-	int jump;
-	int fil, col;
-	player.coord.coordY=DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
-	player.coord.coordX=DISPLAY_LENGTH/2-PLAYER_SIZE_X/2;
+	int i, j;
+	int jump=1;
+	bool tryShoot=false;
 	
-	//ver como inicializar aliens con sus coord
-	alien.coord.Y=
-	alien.coord.X=
-	
-	
-	for (i=0; i<9; i++){
+	for (i = 0; i < 9; i++) {//subo todas las imagenes
 		sprintf(img, "img%d.png", i);
-		image[i]= al_load_bitmap(*img);
+		image[i] = al_load_bitmap(img);
+		if (!image[i]) {
+		    fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);//verifico que se hayan subido bien las imgs
+		    return -1;
+    	}
 	}
-        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar las coord de los aliens ??
-        		if (fil<1){
-        			for (col=0; col<ALIEN_COLS; col++){
-		    		al_draw_bitmap(image[0], player->coord.coordX, player->coord.coordY, 0);
-		    		}
-		   		} else if (fil<3){
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[2], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		} else {
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[4], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		}
-		   	}
-		    jump=0;
-		    al_draw_bitmap(image[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial 
-		    al_flip_display();
-		    
-		    
+	initPlayer(&player);//inicializo al jugador
+	initAliensBlock(&aliensBlock);//inicializo el bloque de aliens
+	initAliensArray(aliens);//inicializo todos los aliens		    
+	initShieldsArray(shields);//inicializo los 4 escudos
     ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
     al_register_event_source(queue, al_get_keyboard_event_source()); //registra teclado y display como fuentes de eventos
     al_register_event_source(queue, al_get_display_event_source(display));
-
     bool running = true; //indica si el programa debe seguir corriendo
     bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
-    bool tryShoot;
-
-    while (running) {
+    
+    while (running) {//programa
         ALLEGRO_EVENT ev;
         while (al_get_next_event(queue, &ev)) {
-            if (ev.type == ALLEGRO_EVENT_KEY_DOWN) //setea que si se aprieta una tecla, es true
+            if (ev.type == ALLEGRO_EVENT_KEY_DOWN){ //setea que si se aprieta una tecla, es true
                 keys[ev.keyboard.keycode] = true;
-            else if (ev.type == ALLEGRO_EVENT_KEY_UP) //setea que si se suelta una tecla es false
+            }
+            else if (ev.type == ALLEGRO_EVENT_KEY_UP){ //setea que si se suelta una tecla es false
                 keys[ev.keyboard.keycode] = false;
-            else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) //setea que si se cierra la ventana, para el programa
+            }
+            else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){ //setea que si se cierra la ventana, para el programa
                 running = false;
+            }
         }
-
 
 		if (keys[ALLEGRO_KEY_LEFT]){//llamo a funcion playerMove para ir a la izq
 			playerMove(-1, &player);
@@ -81,69 +66,81 @@ int main() {
 		if (keys[ALLEGRO_KEY_RIGHT]){//llamo a funcion playerMove para ir a la der
 			playerMove(1, &player);
 		}
-        
-        if(keys[ALLEGRO_KEY_UP]){//llamo a funcion playerShoot para disparar
-        	tryShoot = true;
-        }
-        
-        playerShoot(&tryshoot, &bulletPlayer, &player); //meter en el backend el try y cambiar lo de bullet alive
-        
-    
-        al_clear_to_color(al_map_rgb(0, 0, 0));
-        al_draw_bitmap(image[7], player->coord.coordX, player->coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
-        
-        
-        if (playerBullet.active){// cambiar en el back lo de player con shooting
-			al_draw_bitmap(image[8], bullet->coord.coordX, bullet->coord.coordY, 0);
+      
+		if (keys[ALLEGRO_KEY_UP]) {
+			tryShoot = true;  // se permite volver a disparar
+		}
+			playerShoot(&playerBullet, &player, &tryShoot);//llamo a funcion de disparo
+		
+        al_clear_to_color(al_map_rgb(0, 0, 0));//limpia la pantalla
+        al_draw_bitmap(image[7], player.coord.coordX-PLAYER_SIZE_X/2, player.coord.coordY, 0); //dibuja la nave en su posicion inicial y desp la actualiza con los mov
+         
+        if (playerBullet.active){
+			al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);
 			} //dibuja el disparo
-        al_flip_display();
-        al_rest(0.01);  // pequeña pausa
+      
+        for(i = 0; i < ALIEN_ROWS; i++) { 
+			for(j = 0; j < ALIEN_COLS; j++) { 
+				if(i == 0){
+					al_draw_bitmap(image[0], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+				}
+				else if(i < 3){
+					al_draw_bitmap(image[2], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+				}
+				else{
+					al_draw_bitmap(image[4], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+				}
+			}
+		}
+		jump=0;
+		for(j = 0; j < NUM_SHIELDS; j++) { 
+			al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);
+		}
+			
+			
+			
+			
+			
+			
+			al_flip_display();
+			al_rest(0.01);
+			/*
+        if (jump){//imprimo las variantes de los aliens
         
-        
-        //PONER TIEMPO
-        
-        
-        if (jump){//imprimo la segunda variante de los aliens
-        
-       
-        		for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
-        		if (fil<1){
-        			for (col=0; col<ALIEN_COLS; col++){
-		    		al_draw_bitmap(image[0], player->coord.coordX, player->coord.coordY, 0);
-		    		}
-		   		} else if (fil<3){
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[2], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		} else {
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[4], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		}
-		   	}
-		    jump=0;
-		    al_flip_display();
+			for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
+				for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
+					if(i == 0){
+						al_draw_bitmap(image[0], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+					else if(i < 3){
+						al_draw_bitmap(image[2], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+					else{
+						al_draw_bitmap(image[4], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+				}
+			}
+			jump=0;
+			al_flip_display();
 
         } else {
-        
-        	for (fil=0; fil<ALIEN_ROWS; fil++){//completar con nro de imagen
-        		if (fil<1){
-        			for (col=0; col<ALIEN_COLS; col++){
-		    		al_draw_bitmap(image[1], player->coord.coordX, player->coord.coordY, 0);
-		    		}
-		   		} else if (fil<3){
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[3], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		} else {
-			   		for (col=0; col<ALIEN_COLS; col++){
-						al_draw_bitmap(image[5], player->coord.coordX, player->coord.coordY, 0);
-						}
-		   		}
-		   	}
-		    jump=1;
-		    al_flip_display();
-        }
+			for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
+				for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
+					if(i == 0){
+						al_draw_bitmap(image[1], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+					else if(i < 3){
+						al_draw_bitmap(image[3], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+					else{
+						al_draw_bitmap(image[5], aliens[i][j].coord.coordX, aliens[i][j].coord.coordY, 0);
+					}
+				}
+			}
+			jump=1;
+			al_flip_display();//todos arrancan vivos
+			}*/
+    
     }
    	for (i=0; i<9; i++){
 		al_destroy_bitmap(image[i]);
@@ -152,6 +149,29 @@ int main() {
     al_destroy_event_queue(queue);
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
