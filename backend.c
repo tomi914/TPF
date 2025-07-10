@@ -145,10 +145,11 @@ char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16
 }
 
 //analiza todas las colisiones
-void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock, player_t * player){
+void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock, player_t * player, stats_t * gameStats){
 	if(bulletP->active){
-		collisionBA(bulletP, aliens, aliensBlock); //bullet vs aliens
+		collisionBA(bulletP, aliens, aliensBlock, gameStats); //bullet vs aliens
 		collisionBB(bulletP, bulletA); //bullet vs bullet
+		collisionBO(bulletP, ovni, gameStats); //bullet vs ovni
 	}
 	collisionAS(aliens, shields, aliensBlock); //aliens vs shields
 	collisionBP(bulletA, player); //bullet vs player
@@ -156,27 +157,33 @@ void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[AL
 }
 
 //chequea bala del jugador con todos los aliens
-void collisionBA(bullet_t * bullet , alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){	
+void collisionBA(bullet_t * bullet, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, stats_t * gameStats) {	
 
-	int i, j; 
-	
-	for(i=(aliensBlock->lastRowAlive); i>=0 ; i--){	//recorro filas de aliens desde abajo hacia arriba
-		for(j=aliensBlock->firstColAlive; j<=aliensBlock->lastColAlive ; j++){	//recorro columnas de aliens sin analizar las que ya murieron
-			if(aliens[i][j].alive){	//verifico que el alien este vivo
-			
-				//creo variables intermedias por claridad
-				uint16_t alienX = aliens[i][j].coord.coordX + aliensBlock->coord.coordX;
-				uint16_t alienY = aliens[i][j].coord.coordY + aliensBlock->coord.coordY;
+	for (int row = aliensBlock->lastRowAlive; row >= 0; row--) { // Recorro filas desde abajo hacia arriba
+		for (int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive; col++) { // Recorro columnas activas
+			if (aliens[row][col].alive) { // Verifico que el alien esté vivo
+				
+				// Variables intermedias por claridad
+				uint16_t alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX;
+				uint16_t alienY = aliens[row][col].coord.coordY + aliensBlock->coord.coordY;
 				uint16_t bulletX = bullet->coord.coordX;
 				uint16_t bulletY = bullet->coord.coordY;
 				
-				//chequeo superposicion de rectangulos, si hay, desactivo la bala y mato al alien
-				if(rectangleOverlap(alienX, ALIEN_B_SIZE_X, bulletX, BULLET_SIZE_X,
-                 					alienY, ALIEN_B_SIZE_Y, bulletY, BULLET_SIZE_Y)){
-					aliens[i][j].alive = false; 
-					bullet->active = false; 
-					return;
+				// Chequeo superposición de rectángulos
+				if (rectangleOverlap(alienX, ALIEN_B_SIZE_X, bulletX, BULLET_SIZE_X, alienY, ALIEN_B_SIZE_Y, bulletY, BULLET_SIZE_Y)){
+					aliens[row][col].alive = false; 
+					bullet->active = false;
 					
+					// Asigno puntos
+					if (gameStats != NULL){
+					        switch (aliens[row][col].type){
+					                case 'A': gameStats->actualScore += 10; break;
+					                case 'B': gameStats->actualScore += 20; break;
+					                case 'C': gameStats->actualScore += 30; break;
+					                default: break;
+					        }
+					}
+					return;
 				}
 			}
 		}
@@ -194,8 +201,7 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 		uint16_t bulletAY = bulletA->coord.coordY;
 		
 		//chequeo superposicion de rectangulos, si hay, desactivo las balas
-		if(rectangleOverlap(bulletAX, BULLET_SIZE_X,bulletPX, BULLET_SIZE_X,
-         					bulletAY, BULLET_SIZE_Y, bulletPY, BULLET_SIZE_Y)){
+		if(rectangleOverlap(bulletAX, BULLET_SIZE_X,bulletPX, BULLET_SIZE_X, bulletAY, BULLET_SIZE_Y, bulletPY, BULLET_SIZE_Y)){
 			bulletA->active = false; 
 			bulletP->active = false; 
 			return;
@@ -203,37 +209,38 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 	}
 }
 
-//chequea colision entre aliens y escudos
-void collisionAS(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock){
-
-	int j, k; 
+// Chequea colisión entre aliens y escudos
+void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
 	
-	//solo analizamos la colision con la ultima fila viva, no con las otras
-	for(j=aliensBlock->firstColAlive; j<=aliensBlock->lastColAlive ; j++){
-		for(k=0; k<NUM_SHIELDS; k++){
+	// Solo analizamos la colision con la ultima fila viva
+	for(int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive ; col++){
+		for(int s=0; s < NUM_SHIELDS; s++){
 			
-			if(aliens[aliensBlock->lastRowAlive][j]. alive && shields[k].health){//verifico que el alien este vivo y que el escudo tambien
+			if (aliens[aliensBlock->lastRowAlive][col].alive && shields[s].health){ // Verifico que el alien este vivo y que el escudo también
 			
-				//variables intermedias para mejor comprension
-				uint16_t alienX = aliens[aliensBlock->lastRowAlive][j].coord.coordX + aliensBlock->coord.coordX;
-				uint16_t alienY = aliens[aliensBlock->lastRowAlive][j].coord.coordY + aliensBlock->coord.coordY;
-				uint16_t shieldX = shields[k].coord.coordX;
-				uint16_t shieldW = shields[k].sizeX;
-				uint16_t shieldY = shields[k].coord.coordY;
-				uint16_t shieldH = shields[k].sizeY;
+				// Posiciones
+				uint16_t alienX = aliens[aliensBlock->lastRowAlive][col].coord.coordX + aliensBlock->coord.coordX;
+				uint16_t alienY = aliens[aliensBlock->lastRowAlive][col].coord.coordY + aliensBlock->coord.coordY;
+				uint16_t shieldX = shields[s].coord.coordX;
+				uint16_t shieldW = shields[s].sizeX;
 				
+				// Dimensiones
+				uint16_t shieldY = shields[s].coord.coordY;
+				uint16_t shieldH = shields[s].sizeY;
+				
+				// Detección de colisión
 				if(rectangleOverlap(alienX, ALIEN_B_SIZE_X, shieldX, shieldW, alienY, ALIEN_B_SIZE_Y, shieldY, shieldH)){
-					shields[k].health -= 2; //ver cuanto conviene decrementar las vidas luego 
+					shields[s].health -= 2; //ver cuanto conviene decrementar las vidas luego 
 				}	
 			}		
 		}
 	}	
 }
 
-//recibe la bala del alien y el jugador 
-void collisionBP(bullet_t * bullet, player_t * player){
+// Recibe la bala del alien y el jugador 
+void collisionBP (bullet_t * bullet, player_t * player){
 
-	if(bullet->active){	//me fijo que la bala del alien este activa
+	if (bullet->active){	//me fijo que la bala del alien este activa
 		
 		//variables intermedias para mejor comprension
 		uint16_t bulletX = bullet->coord.coordX;
@@ -254,7 +261,7 @@ void collisionBP(bullet_t * bullet, player_t * player){
 }
 
 //recibe el jugador y los aliens
-void collisionAP(player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void collisionAP (player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
 	
 	int j;
 	
@@ -274,6 +281,35 @@ void collisionAP(player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], al
 		}
 	}
 	
+}
+
+// Colisión entre bala y ovni
+
+#define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
+
+const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
+
+void collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t * gameStats)
+{
+        if (bullet->active && ovni->visible && ovni->alive)
+        {
+                // Variables intermedias por claridad
+                uint16_t ovniX = ovni->coord.coordX;
+		uint16_t ovniY = ovni->coord.coordY;
+		uint16_t bulletX = bullet->coord.coordX;
+		uint16_t bulletY = bullet->coord.coordY;
+				
+                // Chequeo superposición de rectangulos
+                if (rectangleOverlap(ovniX, OVNI_SIZE_X, bulletX, BULLET_SIZE_X, ovniY, OVNI_SIZE_Y, bulletY, BULLET_SIZE_Y)){
+                        bullet->active = false;
+                        ovni->visible = false;
+                        ovni->alive = false;
+                        
+                        if (gameStats != NULL && player != NULL){
+                                gameStats->actualScore += puntosOvni[BULLET_INDEX(player->bulletsFired)];
+                        }
+                }
+        }
 }
 
 //solo se usa en la pc, no en la raspberry
@@ -374,12 +410,13 @@ void playerMove(int dire, player_t * player){//probado en allegro
 	}
 }
 
-void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {//probado en allegro
+void playerShoot(bullet_t * playerBullet, player_t * player, bool * tryShoot) {//probado en allegro
     if (*tryShoot && !playerBullet->active) {
        *tryShoot = false;
         playerBullet->active = true;
         playerBullet->coord.coordY = player->coord.coordY;
         playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
+        player->bulletsFired++; 
     }
 
     if (playerBullet->active) {
@@ -421,3 +458,6 @@ void updateOvni (ovni_t * ovni, double currentTime, double * LastOvniDespawnTime
     }
   }
 }
+
+
+
