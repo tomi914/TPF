@@ -9,6 +9,7 @@
 #define ALIEN_B_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_B_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define ALIEN_C_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
+#define ALIEN_C_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
 #define A_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens
 #define A_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens
 #define B_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens
@@ -23,12 +24,17 @@
 #define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define PLAYER_SIZE_X 3
 #define PLAYER_SIZE_Y 2
-#define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
+#define INIT_PLAYER_Y 15	//en que coordenada Y va  a estar
 #define BULLET_SIZE_X 1
 #define BULLET_SIZE_Y 1
 #define NUM_SHIELDS 4	//cantidad de escudos 
 //ojo que en la raspberry no cambia el tamaño de los escudos
 #define SHIELD_INIT_SIZE_X 3	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 2	//tamaño inicial de los escudos
+#define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
+#define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SPEED_PLAYER 0.05 
+#define SPEED_BULLET_PLAYER 0.05
 #define SHIELD_INIT_SIZE_Y 2	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
