@@ -140,15 +140,17 @@ void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliens
 
 //Muevo el bloque de aliens
 //HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
-void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ //probado en allegro
-		
+void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ 
+
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
 		aliensBlock->direction = -1; 		//cambio de direccion
 		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		aliensBlock->coord.coordX += JUMP_SIZE_X;
 	}	
 	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
 		aliensBlock->direction = 1; 		//cambio de direccion
 		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		aliensBlock->coord.coordX -= JUMP_SIZE_X ;
 	}
 	else{
 		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
@@ -189,9 +191,13 @@ void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[AL
 //ver si en necesario analzar si por separado en Y cuando baja (baja de a una fila)
 void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, stats_t * gameStats, int printedRow) {	
 
+	if(bullet->coord.coordY < DISPLAY_MARGIN_Y){
+		bullet->active = false; 
+	}
+
 	for (int row = aliensBlock->lastRowAlive; row >= 0; row--) { // Recorro filas desde abajo hacia arriba
 		for (int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive; col++) { // Recorro columnas activas
-			if (aliens[row][col].alive) { // Verifico que el alien esté vivo
+			if (aliens[row][col].alive && bullet->active) { // Verifico que el alien esté vivo y la bala activa
 				
 				// Variables intermedias por claridad
 				uint16_t alienX; 
@@ -202,8 +208,12 @@ void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alie
 				//distingo si esa fila ya se movio o no
 				if(row >= printedRow){	
 					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX;
-				}else{	//si todavia no se imprimio la fila desplazada, comparo con las coordenadas anteriores
+				}
+				else if(aliensBlock->direction == 1){	//si todavia no se imprimio la fila desplazada, comparo con las coordenadas anteriores
 					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX - JUMP_SIZE_X;
+				}
+				else if(aliensBlock->direction == -1){	//si todavia no se imprimio la fila desplazada, comparo con las coordenadas anteriores
+					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX + JUMP_SIZE_X;
 				}
 				
 				// Chequeo superposición de rectángulos
@@ -227,7 +237,6 @@ void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alie
 		}
 	}	
 }
-
 //chequea bala del jugador con bala de alien
 void collisionBB(bullet_t * bulletP , bullet_t * bulletA){	
 
@@ -385,57 +394,74 @@ Función que elige que alien va a ser el que va a disparar.
  - Elije el que tenga su coordenada en X mas cerca del jugador.
  - Elije el que esta más abajo dentro de una columna.
 */
-alien_t * selectAlienShooter (alien_t * alien[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player){
-	
-	alien_t * bestCandidate == NULL; //Almacena la dirección de memoria del alien que es el mejor candidato a disparar.
-	int minDistX = DISPLAY_LENGTH; //Almacena la mínima distancia en X entre un alien y el player. Se incializa con una distancia más grande que cualquier otra posible.
 
-	for (int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive; col++){
-		bool found = false; //Flag para dejar de buscar en una columna una vez que el alien se encontró.
+alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player) {
+    alien_t * bestCandidate = NULL;
+    int minDistX = DISPLAY_LENGTH;
 
-		for (int row = aliensBlock->lastRowAlive; row >= 0 && found == false; row--){
-			if (alien[row][col] != NULL && alien[row][col]->alive == true){
-				//Se almacenan las coordenadas en X desde el alien y del player.
-				int alienX = alien[row][col]->coord.coordX;
-				int playerX = player->coord.coordX;
+    for (int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive; col++) {
+        for (int row = ALIEN_ROWS - 1; row >= 0; row--) {
+            if (alien[row][col].alive) {
+                int alienX = alien[row][col].coord.coordX + aliensBlock->coord.coordX;
+                int playerX = player->coord.coordX;
+                int distX = abs(alienX - playerX);
 
-				//Se almacena la distancia entre el alien y el player.
-				int distX = abs(alienX-playerX); //abs() pertenece a <stdlib.h>
+                if (distX < minDistX) {
+                    minDistX = distX;
+                    bestCandidate = &alien[row][col];
+                }
 
-				//Se analiza si el actual alien es la mejor opción.
-				if (distX < minDistX){
-					minDistX = distX; //Nueva mínima distancia.
-					bestCandidate = alien[row][col]; //Nuevo mejor candidato para disparar.
-				}
+                // 🚫 ¡No sigas buscando más arriba en esta columna!
+                break;
+            }
+        }
+    }
 
-				found = true; //Se encontró el alien vivo de más abajo en esta columna.
-			}
-		}
-	}
-	return bestCandidate; //En caso de que no queden más aliens, se devuelve NULL.
+    return bestCandidate;
 }
 
-/* 
-Función que define cómo va a a disparar el alien 
-*/
-void alienShoot (bullet_t * bullet, alien_t * alien, int level){ 
-	
-	if (bullet->active == false){ //Si NO hay bala activa, crear una nueva.
-		bullet->active = true;
-		bullet->coord.coordY = alien->coord.coordY; // Dispara desde la parte mas alta del alien (lo atraviesa).
-		bullet->coord.coordX = alien->coord.coordX + ALIEN_B_SIZE_X/2; // Dispara desde el centro en X del alien (le sumo la mitad del largo del alien B, que es el de tamaño intermedio).
+int getAlienWidthByRow(int row) {
+	if (row >= 4) return ALIEN_C_SIZE_X;
+	if (row >= 2) return ALIEN_B_SIZE_X;
+	return ALIEN_A_SIZE_X;
+}
+int getAlienHeightByRow(int row) {
+	if (row >= 4) return ALIEN_C_SIZE_Y;
+	if (row >= 2) return ALIEN_B_SIZE_Y;
+	return ALIEN_A_SIZE_Y;
+}
+
+void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex) {
+
+	// Calcular desplazamiento lateral simulado si está en animación
+	int offsetX = aliensBlock->coord.coordX;
+	if (lastRowToPrint >= 0 && alienRowIndex > lastRowToPrint) {
+		offsetX += JUMP_SIZE_X * aliensBlock->direction;
 	}
-  
-	// Si está activa la muevo en x;
-	if (bullet->active == true){
+
+	// Obtenemos medidas del sprite correspondiente a ese alien
+	int alienWidth = getAlienWidthByRow(alienRowIndex);
+	int alienHeight = getAlienHeightByRow(alienRowIndex);
+
+	if (!bullet->active) {
+		bullet->active = true;
+
+		// Coordenadas reales ajustadas para disparo centrado y desde la base
+		bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;
+		bullet->coord.coordY = alien->coord.coordY + aliensBlock->coord.coordY + alienHeight;
+	}
+
+	if (bullet->active) {
 		bullet->coord.coordY += SPEED_BULLET_ALIEN(level);
 
-		// Si se sale del display, desactivo la bala.
-		if (bullet->coord.coordY > DISPLAY_HIGH - DISPLAY_MARGIN_Y){
+		if (bullet->coord.coordY > DISPLAY_HIGH - DISPLAY_MARGIN_Y) {
 			bullet->active = false;
 		}
 	}
 }
+
+
+
 
 //revisar logica y compatibilidad REVISADO
 
@@ -454,22 +480,17 @@ void playerMove(int dire, player_t * player){//probado en allegro
     }
 }
 
-void playerShoot(bullet_t * playerBullet, player_t * player, bool * tryShoot) {//probado en allegro
-    if (*tryShoot && !playerBullet->active) {
-       *tryShoot = false;
-        playerBullet->active = true;
-        playerBullet->coord.coordY = player->coord.coordY;
+void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
+    if (*tryShoot && !(playerBullet->active)) {	//si dispara y no habia bala activa
+       *tryShoot = false;		//resetea tryShoot
+        playerBullet->active = true;		//activa la bala
+        playerBullet->coord.coordY = player->coord.coordY;	
         playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
-        player->bulletsFired++; 
     }
-
     if (playerBullet->active) {
         playerBullet->coord.coordY -= SPEED_BULLET_PLAYER;
-        if (playerBullet->coord.coordY < 10) {
-            playerBullet->active = false;
-            *tryShoot = false;
-        }
     }
+    *tryShoot = false;
 }
 
 /* Se incializa el OVNI como no visible al inicio, y se prepara el temporizador para su primera aparición. */

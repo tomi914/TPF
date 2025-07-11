@@ -18,12 +18,27 @@
 #define INIT_ALIENS_MARGIN_Y 40	//margen para donde arrancan los aliens
 #define JUMP_SIZE_X	20			//salto para los movimientos
 #define JUMP_SIZE_Y 20			//salto para los movimientos
-#define DISPLAY_MARGIN_X 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
+#define DISPLAY_MARGIN_X 50	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
 #define NUM_SHIELDS 4	//cantidad de escudos 
-#define SHIELD_INIT_SIZE_X 60	//tamaño inicial de los escudos
+#define SHIELD_INIT_POSITION_1_X 100
+#define SHIELD_INIT_POSITION_2_X 300
+#define SHIELD_INIT_POSITION_3_X 600
+#define SHIELD_INIT_POSITION_4_X 800
+#define SHIELD_INIT_POSITION_Y 500
+#define SHIELD_INIT_SIZE_X 50	//tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
+#define SHIELD_1_SIZE_X 50	//tamaño estado 1 de los escudos
+#define SHIELD_1_SIZE_Y 30	//tamaño estado 1 de los escudos
+#define SHIELD_2_SIZE_X 40	//tamaño estado 2 de los escudos
+#define SHIELD_2_SIZE_Y 20	//tamaño estado 2 de los escudos
+#define SHIELD_3_SIZE_X 30	//tamaño estado 3 de los escudos
+#define SHIELD_3_SIZE_Y 15	//tamaño estado 3 de los escudos
+#define SHIELD_4_SIZE_X 20	//tamaño estado 4 de los escudos
+#define SHIELD_4_SIZE_Y 10	//tamaño estado 4 de los escudos
+#define SHIELD_5_SIZE_X 10	//tamaño estado 4 de los escudos
+#define SHIELD_5_SIZE_Y 5	//tamaño estado 4 de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 200 //cuantas coordenadas hay de espaciado entre cada escudo
 //agregar tmb a constantes_pi.h
@@ -34,7 +49,7 @@
 #define BULLET_SIZE_Y 15
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 #define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
-#define MARGIN_X 30//margen para los escudos
+#define MARGIN_X 50
 //Ovni
 #define OVNI_SIZE_X 70
 #define OVNI_SIZE_Y 30
@@ -48,5 +63,5 @@
 #define POINTS_ALIEN_C 30
 #define LEVEL_POINTS(level) (100*(level))
 
-#define DELAY_START 2 //cuanto tarda en arrancar el mov de aliens
-#define DELAY_ROW 0.5 //cuanto tarda en moverse cada fila
+#define DELAY_START 1
+#define DELAY_ROW 0.2
