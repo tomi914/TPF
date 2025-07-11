@@ -257,7 +257,7 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 }
 
 // Chequea colisión entre aliens y escudos
-void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
+void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
 	
 	// Solo analizamos la colision con la ultima fila viva
 	for(int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive ; col++){
@@ -282,6 +282,52 @@ void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[N
 			}		
 		}
 	}	
+}
+
+//recibe bala del allien y escudos
+void collisionBS(bullet_t * bulletP, bullet_t * bulletA, shield_t shields[NUM_SHIELDS]){
+	
+	int s;
+	
+	if(bulletP->active){
+		for(s=0; s<NUM_SHIELDS; s++){
+			if(shields[s].health){		//si el escudo todavia tiene vida
+			
+				//variables intermedias para mas claridad
+				uint16_t bulletX = bulletP->coord.coordX;
+				uint16_t bulletY = bulletP->coord.coordY;
+				uint16_t shieldX = shields[s].coord.coordX;
+				uint16_t shieldY = shields[s].coord.coordY;
+				uint16_t shieldSizeX = shields[s].sizeX;
+				uint16_t shieldSizeY = shields[s].sizeY;
+				
+				if(rectangleOverlap(shieldX, shieldSizeX, bulletX, BULLET_SIZE_X, shieldY, shieldSizeY, bulletY, BULLET_SIZE_Y)){
+					shields[s].health--; 
+					bullet->active = false;
+				}
+			}
+		}
+	}	
+	if(bulletA->active){
+		for(s=0; s<NUM_SHIELDS; s++){
+			if(shields[s].health){		//si el escudo todavia tiene vida
+			
+				//variables intermedias para mas claridad
+				uint16_t bulletX = bulletA->coord.coordX;
+				uint16_t bulletY = bulletA->coord.coordY;
+				uint16_t shieldX = shields[s].coord.coordX;
+				uint16_t shieldY = shields[s].coord.coordY;
+				uint16_t shieldSizeX = shields[s].sizeX;
+				uint16_t shieldSizeY = shields[s].sizeY;
+				
+				if(rectangleOverlap(shieldX, shieldSizeX, bulletX, BULLET_SIZE_X, shieldY, shieldSizeY, bulletY, BULLET_SIZE_Y)){
+					shields[s].health--; 
+					bullet->active = false;
+				}
+			}
+		}
+	}
+	
 }
 
 // Recibe la bala del alien y el jugador 
