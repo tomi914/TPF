@@ -104,7 +104,7 @@ void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un punter
 	}
 }
 
-void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
 	
 	uint8_t alienColAlive = 0;
 	uint8_t alienRowAlive = 0; 
@@ -112,7 +112,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO FIRSTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->firstColAlive]->alive){
+		if(aliens[i][aliensBlock->firstColAlive].alive){
 			alienColAlive++; 
 		}
 	}
@@ -124,7 +124,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->lastColAlive]->alive){	//si nunca entra al if, alienColAlive queda en 0
+		if(aliens[i][aliensBlock->lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
 			alienColAlive++; 
 		}
 	}
@@ -137,7 +137,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTROWALIVE
 	for(j = 0; j < ALIEN_COLS; i++) { // recorro cada fila
-		if(aliens[aliensBlock->lastRowAlive][j]->alive){
+		if(aliens[aliensBlock->lastRowAlive][j].alive){
 			alienRowAlive++; 
 		}
 	}
@@ -147,7 +147,8 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 }
 
 void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
-		
+	static float jumpx = 0;	
+	static float jumpy = 0;	
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
 		aliensBlock->direction = -1; 		//cambio de direccion
 		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
@@ -157,6 +158,10 @@ void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBloc
 		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
 	}
 	else{
-		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
+		jumpx += JUMP_SIZE_X;
+		aliensBlock->coord.coordX += jumpx * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
+		if(jumpx>=1){
+			jumpx = 0;
+		}
 	}
 }
