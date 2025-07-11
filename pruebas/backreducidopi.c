@@ -150,16 +150,25 @@ void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBloc
 	static float jumpx = 0;	
 	static float jumpy = 0;	
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
-		aliensBlock->direction = -1; 		//cambio de direccion
-		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		jumpy += JUMP_SIZE_Y;
+		if(jumpy>=1){
+			aliensBlock->direction = -1; 		//cambio de direccion
+			aliensBlock->coord.coordY += (int)jumpy;	//salto abajo
+			jumpy = 0;
+		}
+		
 	}	
 	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
-		aliensBlock->direction = 1; 		//cambio de direccion
-		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		jumpy += JUMP_SIZE_Y;
+		if(jumpy>=1){
+			aliensBlock->direction = 1; 		//cambio de direccion
+			aliensBlock->coord.coordY += (int)jumpy;	//salto abajo
+			jumpy = 0;
+		}
 	}
 	else{
 		jumpx += JUMP_SIZE_X;
-		aliensBlock->coord.coordX += jumpx * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
+		aliensBlock->coord.coordX += (int)jumpx * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
 		if(jumpx>=1){
 			jumpx = 0;
 		}
