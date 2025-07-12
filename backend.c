@@ -33,6 +33,10 @@ int getAlienHeightByRow(int row){
 	return ALIEN_A_SIZE_Y;
 }
 
+
+int getAlienBulletSpeed(int level){
+	return (4 + (((level) - 1) / 2));
+}
 //******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
 
 //Inicializo el bloque de aliens
@@ -550,10 +554,10 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 		}
 	}
 	
-	printf("%d 	%d	%d\n", frameCounter, level, SPEED_BULLET_ALIEN(level)); 
+	printf("%d 	%d	%d\n", frameCounter, level, getAlienBulletSpeed(level)); 
 
 	if (bullet->active) {
-		bullet->coord.coordY += SPEED_BULLET_ALIEN(level);
+		bullet->coord.coordY += getAlienBulletSpeed(level);
 
 		if (bullet->coord.coordY > DISPLAY_HIGH - DISPLAY_MARGIN_Y) {
 			bullet->active = false;
