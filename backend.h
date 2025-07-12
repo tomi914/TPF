@@ -1,8 +1,8 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 //FUNCIONES DE USO GENERAL
-static int getAlienWidthByRow(int row);
-static int getAlienHeightByRow(int row);
+int getAlienWidthByRow(int row);
+int getAlienHeightByRow(int row);
 //FUNCIONES DE INICIALIZACION
 void initPlayer(player_t * player);
 void initAliensBlock(aliensBlock_t * aliensBlock);

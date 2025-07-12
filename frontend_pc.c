@@ -66,7 +66,7 @@ int main(){
     bool alienFrameFila[ALIEN_ROWS] = {false};
 
     for (int i = 0; i < 9; i++) {
-        sprintf(img, "img%d.png", i);
+        sprintf(img, "imagenes/img%d.png", i);
         image[i] = al_load_bitmap(img);
         if (!image[i]) {
             fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
