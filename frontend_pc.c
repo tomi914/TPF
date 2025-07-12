@@ -235,7 +235,8 @@ int main(){
 		            }
 		       
 		        }
-		        // Supongamos que estás recorriendo aliens:
+	
+/*		        // Supongamos que estás recorriendo aliens:
 for (int row = 0; row < ALIEN_ROWS; row++) {
     for (int col = 0; col < ALIEN_COLS; col++) {
         if (aliens[row][col].alive) {
@@ -257,7 +258,7 @@ for (int row = 0; row < ALIEN_ROWS; row++) {
         }
     }
 }
-
+*/
 
 
 if (ovni.visible && ovni.alive) {
@@ -274,6 +275,7 @@ if (ovni.visible && ovni.alive) {
     );
 }
 
+/*
 if (player.health > 0) {
     uint16_t playerX = player.coord.coordX;
     uint16_t playerY = player.coord.coordY;
@@ -287,7 +289,7 @@ if (player.health > 0) {
         1                               // grosor de línea
     );
 }
-
+*/
 
 
 for (int s = 0; s < NUM_SHIELDS; s++) {
@@ -352,7 +354,7 @@ if (alienBullet.active) {
 		                    }
 		                }
 		            }
-		            alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
+		            alienShoot(&alienBullet, shooter, gameStats.level, &aliensBlock, lastRowToPrint, shooterRow);
 		        }
 		        
 		        updateOvni (&ovni, clock(), &clkO, rand() % 1001);
