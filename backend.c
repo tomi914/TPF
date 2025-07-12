@@ -33,7 +33,6 @@ int getAlienHeightByRow(int row){
 	return ALIEN_A_SIZE_Y;
 }
 
-
 int getAlienBulletSpeed(int level){
 	return (4 + (((level) - 1) / 2));
 }
