@@ -581,13 +581,18 @@ void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlo
 	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
 		aliensBlock->direction = 1; 		//cambio de direccion
 		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
-		aliensBlock->coord.coordX -= JUMP_SIZE_X ;
+		aliensBlock->coord.coordX -= JUMP_SIZE_X;
+		
+		// Previene que se pase del margen izquierdo
+		int minX = -(aliens[0][aliensBlock->firstColAlive].coord.coordX);
+		if (aliensBlock->coord.coordX < minX){
+			aliensBlock->coord.coordX = minX;
+		}
 	}
 	else{
 		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
 	}
 }
-
 void playerMove(int dire, player_t * player){
     static float speed = 0.95;
 	if(dire<0 && player->coord.coordX>PLAYER_SIZE_X){

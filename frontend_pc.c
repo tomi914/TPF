@@ -7,6 +7,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <time.h>
 #include "entidades.h"
 #include "constantes_pc.h"
 #include "backend.h"
@@ -45,13 +46,15 @@ int main(){
     // Variables de juego
     player_t player;
     ALLEGRO_BITMAP *image[9];
+    ALLEGRO_BITMAP *shield[7];
     alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
     aliensBlock_t aliensBlock;
     bullet_t playerBullet = {0};
     bullet_t alienBullet = {0};
     shield_t shields[NUM_SHIELDS];
     stats_t gameStats;
-    char img[20];
+    //clock_t ovniClock;
+    char img[30];
     bool keys[ALLEGRO_KEY_MAX] = {false};
     bool tryShoot = false;
     
@@ -69,6 +72,14 @@ int main(){
         sprintf(img, "imagenes/img%d.png", i);
         image[i] = al_load_bitmap(img);
         if (!image[i]) {
+            fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
+            return -1;
+        }
+    }
+    for (int i = 1; i < 6; i++) {
+        sprintf(img, "imagenes/shield%d.jpeg", i);
+       shield[i-1] = al_load_bitmap(img);
+        if (!shield[i-1]) {
             fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
             return -1;
         }
@@ -175,7 +186,7 @@ int main(){
 							index=5;
 						}
 						if(index<5){
-							al_draw_bitmap(image[index], shields[j].coord.coordX, shields[j].coord.coordY, 0);
+							al_draw_bitmap(shield[index], shields[j].coord.coordX, shields[j].coord.coordY, 0);
 						}
 					}
 				}

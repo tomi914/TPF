@@ -3,8 +3,8 @@
 #define ENTIDADES_H
 
 typedef struct{ // Almacena las coordenadas 
-	uint16_t coordX;
-	uint16_t coordY;
+	int16_t coordX;
+	int16_t coordY;
 }coord_t;
 
 typedef struct {
