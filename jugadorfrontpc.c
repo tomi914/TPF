@@ -9,195 +9,274 @@
 
 
 
+
+
 int main() {
     if (!al_init()) {
-    	fprintf(stderr, "failed to initialize allegro!\n");//verifico que se haya iniciado bien allegro
+        fprintf(stderr, "failed to initialize allegro!\n");
         return -1;
     }
+
     al_install_keyboard();
     al_init_image_addon();
+    al_init_font_addon();
+	al_init_ttf_addon();
+	
     if (!al_init_primitives_addon()) {
         fprintf(stderr, "failed to initialize primitives!\n");
         return -1;
     }
-    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGTH, DISPLAY_HIGH); //crea display
+
+   
+    ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
+    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGTH, DISPLAY_HIGH);
     if (!display) {
-        fprintf(stderr, "failed to create display!\n");//verifico que se haya creado bien el display
+        fprintf(stderr, "failed to create display!\n");
         return -1;
     }
 
-	player_t player;//creo todas las variables necesarias
-	ALLEGRO_BITMAP *image[9];
-	alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
-	aliensBlock_t aliensBlock;
-	bullet_t playerBullet;
-	bullet_t alienBullet;
-	shield_t shields[NUM_SHIELDS];
-	stats_t gameStats;
-	char img[20];
-	int i, j;
-	
-	bool alienFrameFila[ALIEN_ROWS] = {false};  // Un frame por cada fila
-
-	bool tryShoot=false;
-	int frameCount = 0;
-
-	
-	for (i = 0; i < 9; i++) {//subo todas las imagenes
-		sprintf(img, "img%d.png", i);
-		image[i] = al_load_bitmap(img);
-		if (!image[i]) {
-		    fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);//verifico que se hayan subido bien las imgs
-		    return -1;
-    	}
-	}
-	initPlayer(&player);//inicializo al jugador
-	initAliensBlock(&aliensBlock);//inicializo el bloque de aliens
-	initAliensArray(aliens);//inicializo todos los aliens		    
-	initShieldsArray(shields);//inicializo los 4 escudos
-	initGameStats(&gameStats);
-    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue(); //crea lista de eventos
-    al_register_event_source(queue, al_get_keyboard_event_source()); //registra teclado y display como fuentes de eventos
+    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
+    al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
-    bool running = true; //indica si el programa debe seguir corriendo
-    bool keys[ALLEGRO_KEY_MAX] = {false}; //setea todas las teclas en false asi si aprieto cambia
-    // Variables necesarias (declarar fuera del loop principal si no lo hiciste ya)
-	double timeLastMovAlien = 0;//tiempos para el movimiento de los aliens
-	double timeLastRow = 0;
-	int lastRowToPrint = -1;                 // -1 si no estamos imprimiendo fila por fila
+    al_register_event_source(queue, al_get_timer_event_source(timer));
 
-    
-    while (running) {//programa
-        ALLEGRO_EVENT ev;
-        while (al_get_next_event(queue, &ev)) {
-            if (ev.type == ALLEGRO_EVENT_KEY_DOWN){ //setea que si se aprieta una tecla, es true
-                keys[ev.keyboard.keycode] = true;
-            }
-            else if (ev.type == ALLEGRO_EVENT_KEY_UP){ //setea que si se suelta una tecla es false
-                keys[ev.keyboard.keycode] = false;
-            }
-            else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){ //setea que si se cierra la ventana, para el programa
-                running = false;
-            }
+    al_start_timer(timer);
+
+    // Variables de juego
+    player_t player;
+    ALLEGRO_BITMAP *image[9];
+    alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
+    aliensBlock_t aliensBlock;
+    bullet_t playerBullet = {0};
+    bullet_t alienBullet = {0};
+    shield_t shields[NUM_SHIELDS];
+    stats_t gameStats;
+    char img[20];
+    bool keys[ALLEGRO_KEY_MAX] = {false};
+    bool tryShoot = false;
+    //int frameCount = 0;
+    ovni_t ovni = { .visible = false, .alive = true };  // Estado inicial
+	double lastOvniDespawnTime;
+	initOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
+
+
+    double timeLastMovAlien = 0;
+    double timeLastRow = 0;
+    int lastRowToPrint = -1;
+    bool alienFrameFila[ALIEN_ROWS] = {false};
+
+    for (int i = 0; i < 9; i++) {
+        sprintf(img, "img%d.png", i);
+        image[i] = al_load_bitmap(img);
+        if (!image[i]) {
+            fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
+            return -1;
         }
+    }
+    ALLEGRO_FONT *font = al_load_ttf_font("PressStart2P-Regular.ttf", 14, 0);
+	if (!font) {
+		fprintf(stderr, "No se pudo cargar la fuente\n");
+		return -1;
+	}
 
-		if (keys[ALLEGRO_KEY_LEFT]){//llamo a funcion playerMove para ir a la izq
-			playerMove(-1, &player);
+    /*ALLEGRO_BITMAP *shieldImages[5];  // 5 niveles de daño
+
+	for (int i = 0; i < 5; i++) {
+		char path[20];
+		sprintf(path, "shield%d.png", i);
+		shieldImages[i] = al_load_bitmap(path);
+		if (!shieldImages[i]) {
+		    fprintf(stderr, "No se pudo cargar imagen %s\n", path);
+		    return -1;
 		}
-		if (keys[ALLEGRO_KEY_RIGHT]){//llamo a funcion playerMove para ir a la der
-			playerMove(1, &player);
-		}
-      
-		if (keys[ALLEGRO_KEY_UP]) {
-			tryShoot = true;  // se permite volver a disparar
-		}
-		playerShoot(&playerBullet, &player, &tryShoot);//llamo a funcion de disparo          
-		al_clear_to_color(al_map_rgb(0, 0, 0));
-		for (j = 0; j < NUM_SHIELDS; j++) {
-			al_draw_bitmap(image[0], shields[j].coord.coordX, shields[j].coord.coordY, 0);//imprime escudos
-			//al_draw_rectangle(SHIELD_INIT_POSITION_1_X, SHIELD_INIT_POSITION_Y, SHIELD_INIT_POSITION_1_X+SHIELD_INIT_SIZE_X, SHIELD_INIT_POSITION_Y+SHIELD_INIT_SIZE_Y, al_map_rgb(255, 0, 0), 20.0);
-		}
-		al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0);//imprime la nave y sus movimientos 
-		if (playerBullet.active) {
-			al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//imprime el disparo
-		}
-		if (alienBullet.active) {
-			al_draw_bitmap(image[8], alienBullet.coord.coordX, alienBullet.coord.coordY, 0);//imprime el disparo
-		}
-		double actualTime = al_get_time(); //hace un control del tiempo
-		int blockMovedThisFrame = 0;
-
-		// 🚀 INICIAR MOVIMIENTO DE FILAS SI TOCA MOVER EL BLOQUE
-		if (lastRowToPrint == -1 && actualTime - timeLastMovAlien >= DELAY_START) {
-			lastRowToPrint = ALIEN_ROWS - 1; // empezamos desde la fila de abajo
-			timeLastRow = actualTime;
-			timeLastMovAlien = actualTime;
-		}
-
-		// ⏳ AVANZAMOS UNA FILA HACIA ARRIBA CADA DELAY_FILA
-		if (lastRowToPrint >= 0 && actualTime - timeLastRow >= DELAY_ROW) {
-			if (lastRowToPrint == 0) {
-				// Última fila animada: alternamos y movemos el bloque completo
-				alienFrameFila[0] = !alienFrameFila[0];
-				blockMove(aliens, &aliensBlock);      // ✅ MOVIMIENTO REAL
-			
-				lastRowToPrint = -1;                  // termina la animación
-			} else {
-				// Fila intermedia: solo alternamos frame visual
-				alienFrameFila[lastRowToPrint] = !alienFrameFila[lastRowToPrint];
-				lastRowToPrint--;
-				timeLastRow = actualTime;
-			}
-		}
-
-		// 🧟‍♂️ DIBUJAR ALIENS — todas las filas visibles SIEMPRE
-		for (i = 0; i < ALIEN_ROWS; i++) {
-			for (j = 0; j < ALIEN_COLS; j++) {
-				if (!aliens[i][j].alive) continue;
-
-				int offsetX = aliensBlock.coord.coordX;
-
-				// ⚠️ SIMULAMOS MOVIMIENTO LATERAL SOLO SI EL BLOQUE TODAVÍA NO SE MOVIÓ ESTE FRAME
-				if (lastRowToPrint >= 0 && i > lastRowToPrint) {
-					offsetX += JUMP_SIZE_X * aliensBlock.direction;
-				}
-
-				int drawX = offsetX + aliens[i][j].coord.coordX;
-				int drawY = aliensBlock.coord.coordY + aliens[i][j].coord.coordY;
-
-				// 🎨 Selección del sprite según tipo de alien por fila
-				if (i > 2) {
-					al_draw_bitmap(alienFrameFila[i] ? image[5] : image[4], drawX, drawY, 0); // Alien tipo C
-				} else if (i > 0) {
-					al_draw_bitmap(alienFrameFila[i] ? image[3] : image[2], drawX, drawY, 0); // Alien tipo B
-				} else {
-					al_draw_bitmap(alienFrameFila[i] ? image[1] : image[0], drawX, drawY, 0); // Alien tipo A					
-				}
-			}
-		}
-
-		// 🔁 MOSTRAR TODO
-		al_flip_display();
-
-		collisionBA(&playerBullet, aliens, &aliensBlock, &gameStats, lastRowToPrint);
-		collisionBB(&playerBullet , &alienBullet);
-		collisionBP (&alienBullet, &player);
-		
-		//collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock);
-		//collisionAP (player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock);
-		//collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t * gameStats);
-		
-		
-		// Selecciono al alien más cercano al jugador que puede disparar
-		alien_t * shooter = selectAlienShooter(aliens, &aliensBlock, &player);
+	}*/
 
 
-		// Si hay un alien válido para disparar
-		if (shooter != NULL) {
-			int shooterRow = -1;
-			for (int i = 0; i < ALIEN_ROWS; i++) {
-				for (int j = 0; j < ALIEN_COLS; j++) {
-					if (&aliens[i][j] == shooter) {
-						shooterRow = i;
+    initPlayer(&player);
+    initAliensBlock(&aliensBlock);
+    initAliensArray(aliens);
+    initShieldsArray(shields);
+    initGameStats(&gameStats);
+
+    bool running = true;
+
+    while (running) {
+        ALLEGRO_EVENT ev;
+        al_wait_for_event(queue, &ev);
+
+        switch (ev.type) {//setea que pasa con las teclas
+            case ALLEGRO_EVENT_KEY_DOWN:
+                keys[ev.keyboard.keycode] = true;
+                if (ev.keyboard.keycode == ALLEGRO_KEY_UP) {
+                    tryShoot = true;
+                }
+                break;
+
+            case ALLEGRO_EVENT_KEY_UP:
+                keys[ev.keyboard.keycode] = false;
+                break;
+
+            case ALLEGRO_EVENT_DISPLAY_CLOSE://termina el programa si cierro la ventana
+                running = false;
+                break;
+
+            case ALLEGRO_EVENT_TIMER: {
+		            // ======= ACTUALIZACIONES =======
+		        if (keys[ALLEGRO_KEY_LEFT]) {
+		            playerMove(-1, &player);
+		        }
+		        if (keys[ALLEGRO_KEY_RIGHT]) {
+		            playerMove(1, &player);
+		        }
+		        playerShoot(&playerBullet, &player, &tryShoot);
+
+		        // Movimiento aliens fila por fila
+		        double actualTime = al_get_time();
+		        if (lastRowToPrint == -1 && actualTime - timeLastMovAlien >= DELAY_START) {
+		            lastRowToPrint = ALIEN_ROWS - 1;
+		            timeLastRow = actualTime;
+		            timeLastMovAlien = actualTime;
+		        }
+
+		        if (lastRowToPrint >= 0 && actualTime - timeLastRow >= DELAY_ROW) {
+		            if (lastRowToPrint == 0) {
+		                alienFrameFila[0] = !alienFrameFila[0];
+		                blockMove(aliens, &aliensBlock);
+		                lastRowToPrint = -1;
+		            } else {
+		                alienFrameFila[lastRowToPrint] = !alienFrameFila[lastRowToPrint];
+		                lastRowToPrint--;
+		                timeLastRow = actualTime;
+		            }
+		        }
+
+		        // ======= DIBUJO =======
+		        al_clear_to_color(al_map_rgb(0, 0, 0));
+
+		        for (int j = 0; j < NUM_SHIELDS; j++) {//dibuja los escudos dependiendo su vida VER IMAGENES, TAMANO, Y POSICION
+					if (shields[j].health > 0) {
+						int index;
+						if (shields[j].health > 12){
+							index = 0;
+						}
+						else if (shields[j].health > 9){
+							index = 1;
+						}
+						else if (shields[j].health > 6){
+							index = 2;
+						}
+						else if (shields[j].health > 3){
+							index = 3;
+						}
+						else if (shields[j].health > 0){
+							index = 4;
+						}
+						else{
+							index=5;
+						}
+						if(index<5){
+							al_draw_bitmap(image[index], shields[j].coord.coordX, shields[j].coord.coordY, 0);
+						}
 					}
 				}
-			}
-			alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
-		}
-		shieldsUpdate(shields);
 
-			
-		al_rest(0.01);
-		
-		}
-	for (i=0; i<9; i++){
-		al_destroy_bitmap(image[i]);
-	}
-	al_destroy_display(display);
-	al_destroy_event_queue(queue);
-	return 0;
+		        al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); //dibuja al jugador
+				char scoreText[30];
+				sprintf(scoreText, "Score: %d", gameStats.actualScore);
+				al_draw_text(font, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText);//dibuja el score
+					
+					
+				if (ovni.visible) {
+				    al_draw_bitmap(image[6], ovni.coord.coordX, ovni.coord.coordY, 0);
+				}
+	
+				for (int i = 0; i < player.health; i++) {
+					int drawX = LIVES_POSITION_X + i * (PLAYER_SIZE_X + LIVES_SPACING);
+					al_draw_bitmap(image[7], drawX, LIVES_POSITION_Y, 0);
+				}
+				if(player.health==0){
+					
+					
+				}//poner condicion que se termine el juego, sino se castean las vidas
+
+
+		        if (playerBullet.active){
+		            al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//dibuja la bala del jugador
+				}
+		        if (alienBullet.active){
+		           al_draw_bitmap(image[8], alienBullet.coord.coordX, alienBullet.coord.coordY, 0);//dibuja la bala del alien
+				}
+		        for (int i = 0; i < ALIEN_ROWS; i++) {
+		            for (int j = 0; j < ALIEN_COLS; j++) {//dibuja los aliens y su desfase
+		                if (!aliens[i][j].alive){
+		               		continue;
+						}
+		                int offsetX = aliensBlock.coord.coordX;
+		                if (lastRowToPrint >= 0 && i > lastRowToPrint){
+		                    offsetX += JUMP_SIZE_X * aliensBlock.direction;
+		                }
+		                
+
+		                int drawX = offsetX + aliens[i][j].coord.coordX;
+		                int drawY = aliensBlock.coord.coordY + aliens[i][j].coord.coordY;
+
+		                if (i > 2){
+		                    al_draw_bitmap(alienFrameFila[i] ? image[5] : image[4], drawX, drawY, 0);
+		                }
+		                else if (i > 0){
+		                    al_draw_bitmap(alienFrameFila[i] ? image[3] : image[2], drawX, drawY, 0);
+		                }
+		                else{
+		                    al_draw_bitmap(alienFrameFila[i] ? image[1] : image[0], drawX, drawY, 0);
+		                }
+		            }
+		        }
+
+		        al_flip_display();
+
+		            // ======= COLISIONES Y BALAS =======
+		        collisionBA(&playerBullet, aliens, &aliensBlock, &gameStats, lastRowToPrint);
+		        collisionBB(&playerBullet, &alienBullet);
+		        collisionBP(&alienBullet, &player);
+		        collisionAS (aliens, shields, &aliensBlock);
+		        collisionAP (&player, aliens, &aliensBlock);
+		        collisionBS(&playerBullet, &alienBullet, shields);
+		        shieldsUpdate(shields);
+		            
+		    
+		        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player);//elije alien a disparar
+		        if (shooter != NULL) {
+		            int shooterRow = -1;
+		            for (int i = 0; i < ALIEN_ROWS; i++) {
+		               for (int j = 0; j < ALIEN_COLS; j++) {
+		                    if (&aliens[i][j] == shooter) {
+		                        shooterRow = i;
+		                    }
+		                }
+		            }
+		            alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
+		        }
+		        
+		        updateOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
+
+
+		        break;
+        	}
+        }
+    }
+
+    for (int i = 0; i < 9; i++) {
+        al_destroy_bitmap(image[i]);
+    }
+
+    al_destroy_display(display);
+    al_destroy_event_queue(queue);
+    al_destroy_timer(timer);
+    al_destroy_font(font);
+
+
+    return 0;
 }
-
 
 
 

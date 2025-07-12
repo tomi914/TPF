@@ -35,6 +35,7 @@ typedef struct{ // Almacena la información general de los ESCUDOS
 typedef struct{ // Almacena la información general del JUGADOR (nave espacial)
 	uint8_t health; 
 	coord_t coord;
+	uint16_t bulletsFired;
 }player_t;
 
 typedef struct{ // Almacena la información general de las BALAS 

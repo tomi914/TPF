@@ -14,12 +14,12 @@
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens
-#define INIT_ALIENS_MARGIN_X 60	//margen para donde arrancan los aliens
-#define INIT_ALIENS_MARGIN_Y 40	//margen para donde arrancan los aliens
+//#define INIT_ALIENS_MARGIN_X 60	//margen para donde arrancan los aliens
+//#define INIT_ALIENS_MARGIN_Y 100	//margen para donde arrancan los aliens
 #define JUMP_SIZE_X	20			//salto para los movimientos
 #define JUMP_SIZE_Y 20			//salto para los movimientos
 #define DISPLAY_MARGIN_X 50	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define DISPLAY_MARGIN_Y 20	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
+#define DISPLAY_MARGIN_Y 100	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
 #define NUM_SHIELDS 4	//cantidad de escudos 
 #define SHIELD_INIT_POSITION_1_X 100
@@ -54,14 +54,26 @@
 #define OVNI_SIZE_X 70
 #define OVNI_SIZE_Y 30
 #define INIT_OVNI_MARGIN_X 0
-#define INIT_OVNI_MARGIN_Y 40
-#define SPEED_OVNI //¿que la velocidad del ovni DEPENDA del NIVEL?
+#define INIT_OVNI_MARGIN_Y 5
+#define SPEED_OVNI 2  // Aumenta la velocidad con el nivel
 #define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
+#define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
 //Puntajes 
-#define POINTS_ALIEN_A 10
+#define POINTS_ALIEN_A 30
 #define POINTS_ALIEN_B 20
-#define POINTS_ALIEN_C 30
+#define POINTS_ALIEN_C 10
 #define LEVEL_POINTS(level) (100*(level))
+
 
 #define DELAY_START 1
 #define DELAY_ROW 0.2
+
+#define SCORE_POSITION_X 10
+#define SCORE_POSITION_Y 10
+#define LIVES_POSITION_X 10
+#define LIVES_POSITION_Y (DISPLAY_HIGH - PLAYER_SIZE_Y - 10)
+#define LIVES_SPACING 10  // espacio entre naves
+
+
+
+#define FPS 100

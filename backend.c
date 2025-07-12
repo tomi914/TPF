@@ -12,9 +12,9 @@
 //	- stats_t gameStats
 
 //Inicializo el bloque de aliens
-void initAliensBlock(aliensBlock_t * aliensBlock){//probado en allegro
+void initAliensBlock(aliensBlock_t * aliensBlock){
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
-    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y;
+    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y+OVNI_SIZE_Y+JUMP_SIZE_Y;
     aliensBlock->direction = 1;
     aliensBlock->firstColAlive = 0;
     aliensBlock->lastColAlive = ALIEN_COLS - 1;
@@ -24,7 +24,7 @@ void initAliensBlock(aliensBlock_t * aliensBlock){//probado en allegro
 
 //Inicializo el array de aliens
 void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
-	int i, j;//probado en allegro
+	int i, j;
 	for(i = 0; i < ALIEN_ROWS; i++) { // Itero sobre una fila 
 		for(j = 0; j < ALIEN_COLS; j++) { // Itero sobre una columna 
 			aliens[i][j].alive = true; // todos arrancan vivos
@@ -64,11 +64,13 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 }
 
 //Inicializo el jugador
-void initPlayer(player_t * player){		//probado en allegro
+void initPlayer(player_t * player){		
 	
 	player->health = 3;
 	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
 	player->coord.coordY = DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
+	player->bulletsFired = 0;
+
 	
 }
 
@@ -257,7 +259,7 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 }
 
 // Chequea colisión entre aliens y escudos
-void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
+void collisionAS (alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock){ 
 	
 	// Solo analizamos la colision con la ultima fila viva
 	for(int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive ; col++){
@@ -277,7 +279,7 @@ void collisionAS (alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM
 				
 				// Detección de colisión
 				if(rectangleOverlap(alienX, ALIEN_B_SIZE_X, shieldX, shieldW, alienY, ALIEN_B_SIZE_Y, shieldY, shieldH)){
-					shields[s].health -= 2; //ver cuanto conviene decrementar las vidas luego 
+					shields[s].health -= 5; //ver cuanto conviene decrementar las vidas luego 
 				}	
 			}		
 		}
@@ -303,7 +305,7 @@ void collisionBS(bullet_t * bulletP, bullet_t * bulletA, shield_t shields[NUM_SH
 				
 				if(rectangleOverlap(shieldX, shieldSizeX, bulletX, BULLET_SIZE_X, shieldY, shieldSizeY, bulletY, BULLET_SIZE_Y)){
 					shields[s].health--; 
-					bullet->active = false;
+					bulletP->active = false;
 				}
 			}
 		}
@@ -322,13 +324,14 @@ void collisionBS(bullet_t * bulletP, bullet_t * bulletA, shield_t shields[NUM_SH
 				
 				if(rectangleOverlap(shieldX, shieldSizeX, bulletX, BULLET_SIZE_X, shieldY, shieldSizeY, bulletY, BULLET_SIZE_Y)){
 					shields[s].health--; 
-					bullet->active = false;
+					bulletA->active = false;
 				}
 			}
 		}
 	}
 	
 }
+
 
 // Recibe la bala del alien y el jugador 
 void collisionBP (bullet_t * bullet, player_t * player){
@@ -354,7 +357,7 @@ void collisionBP (bullet_t * bullet, player_t * player){
 }
 
 //recibe el jugador y los aliens
-void collisionAP (player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
 	
 	int j;
 	
@@ -370,6 +373,7 @@ void collisionAP (player_t * player, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], a
 			
 			if((alienY + ALIEN_B_SIZE_Y >= playerY) || rectangleOverlap(playerX, PLAYER_SIZE_X, alienX, ALIEN_B_SIZE_X, playerY, PLAYER_SIZE_Y, alienY, ALIEN_B_SIZE_Y)){
 				//lamo a funcion de gameover
+				
 			}
 		}
 	}
@@ -532,12 +536,14 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
         playerBullet->active = true;		//activa la bala
         playerBullet->coord.coordY = player->coord.coordY;	
         playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
+        player->bulletsFired++;  // <=== AUMENTA EL CONTADOR
     }
     if (playerBullet->active) {
         playerBullet->coord.coordY -= SPEED_BULLET_PLAYER;
     }
     *tryShoot = false;
 }
+
 
 /* Se incializa el OVNI como no visible al inicio, y se prepara el temporizador para su primera aparición. */
 void initOvni(ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
