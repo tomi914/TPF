@@ -40,3 +40,8 @@
 #define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
 #define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
 #define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
+
+#define POINTS_ALIEN_A 10
+#define POINTS_ALIEN_B 20
+#define POINTS_ALIEN_C 30
+#define LEVEL_POINTS(level) (100*(level))
