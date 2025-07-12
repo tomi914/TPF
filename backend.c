@@ -155,7 +155,7 @@ void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * a
 		aliensBlock->lastRowAlive--; 		
 	}
 	
-	printf("fca: %d, lca: %d, lra: %d, abw: %d \n", aliensBlock->firstColAlive, aliensBlock->lastColAlive, aliensBlock->lastRowAlive, aliensBlock->width);
+	//printf("fca: %d, lca: %d, lra: %d, abw: %d \n", aliensBlock->firstColAlive, aliensBlock->lastColAlive, aliensBlock->lastRowAlive, aliensBlock->width);
 }
 //solo se usa en la pc, no en la raspberry
 void shieldsUpdate(shield_t shields[NUM_SHIELDS]){
@@ -522,7 +522,8 @@ alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_
 }
 
 void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex){
-
+	
+	static uint8_t frameCounter = 0; 
 	// Calcular desplazamiento lateral simulado si está en animación
 	int offsetX = aliensBlock->coord.coordX;
 	if (lastRowToPrint >= 0 && alienRowIndex > lastRowToPrint) {
@@ -533,13 +534,20 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	int alienWidth = getAlienWidthByRow(alienRowIndex);
 	int alienHeight = getAlienHeightByRow(alienRowIndex);
 
-	if (!bullet->active) {
-		bullet->active = true;
-
-		// Coordenadas reales ajustadas para disparo centrado y desde la base
-		bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;
-		bullet->coord.coordY = alien->coord.coordY + aliensBlock->coord.coordY + alienHeight;
+	if (!bullet->active) {	//mientas mas alto el nivel, mas balas tiran los aliens
+		if(frameCounter >= 80){
+			bullet->active = true;
+			// Coordenadas reales ajustadas para disparo centrado y desde la base
+			bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;
+			bullet->coord.coordY = alien->coord.coordY + aliensBlock->coord.coordY + alienHeight;
+			frameCounter = 0; 
+		}
+		else{
+			frameCounter++; 
+		}
 	}
+	
+	printf("%d 	%d\n", frameCounter, level); 
 
 	if (bullet->active) {
 		bullet->coord.coordY += SPEED_BULLET_ALIEN(level);

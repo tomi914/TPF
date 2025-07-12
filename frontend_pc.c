@@ -249,7 +249,7 @@ int main(){
 				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &lastOvniDespawnTime);
 
 		        updateAliensBlock(aliens, &aliensBlock);
-		    
+		    	
 		        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player);//elije alien a disparar
 		        if (shooter != NULL) {
 		            int shooterRow = -1;
@@ -260,7 +260,7 @@ int main(){
 		                    }
 		                }
 		            }
-		            alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
+		            alienShoot(&alienBullet, shooter, 7/*gameStats.level*/, &aliensBlock, lastRowToPrint, shooterRow);
 		        }
 		        
 		      updateOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
