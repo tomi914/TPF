@@ -11,7 +11,8 @@
 #include "entidades.h"
 #include "backend.h"
 
-int main(void){
+
+int main() {
     if (!al_init()) {
         fprintf(stderr, "failed to initialize allegro!\n");
         return -1;
@@ -46,7 +47,7 @@ int main(void){
     player_t player;
     ALLEGRO_BITMAP *image[9];
     alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
-    alienBlock_t aliensBlock;
+    aliensBlock_t aliensBlock;
     bullet_t playerBullet = {0};
     bullet_t alienBullet = {0};
     shield_t shields[NUM_SHIELDS];
@@ -234,15 +235,9 @@ int main(void){
 
 		        al_flip_display();
 
-		            // ======= COLISIONES Y BALAS =======
-		        collisionBA(&playerBullet, aliens, &aliensBlock, &gameStats, lastRowToPrint);
-		        collisionBB(&playerBullet, &alienBullet);
-		        collisionBP(&alienBullet, &player);
-		        collisionAS (aliens, shields, &aliensBlock);
-		        collisionAP (&player, aliens, &aliensBlock);
-		        collisionBS(&playerBullet, &alienBullet, shields);
-		        shieldsUpdate(shields);
-		            
+				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint);
+
+		        updateAliensBlock(aliens, &aliensBlock);
 		    
 		        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player);//elije alien a disparar
 		        if (shooter != NULL) {
@@ -277,6 +272,7 @@ int main(void){
 
     return 0;
 }
+
 
  /*
         if (keys[ALLEGRO_KEY_UP]){

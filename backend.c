@@ -113,7 +113,7 @@ void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * a
 	uint8_t i, j; 
 	
 	//ACTUALIZO FIRSTCOLALIVE
-	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
+	for(i = 0; i < ALIEN_ROWS; i++) {  // recorro cada fila		
 		if(aliens[i][aliensBlock->firstColAlive].alive){
 			alienColAlive++; 
 		}
@@ -132,13 +132,13 @@ void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * a
 	}
 	if(!alienColAlive){			//si esa columna ya no tiene aliens vivos
 		aliensBlock->lastColAlive--; 		//actualizo la primera columna que tenga aliens vivos
-	}
-
+	}	
+	
 	//ACTUALIZO WIDTH
 	aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
 	
 	//ACTUALIZO LASTROWALIVE
-	for(j = 0; j < ALIEN_COLS; i++) { // recorro cada fila
+	for(j = 0; j < ALIEN_COLS; j++) { // recorro cada fila
 		if(aliens[aliensBlock->lastRowAlive][j].alive){
 			alienRowAlive++; 
 		}
@@ -146,8 +146,9 @@ void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * a
 	if(!alienRowAlive){			//si esa fila ya no tiene aliens vivos
 		aliensBlock->lastRowAlive--; 		
 	}
+	
+	printf("fca: %d, lca: %d, lra: %d, abw: %d \n", aliensBlock->firstColAlive, aliensBlock->lastColAlive, aliensBlock->lastRowAlive, aliensBlock->width);
 }
-
 //solo se usa en la pc, no en la raspberry
 void shieldsUpdate(shield_t shields[NUM_SHIELDS]){
 	//esta funcion analiza la vida que le queda a cada escudo y actualiza su tamaño
@@ -598,11 +599,6 @@ void playerMove(int dire, player_t * player){//probado en allegro
         speed = 0;
     }
 }
-
-
-
-
-
 
 
 
