@@ -239,11 +239,11 @@ void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTi
         }
 
         // Si se va del display, desaparece
-        if ((direction == -1 && ovni->coord.coordX + OVNI_SIZE_X <= DISPLAY_MARGIN_X) ||
-            (direction == 1 && ovni->coord.coordX >= DISPLAY_LENGTH)) {
-            ovni->visible = false;
-            *LastOvniDespawnTime = currentTime;
-        }
+		if ((direction == -1 && ovni->coord.coordX + OVNI_SIZE_X <= DISPLAY_MARGIN_X) ||
+			(direction == 1 && ovni->coord.coordX + OVNI_SIZE_X >= DISPLAY_LENGTH)) {
+			ovni->visible = false;
+			*LastOvniDespawnTime = currentTime;
+		}
     }
 }
 
@@ -541,7 +541,7 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	int alienHeight = getAlienHeightByRow(alienRowIndex);
 
 	if (!bullet->active) {	//mientas mas alto el nivel, mas balas tiran los aliens
-		if(frameCounter >= 80){
+		if(frameCounter >= SHOOT_FREQ(level)){
 			bullet->active = true;
 			// Coordenadas reales ajustadas para disparo centrado y desde la base
 			bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;

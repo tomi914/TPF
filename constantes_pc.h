@@ -55,6 +55,7 @@
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 //#define SPEED_BULLET_ALIEN(level) (5 + (((level) - 1) / 2)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
 #define MARGIN_X 50
+#define SHOOT_FREQ(level) (80-(level)*5)
 //Ovni
 #define OVNI_SIZE_X 99
 #define OVNI_SIZE_Y 43
