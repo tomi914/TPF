@@ -209,44 +209,41 @@ void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * alien
   -'lastOvniDespawnTime' marca el momento en que el OVNI dejó de ser visible (desapareció o fue destruido). Este valor es el punto de inicio para el "cooldown" o tiempo de espera antes de la próxima aparición del OVNI.
 */
 void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime, int random){
-	static int direction = -1;
-  	static float speed = 0;
-	if (ovni->visible == false){ //Si el ovni no esta visible en pantalla
-		if (((double)(currentTime - *LastOvniDespawnTime)/ CLOCKS_PER_SEC) >= OVNI_SPAWN_INTERVAL && random==500){ //Si paso un tiempo definido luego de la ultima desaparición, se lo hace aparecer.
-		ovni->visible = true;
-		ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y; 
-			if(direction==-1){
-				ovni->coord.coordX = DISPLAY_LENGTH - DISPLAY_MARGIN_Y - INIT_OVNI_MARGIN_X; 
-			}
-			if(direction==1){
-				ovni->coord.coordX = INIT_OVNI_MARGIN_X; 
-			}
+    static int direction = -1;
+    static float speed = 0;
+
+    if (ovni->visible == false){
+        if (((double)(currentTime - *LastOvniDespawnTime)/CLOCKS_PER_SEC) >= OVNI_SPAWN_INTERVAL && random == 500){
+            ovni->visible = true;
+            ovni->alive = true;
+            ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y;
+
+            // Alternar dirección en el momento de aparición
+            direction *= -1;
+
+            if(direction == -1){
+                ovni->coord.coordX = DISPLAY_LENGTH - DISPLAY_MARGIN_Y - INIT_OVNI_MARGIN_X;
+            } else {
+                ovni->coord.coordX = INIT_OVNI_MARGIN_X;
+            }
+        }
+    }
+
+    if (ovni->visible == true){
+        speed += SPEED_OVNI;
+        ovni->coord.coordX += direction * (int)speed;
+
+        if (speed >= 1){
+            speed = 0;
+        }
+
+        // Si se va del display, desaparece
+		if ((direction == -1 && ovni->coord.coordX + OVNI_SIZE_X <= DISPLAY_MARGIN_X) ||
+			(direction == 1 && ovni->coord.coordX + OVNI_SIZE_X >= DISPLAY_LENGTH)) {
+			ovni->visible = false;
+			*LastOvniDespawnTime = currentTime;
 		}
     }
-  
-  // Si está visible en pantalla lo muevo en x;
-  	if (ovni->visible == true){
-		speed += SPEED_OVNI;
-		ovni->coord.coordX += direction*(int)speed;
-		if(speed>=1){
-			speed = 0;
-		}
-		// Si se sale del display, lo pongo como invisible.
-		if(direction==-1){
-			if (ovni->coord.coordX + OVNI_SIZE_X <= DISPLAY_MARGIN_X){
-				ovni->visible = false;
-				*LastOvniDespawnTime = currentTime; //Se almacena el tiempo en el que el ovni desaparece
-				direction=1;
-			}
-		}
-		if(direction==1){
-			if (ovni->coord.coordX + OVNI_SIZE_X >= DISPLAY_LENGTH){
-				ovni->visible = false;
-				*LastOvniDespawnTime = currentTime; //Se almacena el tiempo en el que el ovni desaparece
-				direction=-1;
-			}
-		}
-	}
 }
 
 //******************************************************************||FUNCIONES DE COLISIONES||**************************************************************************************
@@ -473,6 +470,8 @@ void collisionBO(bullet_t * bullet, ovni_t * ovni, double *lastOvniDespawnTime, 
             bullet->active = false;
             ovni->visible = false;
             ovni->alive = false;
+            *lastOvniDespawnTime = (double)clock();  // Marcar el momento de desaparición
+
             
             if (gameStats != NULL){
                     gameStats->actualScore += puntosOvni[numOvniKilled];
@@ -541,7 +540,7 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	int alienHeight = getAlienHeightByRow(alienRowIndex);
 
 	if (!bullet->active) {	//mientas mas alto el nivel, mas balas tiran los aliens
-		if(frameCounter >= 80){
+		if(frameCounter >= SHOOT_FREQ(level)){
 			bullet->active = true;
 			// Coordenadas reales ajustadas para disparo centrado y desde la base
 			bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;
