@@ -41,3 +41,9 @@ typedef struct{ // Almacena la información general de las BALAS
 	coord_t coord;
 	bool active; // Nos indica si la bala existe o no.
 }bullet_t;
+
+typedef struct{ // Almacena la información general del ovni.
+	bool alive; //Indica si el ovni está vivo o no.
+	bool visible; //Indica si el ovni está visible en pantalla o no.
+	coord_t coord;
+}ovni_t;
