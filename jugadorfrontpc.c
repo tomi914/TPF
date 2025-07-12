@@ -2,16 +2,16 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
-#include<stdbool.h>
-#include<stdint.h>
-#include<stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "constantes_pc.h"
+#include "entidades.h"
+#include "backend.h"
 
-
-
-
-int main() {
+int main(void){
     if (!al_init()) {
         fprintf(stderr, "failed to initialize allegro!\n");
         return -1;
@@ -46,7 +46,7 @@ int main() {
     player_t player;
     ALLEGRO_BITMAP *image[9];
     alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
-    aliensBlock_t aliensBlock;
+    alienBlock_t aliensBlock;
     bullet_t playerBullet = {0};
     bullet_t alienBullet = {0};
     shield_t shields[NUM_SHIELDS];
@@ -278,10 +278,7 @@ int main() {
     return 0;
 }
 
-
-
-
-       /*
+ /*
         if (keys[ALLEGRO_KEY_UP]){
          
 		     ALLEGRO_BITMAP *sprite_original2 = al_load_bitmap("imagen2.png"); //sube la img
@@ -344,3 +341,4 @@ int main() {
         al_draw_bitmap(sprite_escalado, x, y, 0);
         al_flip_display();
         al_rest(0.01);  // pequeña pausa*/ //para subir imagenes
+*/

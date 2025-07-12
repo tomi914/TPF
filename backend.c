@@ -11,8 +11,23 @@
 //	- bullet_t bulletAlien
 //	- stats_t gameStats
 
+//******************************************************************||FUNCIONES DE USO GENERAL||**************************************************************************************
+
+static int getAlienWidthByRow(int row){
+	if (row >= 4) return ALIEN_C_SIZE_X;
+	if (row >= 2) return ALIEN_B_SIZE_X;
+	return ALIEN_A_SIZE_X;
+}
+static int getAlienHeightByRow(int row){
+	if (row >= 4) return ALIEN_C_SIZE_Y;
+	if (row >= 2) return ALIEN_B_SIZE_Y;
+	return ALIEN_A_SIZE_Y;
+}
+
+//******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
+
 //Inicializo el bloque de aliens
-void initAliensBlock(aliensBlock_t * aliensBlock){
+void initAliensBlock(alienBlock_t * aliensBlock){
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
     aliensBlock->coord.coordY = DISPLAY_MARGIN_Y+OVNI_SIZE_Y+JUMP_SIZE_Y;
     aliensBlock->direction = 1;
@@ -80,8 +95,17 @@ void initGameStats(stats_t * gameStats){
 	gameStats->level = 1; 
 }
 
+/* Se incializa el OVNI como no visible al inicio, y se prepara el temporizador para su primera aparición. */
+void initOvni(ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
+    ovni->visible = false; // El OVNI arranca invisible.
+    ovni->alive = true;
+    *LastOvniDespawnTime = currentTime; //Se comienza a contar desde el instante actual, para que luego aparezca el ovni.
+}
+
+//******************************************************************||FUNCIONES DE ACTUALIZACION||**************************************************************************************
+
 //Actualizo los datos del bloque de aliens 
-void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
+void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
 	
 	uint8_t alienColAlive = 0;
 	uint8_t alienRowAlive = 0; 
@@ -123,6 +147,35 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t *
 	}
 }
 
+//solo se usa en la pc, no en la raspberry
+void shieldsUpdate(shield_t shields[NUM_SHIELDS]){
+	//esta funcion analiza la vida que le queda a cada escudo y actualiza su tamaño
+	int k; 
+	
+	for(k=0; k<NUM_SHIELDS; k++){
+		if(shields[k].health > 12){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 9){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 6){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else if(shields[k].health > 3){
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+		else{
+			shields[k].sizeX = /*nuevo tamaño*/;
+			shields[k].sizeY = /*nuevo tamaño*/;
+		}
+	}
+}
+
 //Verifico si tengo que pasar al siguiente nivel
 //creo que no hace falta pasarle las balas, ya deberian estar desactivadas
 void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats){
@@ -136,28 +189,34 @@ void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliens
 		
 		gameStats->actualScore += LEVEL_POINTS(gameStats->level);
 		gameStats->level++;
-	}
-	
-}
-
-//Muevo el bloque de aliens
-//HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
-void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ 
-
-	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
-		aliensBlock->direction = -1; 		//cambio de direccion
-		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
-		aliensBlock->coord.coordX += JUMP_SIZE_X;
 	}	
-	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
-		aliensBlock->direction = 1; 		//cambio de direccion
-		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
-		aliensBlock->coord.coordX -= JUMP_SIZE_X ;
-	}
-	else{
-		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
-	}
 }
+
+/* Gestiona el movimiento y la reaparición del OVNI, fijandose si paso el tiempo de espera para la aparición (OVNI_SPAWN_INTERVAL -es constante-).
+  -'lastOvniDespawnTime' marca el momento en que el OVNI dejó de ser visible (desapareció o fue destruido). Este valor es el punto de inicio para el "cooldown" o tiempo de espera antes de la próxima aparición del OVNI.
+*/
+void updateOvni (ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
+  if (ovni->visible == false){ //Si el ovni no esta visible en pantalla
+    if (currentTime - *LastOvniDespawnTime >= OVNI_SPAWN_INTERVAL) { //Si paso un tiempo definido luego de la ultima desaparición, se lo hace aparecer.
+      ovni->visible = true;
+      ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y; //Le asigno una coordenada en Y un poco por debajo del márgen de arriba del display.
+      ovni->coord.coordX = DISPLAY_LENGTH - DISPLAY_MARGIN_Y - INIT_OVNI_MARGIN_X; //Le asigno una coordenada en X un poco más a la izquierda del márgen de a la derecha del display.
+    }
+  }
+  
+  // Si está visible en pantalla lo muevo en x;
+  if (ovni->visible == true){
+    ovni->coord.coordX -= SPEED_OVNI;
+  
+    // Si se sale del display, lo pongo como invisible.
+    if (ovni->coord.coordX + OVNI_SIZE_X < DISPLAY_MARGIN_X){
+      ovni->visible = false;
+      *LastOvniDespawnTime = currentTime; //Se almacena el tiempo en el que el ovni desaparece
+    }
+  }
+}
+
+//******************************************************************||FUNCIONES DE COLISIONES||**************************************************************************************
 
 /*	verifica superposicion de rectangulos
 	A y B entidades a analizar
@@ -191,7 +250,7 @@ void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[AL
 
 //chequea bala del jugador con todos los aliens
 //ver si en necesario analzar si por separado en Y cuando baja (baja de a una fila)
-void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, stats_t * gameStats, int printedRow) {	
+void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, stats_t * gameStats, int printedRow) {	
 
 	if(bullet->coord.coordY < DISPLAY_MARGIN_Y){
 		bullet->active = false; 
@@ -239,6 +298,7 @@ void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alie
 		}
 	}	
 }
+
 //chequea bala del jugador con bala de alien
 void collisionBB(bullet_t * bulletP , bullet_t * bulletA){	
 
@@ -259,7 +319,7 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 }
 
 // Chequea colisión entre aliens y escudos
-void collisionAS (alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock){ 
+void collisionAS (alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
 	
 	// Solo analizamos la colision con la ultima fila viva
 	for(int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive ; col++){
@@ -357,7 +417,7 @@ void collisionBP (bullet_t * bullet, player_t * player){
 }
 
 //recibe el jugador y los aliens
-void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
+void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
 	
 	int j;
 	
@@ -382,11 +442,19 @@ void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ali
 
 // Colisión entre bala y ovni
 
-#define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
+//******************************************************************||NO FUNCIONA||**************************************************************************************
+//******************************************************************||NO FUNCIONA||**************************************************************************************
 
-const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
 
-void collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t * gameStats){
+// #define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
+
+//SE PODRA DEFINIR DE ALGUNA MANERA QUE NO SEA GOLBAL?
+//const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
+
+void collisionBO(bullet_t * bullet, ovni_t * ovni, stats_t * gameStats){
+
+	const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
+	static uint8_t numOvniKilled = 0; 
 
     if (bullet->active && ovni->visible && ovni->alive){
     
@@ -403,41 +471,19 @@ void collisionBO (bullet_t * bullet, ovni_t * ovni, player_t * player, stats_t *
             ovni->visible = false;
             ovni->alive = false;
             
-            if (gameStats != NULL && player != NULL){
-                    gameStats->actualScore += puntosOvni[BULLET_INDEX(player->bulletsFired)];
+            if (gameStats != NULL){
+                    gameStats->actualScore += puntosOvni[numOvniKilled];
             }
+            
+            numOvniKilled++; //para que el proximo me de otro puntaje
         }
     }
 }
 
-//solo se usa en la pc, no en la raspberry
-void shieldsUpdate(shield_t * shields[NUM_SHIELDS]){
-	//esta funcion analiza la vida que le queda a cada escudo y actualiza su tamaño
-	int k; 
-	
-	for(k=0; k<NUM_SHIELDS; k++){
-		if(shields[k].health > 12){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
-		}
-		else if(shields[k].health > 9){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
-		}
-		else if(shields[k].health > 6){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
-		}
-		else if(shields[k].health > 3){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
-		}
-		else{
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
-		}
-	}
-}
+//******************************************************************||NO FUNCIONA||**************************************************************************************
+//******************************************************************||NO FUNCIONA||**************************************************************************************
+
+//******************************************************************||FUNCIONES DE DISPAROS||**************************************************************************************
 
 /* 
 Función que elige que alien va a ser el que va a disparar.
@@ -445,7 +491,7 @@ Función que elige que alien va a ser el que va a disparar.
  - Elije el que esta más abajo dentro de una columna.
 */
 
-alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player) {
+alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player){
     alien_t * bestCandidate = NULL;
     int minDistX = DISPLAY_LENGTH;
 
@@ -460,8 +506,6 @@ alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_
                     minDistX = distX;
                     bestCandidate = &alien[row][col];
                 }
-
-                // 🚫 ¡No sigas buscando más arriba en esta columna!
                 break;
             }
         }
@@ -470,18 +514,7 @@ alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_
     return bestCandidate;
 }
 
-int getAlienWidthByRow(int row) {
-	if (row >= 4) return ALIEN_C_SIZE_X;
-	if (row >= 2) return ALIEN_B_SIZE_X;
-	return ALIEN_A_SIZE_X;
-}
-int getAlienHeightByRow(int row) {
-	if (row >= 4) return ALIEN_C_SIZE_Y;
-	if (row >= 2) return ALIEN_B_SIZE_Y;
-	return ALIEN_A_SIZE_Y;
-}
-
-void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex) {
+void alienShoot(bullet_t * bullet, alien_t * alien, int level, alienBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex){
 
 	// Calcular desplazamiento lateral simulado si está en animación
 	int offsetX = aliensBlock->coord.coordX;
@@ -510,10 +543,40 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	}
 }
 
+void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
+    if (*tryShoot && !(playerBullet->active)) {	//si dispara y no habia bala activa
+       *tryShoot = false;		//resetea tryShoot
+        playerBullet->active = true;		//activa la bala
+        playerBullet->coord.coordY = player->coord.coordY;	
+        playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
+        player->bulletsFired++;  // <=== AUMENTA EL CONTADOR
+    }
+    if (playerBullet->active) {
+        playerBullet->coord.coordY -= SPEED_BULLET_PLAYER;
+    }
+    *tryShoot = false;
+}
 
+//******************************************************************||FUNCIONES DE MOVIMIENTO||**************************************************************************************
 
+//Muevo el bloque de aliens
+//HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
+void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
 
-//revisar logica y compatibilidad REVISADO
+	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
+		aliensBlock->direction = -1; 		//cambio de direccion
+		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		aliensBlock->coord.coordX += JUMP_SIZE_X;
+	}	
+	else if(aliensBlock->direction==-1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->coord.coordX )<= DISPLAY_MARGIN_X)){	//verifico si llego al limite izquierdo
+		aliensBlock->direction = 1; 		//cambio de direccion
+		aliensBlock->coord.coordY += JUMP_SIZE_Y;	//salto abajo
+		aliensBlock->coord.coordX -= JUMP_SIZE_X ;
+	}
+	else{
+		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
+	}
+}
 
 void playerMove(int dire, player_t * player){//probado en allegro
     static float speed = 0;
@@ -530,51 +593,8 @@ void playerMove(int dire, player_t * player){//probado en allegro
     }
 }
 
-void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
-    if (*tryShoot && !(playerBullet->active)) {	//si dispara y no habia bala activa
-       *tryShoot = false;		//resetea tryShoot
-        playerBullet->active = true;		//activa la bala
-        playerBullet->coord.coordY = player->coord.coordY;	
-        playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
-        player->bulletsFired++;  // <=== AUMENTA EL CONTADOR
-    }
-    if (playerBullet->active) {
-        playerBullet->coord.coordY -= SPEED_BULLET_PLAYER;
-    }
-    *tryShoot = false;
-}
 
 
-/* Se incializa el OVNI como no visible al inicio, y se prepara el temporizador para su primera aparición. */
-void initOvni(ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
-    ovni->visible = false; // El OVNI arranca invisible.
-    ovni->alive = true;
-    *LastOvniDespawnTime = currentTime; //Se comienza a contar desde el instante actual, para que luego aparezca el ovni.
-}
-
-/* Gestiona el movimiento y la reaparición del OVNI, fijandose si paso el tiempo de espera para la aparición (OVNI_SPAWN_INTERVAL -es constante-).
-  -'lastOvniDespawnTime' marca el momento en que el OVNI dejó de ser visible (desapareció o fue destruido). Este valor es el punto de inicio para el "cooldown" o tiempo de espera antes de la próxima aparición del OVNI.
-*/
-void updateOvni (ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
-  if (ovni->visible == false){ //Si el ovni no esta visible en pantalla
-    if (currentTime - *LastOvniDespawnTime >= OVNI_SPAWN_INTERVAL) { //Si paso un tiempo definido luego de la ultima desaparición, se lo hace aparecer.
-      ovni->visible = true;
-      ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y; //Le asigno una coordenada en Y un poco por debajo del márgen de arriba del display.
-      ovni->coord.coordX = DISPLAY_LENGTH - DISPLAY_MARGIN_Y - INIT_OVNI_MARGIN_X; //Le asigno una coordenada en X un poco más a la izquierda del márgen de a la derecha del display.
-    }
-  }
-  
-  // Si está visible en pantalla lo muevo en x;
-  if (ovni->visible == true){
-    ovni->coord.coordX -= SPEED_OVNI;
-  
-    // Si se sale del display, lo pongo como invisible.
-    if (ovni->coord.coordX + OVNI_SIZE_X < DISPLAY_MARGIN_X){
-      ovni->visible = false;
-      *LastOvniDespawnTime = currentTime; //Se almacena el tiempo en el que el ovni desaparece
-    }
-  }
-}
 
 
 
