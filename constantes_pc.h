@@ -1,3 +1,6 @@
+#ifndef CONSTANTES_PC_H
+#define CONSTANTES_PC_H
+
 #define ALIEN_ROWS 5  // Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 11  // Cantidad de COLUMNAS de ALIENS.
 #define DISPLAY_HIGH 800	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
@@ -74,6 +77,6 @@
 #define LIVES_POSITION_Y (DISPLAY_HIGH - PLAYER_SIZE_Y - 10)
 #define LIVES_SPACING 10  // espacio entre naves
 
-
-
 #define FPS 100
+
+#endif //CONSTANTES_PC_H

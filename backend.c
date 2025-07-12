@@ -1,7 +1,17 @@
-#include<stdbool.h>
-#include<stdint.h>
-#include<stdlib.h>
-#include<stdio.h>
+
+
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+#include "entidades.h"
+#include "constantes_pc.h"
+#include "backend.h"
 
 //inicializar en el front: 
 //	- alienBlock_t aliensBlock

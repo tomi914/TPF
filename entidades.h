@@ -1,3 +1,12 @@
+
+#ifndef ENTIDADES_H
+#define ENTIDADES_H
+
+
+
+
+
+
 typedef struct{ // Almacena las coordenadas 
 	uint16_t coordX;
 	uint16_t coordY;
@@ -10,7 +19,7 @@ typedef struct {
 	uint8_t lastColAlive;
 	uint8_t lastRowAlive;
 	uint16_t width; 
-}alienBlock_t;
+}aliensBlock_t;
 
 typedef struct{ // Almacena la información general de toodos los ALIENS.
 	bool alive;
@@ -48,3 +57,5 @@ typedef struct{ // Almacena la información general del ovni.
 	bool visible; //Indica si el ovni está visible en pantalla o no.
 	coord_t coord;
 }ovni_t;
+
+#endif // ENTIDADES_H

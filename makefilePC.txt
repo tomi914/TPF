@@ -1,0 +1,26 @@
+# Compilador
+#CC = gcc
+
+# Flags de compilación
+CFLAGS = -Wall -std=c99 -g
+
+# Librerías de Allegro 5
+LIBS = -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
+
+# Ejecutable
+TARGET = space_invaders_pc
+
+all: space_invaders_pc
+
+space_invaders_pc: frontend_pc.o backend.o
+	gcc $(CFLAGS) -o space_invaders_pc frontend_pc.o backend.o $(LIBS)
+
+frontend_pc.o: frontend_pc.c constantes_pc.h entidades.h backend.h
+	gcc $(CFLAGS) -c frontend_pc.c
+
+backend.o: backend.c
+	gcc $(CFLAGS) -c backend.c
+
+clean:
+	rm -f *.o space_invaders_pc
+
