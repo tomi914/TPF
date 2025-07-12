@@ -11,6 +11,7 @@
 //	- bullet_t bulletAlien
 //	- stats_t gameStats
 
+
 //******************************************************************||FUNCIONES DE USO GENERAL||**************************************************************************************
 
 static int getAlienWidthByRow(int row){
@@ -27,7 +28,7 @@ static int getAlienHeightByRow(int row){
 //******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
 
 //Inicializo el bloque de aliens
-void initAliensBlock(alienBlock_t * aliensBlock){
+void initAliensBlock(aliensBlock_t * aliensBlock){
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
     aliensBlock->coord.coordY = DISPLAY_MARGIN_Y+OVNI_SIZE_Y+JUMP_SIZE_Y;
     aliensBlock->direction = 1;
@@ -105,7 +106,7 @@ void initOvni(ovni_t * ovni, double currentTime, double * LastOvniDespawnTime){
 //******************************************************************||FUNCIONES DE ACTUALIZACION||**************************************************************************************
 
 //Actualizo los datos del bloque de aliens 
-void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
 	
 	uint8_t alienColAlive = 0;
 	uint8_t alienRowAlive = 0; 
@@ -113,7 +114,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO FIRSTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->firstColAlive]->alive){
+		if(aliens[i][aliensBlock->firstColAlive].alive){
 			alienColAlive++; 
 		}
 	}
@@ -125,7 +126,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTCOLALIVE
 	for(i = 0; i < ALIEN_ROWS; i++) { // recorro cada fila
-		if(aliens[i][aliensBlock->lastColAlive]->alive){	//si nunca entra al if, alienColAlive queda en 0
+		if(aliens[i][aliensBlock->lastColAlive].alive){	//si nunca entra al if, alienColAlive queda en 0
 			alienColAlive++; 
 		}
 	}
@@ -138,7 +139,7 @@ void updateAliensBlock(alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * 
 	
 	//ACTUALIZO LASTROWALIVE
 	for(j = 0; j < ALIEN_COLS; i++) { // recorro cada fila
-		if(aliens[aliensBlock->lastRowAlive][j]->alive){
+		if(aliens[aliensBlock->lastRowAlive][j].alive){
 			alienRowAlive++; 
 		}
 	}
@@ -154,31 +155,31 @@ void shieldsUpdate(shield_t shields[NUM_SHIELDS]){
 	
 	for(k=0; k<NUM_SHIELDS; k++){
 		if(shields[k].health > 12){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
+			shields[k].sizeX = SHIELD_1_SIZE_X;
+			shields[k].sizeY = SHIELD_1_SIZE_X;
 		}
 		else if(shields[k].health > 9){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
+			shields[k].sizeX = SHIELD_2_SIZE_X;
+			shields[k].sizeY = SHIELD_2_SIZE_X;
 		}
 		else if(shields[k].health > 6){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
+			shields[k].sizeX = SHIELD_3_SIZE_X;
+			shields[k].sizeY = SHIELD_3_SIZE_X;
 		}
 		else if(shields[k].health > 3){
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
+			shields[k].sizeX = SHIELD_4_SIZE_X;
+			shields[k].sizeY = SHIELD_4_SIZE_X;
 		}
 		else{
-			shields[k].sizeX = /*nuevo tamaño*/;
-			shields[k].sizeY = /*nuevo tamaño*/;
+			shields[k].sizeX = SHIELD_5_SIZE_X;
+			shields[k].sizeY = SHIELD_5_SIZE_X;
 		}
 	}
 }
 
 //Verifico si tengo que pasar al siguiente nivel
 //creo que no hace falta pasarle las balas, ya deberian estar desactivadas
-void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats){
+void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats){
 	
 	//verifico si murieron todos para volver a inicializar todo, creo que con esto alcanza
 	if(aliensBlock->firstColAlive > aliensBlock->lastColAlive){
@@ -236,21 +237,11 @@ char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16
 	}
 }
 
-//analiza todas las colisiones
-void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t * aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t * shields[NUM_SHIELDS], alienBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow){
-	if(bulletP->active){
-		collisionBA(bulletP, aliens, aliensBlock, gameStats, printedRow); //bullet vs aliens
-		collisionBB(bulletP, bulletA); //bullet vs bullet
-		collisionBO(bulletP, ovni, gameStats); //bullet vs ovni
-	}
-	collisionAS(aliens, shields, aliensBlock); //aliens vs shields
-	collisionBP(bulletA, player); //bullet vs player
-	collisionAP(player, aliens, aliensBlock); //aliens vs player
-}
+
 
 //chequea bala del jugador con todos los aliens
 //ver si en necesario analzar si por separado en Y cuando baja (baja de a una fila)
-void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, stats_t * gameStats, int printedRow) {	
+void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, stats_t * gameStats, int printedRow) {	
 
 	if(bullet->coord.coordY < DISPLAY_MARGIN_Y){
 		bullet->active = false; 
@@ -319,7 +310,7 @@ void collisionBB(bullet_t * bulletP , bullet_t * bulletA){
 }
 
 // Chequea colisión entre aliens y escudos
-void collisionAS (alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], alienBlock_t * aliensBlock){ 
+void collisionAS (alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock){ 
 	
 	// Solo analizamos la colision con la ultima fila viva
 	for(int col = aliensBlock->firstColAlive; col <= aliensBlock->lastColAlive ; col++){
@@ -417,7 +408,7 @@ void collisionBP (bullet_t * bullet, player_t * player){
 }
 
 //recibe el jugador y los aliens
-void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){
+void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
 	
 	int j;
 	
@@ -480,6 +471,21 @@ void collisionBO(bullet_t * bullet, ovni_t * ovni, stats_t * gameStats){
     }
 }
 
+
+//analiza todas las colisiones
+void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow){
+	if(bulletP->active){
+		collisionBA(bulletP, aliens, aliensBlock, gameStats, printedRow); //bullet vs aliens
+		collisionBB(bulletP, bulletA); //bullet vs bullet
+		collisionBO(bulletP, ovni, gameStats); //bullet vs ovni
+	}
+	collisionBS(bulletP, bulletA, shields);//shield vs bullet
+	collisionBP(bulletA, player);//player vs bullet
+	collisionAS (aliens, shields, aliensBlock);//alien vs shield
+	collisionAP (player, aliens, aliensBlock);//alien vs player
+}
+
+
 //******************************************************************||NO FUNCIONA||**************************************************************************************
 //******************************************************************||NO FUNCIONA||**************************************************************************************
 
@@ -491,7 +497,7 @@ Función que elige que alien va a ser el que va a disparar.
  - Elije el que esta más abajo dentro de una columna.
 */
 
-alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock, player_t * player){
+alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player){
     alien_t * bestCandidate = NULL;
     int minDistX = DISPLAY_LENGTH;
 
@@ -514,7 +520,7 @@ alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], alienBlock_t
     return bestCandidate;
 }
 
-void alienShoot(bullet_t * bullet, alien_t * alien, int level, alienBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex){
+void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex){
 
 	// Calcular desplazamiento lateral simulado si está en animación
 	int offsetX = aliensBlock->coord.coordX;
@@ -561,7 +567,7 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
 
 //Muevo el bloque de aliens
 //HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
-void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alienBlock_t * aliensBlock){ 
+void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){ 
 
 	if(aliensBlock->direction==1 && ((aliens[0][aliensBlock->firstColAlive].coord.coordX + aliensBlock->width + aliensBlock->coord.coordX) >= DISPLAY_LENGTH - DISPLAY_MARGIN_X)){	//verifico si llego al limite derecho
 		aliensBlock->direction = -1; 		//cambio de direccion
@@ -592,6 +598,9 @@ void playerMove(int dire, player_t * player){//probado en allegro
         speed = 0;
     }
 }
+
+
+
 
 
 
