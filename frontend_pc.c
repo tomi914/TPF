@@ -7,8 +7,8 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
-#include "constantes_pc.h"
 #include "entidades.h"
+#include "constantes_pc.h"
 #include "backend.h"
 
 int main(){
