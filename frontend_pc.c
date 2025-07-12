@@ -54,7 +54,7 @@ int main(){
     char img[20];
     bool keys[ALLEGRO_KEY_MAX] = {false};
     bool tryShoot = false;
-    //int frameCount = 0;
+    
     ovni_t ovni = { .visible = false, .alive = true };  // Estado inicial
 	double lastOvniDespawnTime;
 	initOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
@@ -230,11 +230,12 @@ int main(){
 		                    al_draw_bitmap(alienFrameFila[i] ? image[1] : image[0], drawX, drawY, 0);
 		                }
 		            }
+		       
 		        }
 
 		        al_flip_display();
 
-				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint);
+				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &lastOvniDespawnTime);
 
 		        updateAliensBlock(aliens, &aliensBlock);
 		    
@@ -251,7 +252,7 @@ int main(){
 		            alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
 		        }
 		        
-		        updateOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
+		      updateOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
 
 
 		        break;
