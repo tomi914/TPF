@@ -32,16 +32,16 @@
 #define SHIELD_INIT_POSITION_Y 500
 #define SHIELD_INIT_SIZE_X 50	//tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
-#define SHIELD_1_SIZE_X 50	//tamaño estado 1 de los escudos
-#define SHIELD_1_SIZE_Y 30	//tamaño estado 1 de los escudos
-#define SHIELD_2_SIZE_X 40	//tamaño estado 2 de los escudos
-#define SHIELD_2_SIZE_Y 20	//tamaño estado 2 de los escudos
-#define SHIELD_3_SIZE_X 30	//tamaño estado 3 de los escudos
-#define SHIELD_3_SIZE_Y 15	//tamaño estado 3 de los escudos
-#define SHIELD_4_SIZE_X 20	//tamaño estado 4 de los escudos
-#define SHIELD_4_SIZE_Y 10	//tamaño estado 4 de los escudos
-#define SHIELD_5_SIZE_X 10	//tamaño estado 4 de los escudos
-#define SHIELD_5_SIZE_Y 5	//tamaño estado 4 de los escudos
+#define SHIELD_1_SIZE_X 80	//tamaño estado 1 de los escudos
+#define SHIELD_1_SIZE_Y 61	//tamaño estado 1 de los escudos
+#define SHIELD_2_SIZE_X 80	//tamaño estado 2 de los escudos
+#define SHIELD_2_SIZE_Y 61	//tamaño estado 2 de los escudos
+#define SHIELD_3_SIZE_X 80	//tamaño estado 3 de los escudos
+#define SHIELD_3_SIZE_Y 61	//tamaño estado 3 de los escudos
+#define SHIELD_4_SIZE_X 80	//tamaño estado 4 de los escudos
+#define SHIELD_4_SIZE_Y 61	//tamaño estado 4 de los escudos
+#define SHIELD_5_SIZE_X 80	//tamaño estado 4 de los escudos
+#define SHIELD_5_SIZE_Y 61	//tamaño estado 4 de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 200 //cuantas coordenadas hay de espaciado entre cada escudo
 //agregar tmb a constantes_pi.h
@@ -59,7 +59,7 @@
 #define INIT_OVNI_MARGIN_X 0
 #define INIT_OVNI_MARGIN_Y 5
 #define SPEED_OVNI 2  // Aumenta la velocidad con el nivel
-#define OVNI_SPAWN_INTERVAL 10.0 //Define el tiempo entre que desaparece un ovni y aparece el otro.
+#define OVNI_SPAWN_INTERVAL 2 //Define el tiempo entre que desaparece un ovni y aparece el otro.
 #define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
 //Puntajes 
 #define POINTS_ALIEN_A 30

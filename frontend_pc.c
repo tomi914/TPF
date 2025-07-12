@@ -53,6 +53,9 @@ int main(){
     bullet_t alienBullet = {0};
     shield_t shields[NUM_SHIELDS];
     stats_t gameStats;
+    srand(time(NULL));
+    clock_t clock();
+    clock_t clkO;
     //clock_t ovniClock;
     char img[30];
     bool keys[ALLEGRO_KEY_MAX] = {false};
@@ -60,7 +63,7 @@ int main(){
     
     ovni_t ovni = { .visible = false, .alive = true };  // Estado inicial
 	double lastOvniDespawnTime;
-	initOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
+	initOvni(&ovni, clock(), &clkO);
 
 
     double timeLastMovAlien = 0;
@@ -90,18 +93,7 @@ int main(){
 		return -1;
 	}
 
-    /*ALLEGRO_BITMAP *shieldImages[5];  // 5 niveles de daño
-
-	for (int i = 0; i < 5; i++) {
-		char path[20];
-		sprintf(path, "shield%d.png", i);
-		shieldImages[i] = al_load_bitmap(path);
-		if (!shieldImages[i]) {
-		    fprintf(stderr, "No se pudo cargar imagen %s\n", path);
-		    return -1;
-		}
-	}*/
-
+ 
 
     initPlayer(&player);
     initAliensBlock(&aliensBlock);
@@ -198,7 +190,7 @@ int main(){
 					
 					
 				if (ovni.visible) {
-				    al_draw_bitmap(image[6], ovni.coord.coordX, ovni.coord.coordY, 0);
+				    al_draw_bitmap(image[6], ovni.coord.coordX, ovni.coord.coordY, 0);//dibuja el ovni
 				}
 	
 				for (int i = 0; i < player.health; i++) {
@@ -243,13 +235,113 @@ int main(){
 		            }
 		       
 		        }
+		        // Supongamos que estás recorriendo aliens:
+for (int row = 0; row < ALIEN_ROWS; row++) {
+    for (int col = 0; col < ALIEN_COLS; col++) {
+        if (aliens[row][col].alive) {
+
+            int alienX = aliens[row][col].coord.coordX + aliensBlock.coord.coordX;
+            int alienY = aliens[row][col].coord.coordY + aliensBlock.coord.coordY;
+            int alienW = getAlienWidthByRow(row);
+            int alienH = getAlienHeightByRow(row);
+
+            // Dibujo de hitbox en color rojo
+            al_draw_rectangle(
+                alienX,                   // x1
+                alienY,                   // y1
+                alienX + alienW,          // x2
+                alienY + alienH,          // y2
+                al_map_rgb(255, 0, 0),    // color
+                1                         // grosor
+            );
+        }
+    }
+}
+
+
+
+if (ovni.visible && ovni.alive) {
+    uint16_t ovniX = ovni.coord.coordX;
+    uint16_t ovniY = ovni.coord.coordY;
+
+    al_draw_rectangle(
+        ovniX,                    // x1
+        ovniY,                    // y1
+        ovniX + OVNI_SIZE_X,     // x2
+        ovniY + OVNI_SIZE_Y,     // y2
+        al_map_rgb(0, 255, 0),   // color verde para diferenciar del alien
+        1                        // grosor
+    );
+}
+
+if (player.health > 0) {
+    uint16_t playerX = player.coord.coordX;
+    uint16_t playerY = player.coord.coordY;
+
+    al_draw_rectangle(
+        playerX,                         // x1
+        playerY,                         // y1
+        playerX + PLAYER_SIZE_X,        // x2
+        playerY + PLAYER_SIZE_Y,        // y2
+        al_map_rgb(255, 0, 0),          // color rojo
+        1                               // grosor de línea
+    );
+}
+
+
+
+for (int s = 0; s < NUM_SHIELDS; s++) {
+    if (shields[s].health > 0) {
+        uint16_t shieldX = shields[s].coord.coordX;
+        uint16_t shieldY = shields[s].coord.coordY;
+        uint16_t shieldW = shields[s].sizeX;
+        uint16_t shieldH = shields[s].sizeY;
+
+        al_draw_rectangle(
+            shieldX, shieldY,
+            shieldX + shieldW, shieldY + shieldH,
+            al_map_rgb(0, 255, 255), // color cian (turquesa)
+            1                        // grosor de línea
+        );
+    }
+}
+
+
+
+// Hitbox de la bala del jugador
+if (playerBullet.active) {
+    uint16_t bulletX = playerBullet.coord.coordX;
+    uint16_t bulletY = playerBullet.coord.coordY;
+
+    al_draw_rectangle(
+        bulletX, bulletY,
+        bulletX + BULLET_SIZE_X, bulletY + BULLET_SIZE_Y,
+        al_map_rgb(255, 255, 0), // amarillo
+        1
+    );
+}
+
+// Hitbox de la bala del alien
+if (alienBullet.active) {
+    uint16_t bulletX = alienBullet.coord.coordX;
+    uint16_t bulletY = alienBullet.coord.coordY;
+
+    al_draw_rectangle(
+        bulletX, bulletY,
+        bulletX + BULLET_SIZE_X, bulletY + BULLET_SIZE_Y,
+        al_map_rgb(255, 0, 255), // magenta
+        1
+    );
+}
+
+
 
 		        al_flip_display();
 
 				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &lastOvniDespawnTime);
 
 		        updateAliensBlock(aliens, &aliensBlock);
-		    	
+		    
 		        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player);//elije alien a disparar
 		        if (shooter != NULL) {
 		            int shooterRow = -1;
@@ -260,12 +352,13 @@ int main(){
 		                    }
 		                }
 		            }
-		            alienShoot(&alienBullet, shooter, 7/*gameStats.level*/, &aliensBlock, lastRowToPrint, shooterRow);
+		            alienShoot(&alienBullet, shooter, 7, &aliensBlock, lastRowToPrint, shooterRow);
 		        }
 		        
-		      updateOvni(&ovni, al_get_time(), &lastOvniDespawnTime);
+		        updateOvni (&ovni, clock(), &clkO, rand() % 1001);
 
 
+				
 		        break;
         	}
         }
@@ -283,5 +376,3 @@ int main(){
 
     return 0;
 }
-
-
