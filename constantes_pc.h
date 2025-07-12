@@ -25,13 +25,14 @@
 #define DISPLAY_MARGIN_Y 100	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
 #define NUM_SHIELDS 4	//cantidad de escudos 
+#define SHIELD_X 80 //para q ande la pi tmbien
 #define SHIELD_INIT_POSITION_1_X 100
 #define SHIELD_INIT_POSITION_2_X 300
 #define SHIELD_INIT_POSITION_3_X 600
 #define SHIELD_INIT_POSITION_4_X 800
 #define SHIELD_INIT_POSITION_Y 500
-#define SHIELD_INIT_SIZE_X 50	//tamaño inicial de los escudos
-#define SHIELD_INIT_SIZE_Y 30	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_X 80	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 61	//tamaño inicial de los escudos
 #define SHIELD_1_SIZE_X 80	//tamaño estado 1 de los escudos
 #define SHIELD_1_SIZE_Y 61	//tamaño estado 1 de los escudos
 #define SHIELD_2_SIZE_X 80	//tamaño estado 2 de los escudos
@@ -43,7 +44,8 @@
 #define SHIELD_5_SIZE_X 80	//tamaño estado 4 de los escudos
 #define SHIELD_5_SIZE_Y 61	//tamaño estado 4 de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP 200 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SHIELD_INIT_X_JUMP (((DISPLAY_LENGTH)-(DISPLAY_MARGIN_X)*2)/4) //cuantas coordenadas hay de espaciado entre cada escudo
+
 //agregar tmb a constantes_pi.h
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
@@ -51,11 +53,11 @@
 #define BULLET_SIZE_X 3
 #define BULLET_SIZE_Y 15
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
-#define SPEED_BULLET_ALIEN(level) (30 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
+#define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
 #define MARGIN_X 50
 //Ovni
-#define OVNI_SIZE_X 70
-#define OVNI_SIZE_Y 30
+#define OVNI_SIZE_X 99
+#define OVNI_SIZE_Y 43
 #define INIT_OVNI_MARGIN_X 0
 #define INIT_OVNI_MARGIN_Y 5
 #define SPEED_OVNI 2  // Aumenta la velocidad con el nivel

@@ -80,7 +80,7 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 	for(i=0;i<NUM_SHIELDS;i++){
 		shields[i].health = 15; 	//le seteo la cantidad de vidas
 		shields[i].coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
-		shields[i].coord.coordX = (SHIELD_INIT_X_JUMP * (i+1))-SHIELD_INIT_SIZE_X; 
+		shields[i].coord.coordX = (SHIELD_INIT_X_JUMP * (i+1))-SHIELD_INIT_SIZE_X/2; 
 		shields[i].sizeX = SHIELD_INIT_SIZE_X;
 		shields[i].sizeY = SHIELD_INIT_SIZE_Y;
 	
