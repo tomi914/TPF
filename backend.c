@@ -255,10 +255,10 @@ void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTi
 	devuelve 1 si hay superposicion, sino 0 
 */
 char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16_t AY, uint16_t AH, uint16_t BY, uint16_t BH){
-	if(	AX <= BX + BW
-	&&	BX <= AX + AW
-	&&	AY <= BY + BH
-	&&	BY <= AY + AH){
+	if(	AX < BX + BW
+	&&	BX < AX + AW
+	&&	AY < BY + BH
+	&&	BY < AY + AH){
 		return 1;
 	}
 	else{
