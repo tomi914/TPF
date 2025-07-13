@@ -2,12 +2,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <time.h>
+#include <time.h> //para el clock
 #include "entidades.h"
-#include "constantes_pc.h"
+#include "constantes_pi.h"
 #include "backend.h"
 
-
+//inicializar en el front: 
+//	- alienBlock_t aliensBlock
+//	- alien_t aliens[ALIEN_ROWS][ALIEN_COLS]
+// 	- shield_t shields[NUM_SHIELDS]
+//	- bullet_t bulletPlayer
+//	- bullet_t bulletAlien
+//	- stats_t gameStats
 
 
 //******************************************************************||FUNCIONES DE USO GENERAL||**************************************************************************************
@@ -29,15 +35,16 @@ int getAlienBulletSpeed(int level){
 //******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
 
 //Inicializo el bloque de aliens
-void initAliensBlock(aliensBlock_t * aliensBlock){
+void initAliensBlock(aliensBlock_t * aliensBlock){ 
 	aliensBlock->coord.coordX = DISPLAY_MARGIN_X;
-    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y+OVNI_SIZE_Y+JUMP_SIZE_Y;
+    aliensBlock->coord.coordY = DISPLAY_MARGIN_Y+INIT_ALIENS_MARGIN;
     aliensBlock->direction = 1;
     aliensBlock->firstColAlive = 0;
     aliensBlock->lastColAlive = ALIEN_COLS - 1;
     aliensBlock->lastRowAlive = ALIEN_ROWS - 1; 
     aliensBlock->width = (aliensBlock->lastColAlive - aliensBlock->firstColAlive) * (ALIEN_B_SIZE_X + B_INIT_JUMP_SIZE_X) + ALIEN_B_SIZE_X;
 }
+
 
 //Inicializo el array de aliens
 void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]){	//recibe un puntero al arreglo de aliens(xq en el stack? porque es mas rapido y no tenemos cant. variable)
@@ -73,21 +80,19 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 	for(i=0;i<NUM_SHIELDS;i++){
 		shields[i].health = 15; 	//le seteo la cantidad de vidas
 		shields[i].coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
-		shields[i].coord.coordX = DISPLAY_MARGIN_X + SHIELD_INIT_X_JUMP * i + (SHIELD_INIT_X_JUMP - SHIELD_INIT_SIZE_X) / 2;
+		shields[i].coord.coordX = INIT_SHIELDS_MARGIN_X + (SHIELD_INIT_X_JUMP * (i+FACTOR_CORRECTOR)) - SHIELD_X; 
 		shields[i].sizeX = SHIELD_INIT_SIZE_X;
 		shields[i].sizeY = SHIELD_INIT_SIZE_Y;
 	
 	}
 }
+
 //Inicializo el jugador
 void initPlayer(player_t * player){		
-	
 	player->health = 3;
-	player->coord.coordX = DISPLAY_LENGTH / 2;	//asi arranca al medio
-	player->coord.coordY = DISPLAY_HIGH-DISPLAY_HIGH/8-PLAYER_SIZE_Y/2;
+	player->coord.coordX = INIT_PLAYER_MARGIN_X;	
+	player->coord.coordY = INIT_PLAYER_Y;
 	player->bulletsFired = 0;
-
-	
 }
 
 //Inicializo las estadisticas del juego
@@ -608,9 +613,10 @@ void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlo
 		aliensBlock->coord.coordX += JUMP_SIZE_X * aliensBlock->direction;		//suma o resta dependiendo de hacia donde tiene que ir
 	}
 }
+
 void playerMove(int dire, player_t * player){
     static float speed = 0.95;
-	if(dire<0 && player->coord.coordX>PLAYER_SIZE_X){
+	if(dire<0 && player->coord.coordX>PLAYER_LIMIT_X){
         if(!speed){
             speed=-0.95;
         }
@@ -628,6 +634,7 @@ void playerMove(int dire, player_t * player){
         speed = 0.05;
     }
 }
+
 
 
 
