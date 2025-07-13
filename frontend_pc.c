@@ -47,6 +47,7 @@ int main(){
     player_t player;
     ALLEGRO_BITMAP *image[9];
     ALLEGRO_BITMAP *shield[7];
+    ALLEGRO_BITMAP *bulletImg;
     alien_t aliens[ALIEN_ROWS][ALIEN_COLS];
     aliensBlock_t aliensBlock;
     bullet_t playerBullet = {0};
@@ -58,7 +59,7 @@ int main(){
     clock_t clkO;
     clock_t clk1;
     //clock_t ovniClock;
-    char img[30];
+    char img[50];
     bool keys[ALLEGRO_KEY_MAX] = {false};
     bool tryShoot = false;
     
@@ -81,13 +82,19 @@ int main(){
         }
     }
     for (int i = 1; i < 6; i++) {
-        sprintf(img, "imagenes/shield%d.jpeg", i);
+        sprintf(img, "imagenes/imagenesNuevas/Shield%d.png", i);
        shield[i-1] = al_load_bitmap(img);
         if (!shield[i-1]) {
             fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
             return -1;
         }
     }
+    bulletImg = al_load_bitmap("imagenes/imagenesNuevas/bullet.png");
+        if (!bulletImg) {
+            fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
+            return -1;
+        }
+        
     ALLEGRO_FONT *font = al_load_ttf_font("PressStart2P-Regular.ttf", 14, 0);
 	if (!font) {
 		fprintf(stderr, "No se pudo cargar la fuente\n");
@@ -205,10 +212,10 @@ int main(){
 
 
 		        if (playerBullet.active){
-		            al_draw_bitmap(image[8], playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//dibuja la bala del jugador
+		            al_draw_bitmap(bulletImg, playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//dibuja la bala del jugador
 				}
 		        if (alienBullet.active){
-		           al_draw_bitmap(image[8], alienBullet.coord.coordX, alienBullet.coord.coordY, 0);//dibuja la bala del alien
+		           al_draw_bitmap(bulletImg, alienBullet.coord.coordX, alienBullet.coord.coordY, 0);//dibuja la bala del alien
 				}
 		        for (int i = 0; i < ALIEN_ROWS; i++) {
 		            for (int j = 0; j < ALIEN_COLS; j++) {//dibuja los aliens y su desfase

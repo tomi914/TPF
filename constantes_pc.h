@@ -32,17 +32,17 @@
 #define SHIELD_INIT_POSITION_4_X 800
 #define SHIELD_INIT_POSITION_Y 500
 #define SHIELD_INIT_SIZE_X 80	//tamaño inicial de los escudos
-#define SHIELD_INIT_SIZE_Y 61	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 60	//tamaño inicial de los escudos
 #define SHIELD_1_SIZE_X 80	//tamaño estado 1 de los escudos
-#define SHIELD_1_SIZE_Y 61	//tamaño estado 1 de los escudos
+#define SHIELD_1_SIZE_Y 60	//tamaño estado 1 de los escudos
 #define SHIELD_2_SIZE_X 80	//tamaño estado 2 de los escudos
-#define SHIELD_2_SIZE_Y 61	//tamaño estado 2 de los escudos
+#define SHIELD_2_SIZE_Y 60	//tamaño estado 2 de los escudos
 #define SHIELD_3_SIZE_X 80	//tamaño estado 3 de los escudos
-#define SHIELD_3_SIZE_Y 61	//tamaño estado 3 de los escudos
+#define SHIELD_3_SIZE_Y 60	//tamaño estado 3 de los escudos
 #define SHIELD_4_SIZE_X 80	//tamaño estado 4 de los escudos
-#define SHIELD_4_SIZE_Y 61	//tamaño estado 4 de los escudos
+#define SHIELD_4_SIZE_Y 60	//tamaño estado 4 de los escudos
 #define SHIELD_5_SIZE_X 80	//tamaño estado 4 de los escudos
-#define SHIELD_5_SIZE_Y 61	//tamaño estado 4 de los escudos
+#define SHIELD_5_SIZE_Y 60	//tamaño estado 4 de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP (((DISPLAY_LENGTH)-(DISPLAY_MARGIN_X)*2)/4) //cuantas coordenadas hay de espaciado entre cada escudo
 
@@ -51,7 +51,7 @@
 #define PLAYER_SIZE_Y 56
 #define SPEED_PLAYER 10
 #define BULLET_SIZE_X 3
-#define BULLET_SIZE_Y 15
+#define BULLET_SIZE_Y 7
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 //#define SPEED_BULLET_ALIEN(level) (5 + (((level) - 1) / 2)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
 #define MARGIN_X 50
