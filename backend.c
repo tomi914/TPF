@@ -260,7 +260,7 @@ void collisionBA(bullet_t * bullet, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], alie
 				uint16_t bulletY = bullet->coord.coordY;
 				
 				//distingo si esa fila ya se movio o no
-				if(row > printedRow){	
+				if(row >= printedRow){	
 					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX + JUMP_SIZE_X * aliensBlock->direction;
 				}else{	//si todavia no se imprimio la fila desplazada, comparo con las coordenadas anteriores
 					alienX = aliens[row][col].coord.coordX + aliensBlock->coord.coordX;
