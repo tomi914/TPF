@@ -553,8 +553,6 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 			frameCounter++; 
 		}
 	}
-	
-	printf("%d 	%d	%f\n", frameCounter, level, getAlienBulletSpeed(level)); 
 
 	if (bullet->active) {
 		speed += getAlienBulletSpeed(level);
