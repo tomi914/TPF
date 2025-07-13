@@ -1,23 +1,13 @@
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
+#include <time.h>
 #include "entidades.h"
 #include "constantes_pc.h"
 #include "backend.h"
 
-//inicializar en el front: 
-//	- alienBlock_t aliensBlock
-//	- alien_t aliens[ALIEN_ROWS][ALIEN_COLS]
-// 	- shield_t shields[NUM_SHIELDS]
-//	- bullet_t bulletPlayer
-//	- bullet_t bulletAlien
-//	- stats_t gameStats
+
 
 
 //******************************************************************||FUNCIONES DE USO GENERAL||**************************************************************************************
@@ -569,23 +559,29 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	}
 }
 
-void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot) {
-    if (*tryShoot && !(playerBullet->active)) {	//si dispara y no habia bala activa
-       *tryShoot = false;		//resetea tryShoot
-        playerBullet->active = true;		//activa la bala
-        playerBullet->coord.coordY = player->coord.coordY;	
-        playerBullet->coord.coordX = player->coord.coordX - BULLET_SIZE_X / 2;
-        player->bulletsFired++;  // <=== AUMENTA EL CONTADOR
+void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot){
+    static float speed = 0;
+    if (*tryShoot && !playerBullet->active){
+       *tryShoot = false;
+        playerBullet->active = true;
+        playerBullet->coord.coordY = player->coord.coordY;
+        playerBullet->coord.coordX = player->coord.coordX + 1 - BULLET_SIZE_X / 2;
+    } else if (playerBullet->active){
+        if (playerBullet->coord.coordY < 1) {
+            playerBullet->active = false;
+            *tryShoot = false;
+        }
+        if(playerBullet->coord.coordY){
+            speed -= SPEED_BULLET_PLAYER;
+            playerBullet->coord.coordY += (int) speed;
+        }
+    } else{
+        speed = 0;
     }
-    if (playerBullet->active) {
-        playerBullet->coord.coordY -= SPEED_BULLET_PLAYER;
+    if(speed<=-1){
+        speed = 0;
     }
-    if(playerBullet->coord.coordY<DISPLAY_MARGIN_Y){
-    	playerBullet->active = false;
-    }
-    *tryShoot = false;
 }
-
 //******************************************************************||FUNCIONES DE MOVIMIENTO||**************************************************************************************
 
 //Muevo el bloque de aliens
