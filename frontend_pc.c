@@ -612,24 +612,24 @@ void drawMenu(ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType 
 
     al_clear_to_color(al_map_rgb(0, 0, 0)); // Se pone el fondo en negro.
     
-    al_draw_bitmap(imagenes[IMG_FONDO], 0, 0, 0); // Agregamos el marco para el menú, junto a los aliens y las naves de decoración.
+    al_draw_bitmap(imagenes[IMG_FONDO], 100, 0, 0); // Agregamos el marco para el menú, junto a los aliens y las naves de decoración.
     
-    al_draw_bitmap(imagenes[IMG_LOGO], 200, 50, 0); // Agregamos el cartel de Space Invaders.
+    al_draw_bitmap(imagenes[IMG_LOGO], 300, 50, 0); // Agregamos el cartel de Space Invaders.
 
     if (type == MENU_TYPE_START) { // Si estamos en el MENÚ de INICIO
-            al_draw_bitmap(selectedOption == START_OPTION_PLAY ? imagenes[IMG_PLAY_ON] : imagenes[IMG_PLAY_OFF], 267, 412, 0);
-            al_draw_bitmap(selectedOption == START_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 267, 625, 0);
+            al_draw_bitmap(selectedOption == START_OPTION_PLAY ? imagenes[IMG_PLAY_ON] : imagenes[IMG_PLAY_OFF], 311, 412, 0);
+            al_draw_bitmap(selectedOption == START_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
     }
     
     else if (type == MENU_TYPE_PAUSE) { // Si estamos en el MENÚ de PAUSA
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESUME ? imagenes[IMG_RESUME_ON] : imagenes[IMG_RESUME_OFF], 164, 325, 0);
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESTART ? imagenes[IMG_RESTART_ON] : imagenes[IMG_RESTART_OFF], 152, 475, 0);
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 267, 625, 0);
+        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESUME ? imagenes[IMG_RESUME_ON] : imagenes[IMG_RESUME_OFF], 264, 325, 0);
+        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESTART ? imagenes[IMG_RESTART_ON] : imagenes[IMG_RESTART_OFF], 252, 475, 0);
+        al_draw_bitmap(selectedOption == PAUSE_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
     }
     
     else if (type == MENU_TYPE_GAMEOVER) { // Si estamos en el MENÚ de GAMEOVER
-        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_RESTART ? imagenes[IMG_RESTART_ON_GAMEOVER] : imagenes[IMG_RESTART_OFF_GAMEOVER], 94, 427, 0);
-        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 267, 625, 0);
+        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_RESTART ? imagenes[IMG_RESTART_ON_GAMEOVER] : imagenes[IMG_RESTART_OFF_GAMEOVER], 194, 427, 0);
+        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
     }
     
 }
