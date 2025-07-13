@@ -41,7 +41,7 @@ int lastRowToPrint = -1;
 clock_t clkB = 0; //tiempos para el movimiento de los aliens
 clock_t clkA = 0;
 int offsetX;
-int prevCoordX = 0;
+//int prevCoordX = 0;
 
 int playSymbol[16][16] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -282,7 +282,6 @@ int main(void){
 		}
 		if((lastRowToPrint >= 0 && ((double)(clock() - clkA) / CLOCKS_PER_SEC) >= 0.1)){
             if(lastRowToPrint == 0){
-                prevCoordX = block.coord.coordX;
                 blockMove(alien, &block); 
                 lastRowToPrint = -1;
                 printf("2, %d\n", block.coord.coordX);
@@ -300,10 +299,9 @@ int main(void){
                     continue;
                 }
                 // Offset del bloque horizontal si hay que aplicarlo (cuando baja una fila o si ya terminó de bajar)
+                offsetX = block.coord.coordX;
                 if (lastRowToPrint >= 0 && i > lastRowToPrint) {
-                    offsetX = prevCoordX; // usar la posición anterior
-                } else {
-                    offsetX = block.coord.coordX; // usarla actual
+                    offsetX += block.direction;
                 }
                 // Coordenadas absolutas del alien actual
                 myPoint.x = offsetX + alien[i][j].coord.coordX;
