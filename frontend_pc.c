@@ -57,7 +57,6 @@ int main(){
     srand(time(NULL));
     clock_t clock();
     clock_t clkO;
-    clock_t clk1;
     //clock_t ovniClock;
     char img[50];
     bool keys[ALLEGRO_KEY_MAX] = {false};
@@ -248,7 +247,7 @@ int main(){
 
 		        al_flip_display();
 
-				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clk1);
+				collisionDetect(&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clkO);
 
 		        updateAliensBlock(aliens, &aliensBlock);
 		    

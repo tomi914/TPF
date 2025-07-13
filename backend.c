@@ -83,13 +83,12 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 	for(i=0;i<NUM_SHIELDS;i++){
 		shields[i].health = 15; 	//le seteo la cantidad de vidas
 		shields[i].coord.coordY = SHIELD_INIT_Y; 	//lo ubico en el display
-		shields[i].coord.coordX = (SHIELD_INIT_X_JUMP * (i+1))-SHIELD_INIT_SIZE_X/2; 
+		shields[i].coord.coordX = DISPLAY_MARGIN_X + SHIELD_INIT_X_JUMP * i + (SHIELD_INIT_X_JUMP - SHIELD_INIT_SIZE_X) / 2;
 		shields[i].sizeX = SHIELD_INIT_SIZE_X;
 		shields[i].sizeY = SHIELD_INIT_SIZE_Y;
 	
 	}
 }
-
 //Inicializo el jugador
 void initPlayer(player_t * player){		
 	
@@ -208,12 +207,12 @@ void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * alien
 /* Gestiona el movimiento y la reaparición del OVNI, fijandose si paso el tiempo de espera para la aparición (OVNI_SPAWN_INTERVAL -es constante-).
   -'lastOvniDespawnTime' marca el momento en que el OVNI dejó de ser visible (desapareció o fue destruido). Este valor es el punto de inicio para el "cooldown" o tiempo de espera antes de la próxima aparición del OVNI.
 */
-void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime, int random){
+void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * clkO, int random){
     static int direction = -1;
     static float speed = 0;
 
     if (ovni->visible == false){
-        if (((double)(currentTime - *LastOvniDespawnTime)/CLOCKS_PER_SEC) >= OVNI_SPAWN_INTERVAL && random == 500){
+        if (((double)(currentTime - *clkO)/CLOCKS_PER_SEC) >= OVNI_SPAWN_INTERVAL && random == 500){
             ovni->visible = true;
             ovni->alive = true;
             ovni->coord.coordY = DISPLAY_MARGIN_Y + INIT_OVNI_MARGIN_Y;
@@ -241,7 +240,7 @@ void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTi
 		if ((direction == -1 && ovni->coord.coordX + OVNI_SIZE_X <= DISPLAY_MARGIN_X) ||
 			(direction == 1 && ovni->coord.coordX + OVNI_SIZE_X >= DISPLAY_LENGTH)) {
 			ovni->visible = false;
-			*LastOvniDespawnTime = currentTime;
+			*clkO = currentTime;
 		}
     }
 }
@@ -453,42 +452,48 @@ void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ali
 // Colisión entre bala y ovni
 // Colisión entre bala y ovni
 void collisionBO(bullet_t * bullet, ovni_t * ovni, clock_t *lastOvniDespawnTime, stats_t * gameStats){
+    const int puntosOvni[16] = {
+        100, 50, 50, 100, 150, 100, 100, 50,
+        300, 100, 100, 50, 150, 100, 100, 50
+    }; // Puntajes por cada ovni destruido
 
-	const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
-	static uint8_t numOvniKilled = 0; 
+    static uint8_t numOvniKilled = 0;
 
-    if (bullet->active && ovni->visible && ovni->alive){
-    
+    if (bullet->active && ovni->visible && ovni->alive) {
+
         // Variables intermedias por claridad
         uint16_t ovniX = ovni->coord.coordX;
-		uint16_t ovniY = ovni->coord.coordY;
-		uint16_t bulletX = bullet->coord.coordX;
-		uint16_t bulletY = bullet->coord.coordY;
-			
-        // Chequeo superposición de rectangulos
-        if (rectangleOverlap(ovniX, OVNI_SIZE_X, bulletX, BULLET_SIZE_X, ovniY, OVNI_SIZE_Y, bulletY, BULLET_SIZE_Y)){
-            
+        uint16_t ovniY = ovni->coord.coordY;
+        uint16_t bulletX = bullet->coord.coordX;
+        uint16_t bulletY = bullet->coord.coordY;
+
+        // Chequeo de superposición
+        if (rectangleOverlap(ovniX, OVNI_SIZE_X, bulletX, BULLET_SIZE_X,
+                             ovniY, OVNI_SIZE_Y, bulletY, BULLET_SIZE_Y)) {
+
             bullet->active = false;
             ovni->visible = false;
             ovni->alive = false;
-            *lastOvniDespawnTime = clock();  // Marcar el momento de desaparición
+            *lastOvniDespawnTime = clock();  // Marcar momento de desaparición
 
-            
-            if (gameStats != NULL){
-                    gameStats->actualScore += puntosOvni[numOvniKilled];
+            // Sumar puntaje si corresponde
+            if (gameStats != NULL) {
+                uint8_t idx = (numOvniKilled < 16) ? numOvniKilled : 15;
+                gameStats->actualScore += puntosOvni[idx];
             }
-            
-            numOvniKilled++; //para que el proximo me de otro puntaje
+
+            numOvniKilled++;  // Para que el próximo ovni dé otro puntaje
         }
     }
 }
 
+
 //analiza todas las colisiones
-void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow, clock_t *lastOvniDespawnTime){
+void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow, clock_t *clkO){
 	if(bulletP->active){
 		collisionBA(bulletP, aliens, aliensBlock, gameStats, printedRow); //bullet vs aliens
 		collisionBB(bulletP, bulletA); //bullet vs bullet
-		collisionBO(bulletP, ovni, *lastOvniDespawnTime, gameStats); //bullet vs ovni
+		collisionBO(bulletP, ovni, clkO, gameStats); //bullet vs ovni
 	}
 	collisionBS(bulletP, bulletA, shields);//shield vs bullet
 	collisionBP(bulletA, player);//player vs bullet

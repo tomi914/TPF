@@ -44,14 +44,14 @@
 #define SHIELD_5_SIZE_X 80	//tamaño estado 4 de los escudos
 #define SHIELD_5_SIZE_Y 60	//tamaño estado 4 de los escudos
 #define SHIELD_INIT_Y 600 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP (((DISPLAY_LENGTH)-(DISPLAY_MARGIN_X)*2)/4) //cuantas coordenadas hay de espaciado entre cada escudo
+#define SHIELD_INIT_X_JUMP (((DISPLAY_LENGTH)-(DISPLAY_MARGIN_X*2))/4) //cuantas coordenadas hay de espaciado entre cada escudo
 
 //agregar tmb a constantes_pi.h
 #define PLAYER_SIZE_X 50//VER
 #define PLAYER_SIZE_Y 56
 #define SPEED_PLAYER 10
-#define BULLET_SIZE_X 3
-#define BULLET_SIZE_Y 7
+#define BULLET_SIZE_X 4
+#define BULLET_SIZE_Y 15
 #define SPEED_BULLET_PLAYER 5 // Velocidad de la bala del player.
 //#define SPEED_BULLET_ALIEN(level) (5 + (((level) - 1) / 2)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
 #define MARGIN_X 50
