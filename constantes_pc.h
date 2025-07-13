@@ -23,7 +23,7 @@
 #define JUMP_SIZE_Y 20			//salto para los movimientos
 #define DISPLAY_MARGIN_X 50	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 100	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define INIT_PLAYER_Y 1	//en que coordenada Y va  a estar
+#define INIT_PLAYER_Y 672	//en que coordenada Y va  a estar
 #define NUM_SHIELDS 4	//cantidad de escudos 
 #define SHIELD_X 80 //para q ande la pi tmbien
 #define SHIELD_INIT_POSITION_1_X 100
@@ -81,5 +81,14 @@
 #define LIVES_SPACING 10  // espacio entre naves
 
 #define FPS 100
+
+
+#define INIT_ALIENS_MARGIN (OVNI_SIZE_Y+JUMP_SIZE_Y)			
+#define INIT_SHIELDS_MARGIN_X (DISPLAY_MARGIN_X +(SHIELD_INIT_X_JUMP - SHIELD_INIT_SIZE_X) / 2 + SHIELD_X)			
+#define FACTOR_CORRECTOR 0						
+#define INIT_PLAYER_MARGIN_X 50				
+#define PLAYER_LIMIT_X PLAYER_SIZE_X	
+
+
 
 #endif //CONSTANTES_PC_H
