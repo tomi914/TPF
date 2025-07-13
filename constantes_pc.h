@@ -90,5 +90,11 @@
 #define PLAYER_LIMIT_X PLAYER_SIZE_X	
 
 
+#define SCREEN_W 1000
+#define SCREEN_H 800
+#define CARPETA "resizedImages/"
+#define BULLET_SPEED_ADJUSTMENT 1
+
+
 
 #endif //CONSTANTES_PC_H

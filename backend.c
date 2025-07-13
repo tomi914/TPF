@@ -29,8 +29,8 @@ int getAlienHeightByRow(int row){
 	return ALIEN_A_SIZE_Y;
 }
 
-int getAlienBulletSpeed(int level){
-	return (4 + (((level) - 1) / 2));
+float getAlienBulletSpeed(int level){
+	return ((4 + (((level) - 1) / 2))/(float)BULLET_SPEED_ADJUSTMENT); 
 }
 //******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
 
@@ -530,6 +530,7 @@ alien_t * selectAlienShooter(alien_t alien[ALIEN_ROWS][ALIEN_COLS], aliensBlock_
 void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * aliensBlock, int lastRowToPrint, int alienRowIndex){
 	
 	static uint8_t frameCounter = 0; 
+	static float speed;
 	// Calcular desplazamiento lateral simulado si está en animación
 	int offsetX = aliensBlock->coord.coordX;
 	if (lastRowToPrint >= 0 && alienRowIndex > lastRowToPrint) {
@@ -553,10 +554,14 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 		}
 	}
 	
-	printf("%d 	%d	%d\n", frameCounter, level, getAlienBulletSpeed(level)); 
+	printf("%d 	%d	%f\n", frameCounter, level, getAlienBulletSpeed(level)); 
 
 	if (bullet->active) {
-		bullet->coord.coordY += getAlienBulletSpeed(level);
+		speed += getAlienBulletSpeed(level);
+		bullet->coord.coordY += (int)speed;
+		if(speed>=1){
+			speed = 0;
+		}
 
 		if (bullet->coord.coordY > DISPLAY_HIGH - DISPLAY_MARGIN_Y) {
 			bullet->active = false;
