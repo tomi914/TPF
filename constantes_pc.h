@@ -95,6 +95,8 @@
 #define CARPETA "resizedImages/"
 #define BULLET_SPEED_ADJUSTMENT 1
 
+#define SHIELD_HEALTH 15
+#define HITBOX PLAYER_SIZE_X/2
 
 
 #endif //CONSTANTES_PC_H

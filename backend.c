@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h> //para el clock
 #include "entidades.h"
-#include "constantes_pi.h"
+#include "constantes_pc.h"
 #include "backend.h"
 
 //inicializar en el front: 
