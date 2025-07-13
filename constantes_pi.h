@@ -61,3 +61,6 @@
 #define INIT_PLAYER_MARGIN_X 0
 #define PLAYER_LIMIT_X 0
 #define BULLET_SPEED_ADJUSTMENT 1000
+#define SHIELD_HEALTH 6
+#define HITBOX 0
+#define SHOOT_FREQ(level) (80-(level)*5)
