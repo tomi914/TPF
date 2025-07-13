@@ -24,24 +24,39 @@
 #define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define PLAYER_SIZE_X 3
 #define PLAYER_SIZE_Y 2
-#define INIT_PLAYER_Y 15	//en que coordenada Y va  a estar
+#define INIT_PLAYER_Y 14	//en que coordenada Y va  a estar
 #define BULLET_SIZE_X 1
 #define BULLET_SIZE_Y 1
 #define NUM_SHIELDS 4	//cantidad de escudos 
 //ojo que en la raspberry no cambia el tamaño de los escudos
-#define SHIELD_INIT_SIZE_X 3	//tamaño inicial de los escudos
-#define SHIELD_INIT_SIZE_Y 2	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_X 1	//tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 1	//tamaño inicial de los escudos
 #define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
 #define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
+#define SHIELD_X 0
 #define SPEED_PLAYER 0.05 
 #define SPEED_BULLET_PLAYER 0.05
-#define SHIELD_INIT_SIZE_Y 2	//tamaño inicial de los escudos
-#define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
-#define SPEED_BULLET_PLAYER 1 // Velocidad de la bala del player.
-#define SPEED_BULLET_ALIEN(level) (1 + (((level) - 1) / 3)) // Velocidad de la bala del alien. Aumenta cada 3 niveles: nivel 1,2,3: v1 ; nivel 4,5,6: v2 ...
+#define SHIELD_1_SIZE_X 1
+#define SHIELD_2_SIZE_X 1
+#define SHIELD_3_SIZE_X 1
+#define SHIELD_4_SIZE_X 1
+#define SHIELD_5_SIZE_X 1
 
 #define POINTS_ALIEN_A 10
 #define POINTS_ALIEN_B 20
 #define POINTS_ALIEN_C 30
 #define LEVEL_POINTS(level) (100*(level))
+
+#define OVNI_SIZE_X 1
+#define OVNI_SIZE_Y 1
+#define INIT_OVNI_MARGIN_X 1
+#define INIT_OVNI_MARGIN_Y -1
+#define SPEED_OVNI  0.009// Aumenta la velocidad con el nivel
+#define OVNI_SPAWN_INTERVAL 2 //Define el tiempo entre que desaparece un ovni y aparece el otro.
+#define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
+
+#define INIT_ALIENS_MARGIN 0
+#define INIT_SHIELDS_MARGIN_X 0
+#define FACTOR_CORRECTOR 1
+#define INIT_PLAYER_MARGIN_X 0
+#define PLAYER_LIMIT_X 0
