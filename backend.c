@@ -451,7 +451,8 @@ void collisionAP (player_t * player, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ali
 }
 
 // Colisión entre bala y ovni
-void collisionBO(bullet_t * bullet, ovni_t * ovni, double *lastOvniDespawnTime, stats_t * gameStats){
+// Colisión entre bala y ovni
+void collisionBO(bullet_t * bullet, ovni_t * ovni, clock_t *lastOvniDespawnTime, stats_t * gameStats){
 
 	const int puntosOvni[16] = {100, 50, 50, 100, 150, 100, 100, 50, 300, 100, 100, 100, 50, 150, 100, 50}; //Son los valores que se usan en el juego real.
 	static uint8_t numOvniKilled = 0; 
@@ -470,7 +471,7 @@ void collisionBO(bullet_t * bullet, ovni_t * ovni, double *lastOvniDespawnTime, 
             bullet->active = false;
             ovni->visible = false;
             ovni->alive = false;
-            *lastOvniDespawnTime = (double)clock();  // Marcar el momento de desaparición
+            *lastOvniDespawnTime = clock();  // Marcar el momento de desaparición
 
             
             if (gameStats != NULL){
@@ -483,11 +484,11 @@ void collisionBO(bullet_t * bullet, ovni_t * ovni, double *lastOvniDespawnTime, 
 }
 
 //analiza todas las colisiones
-void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow, double * lastOvniDespawnTime){
+void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow, clock_t *lastOvniDespawnTime){
 	if(bulletP->active){
 		collisionBA(bulletP, aliens, aliensBlock, gameStats, printedRow); //bullet vs aliens
 		collisionBB(bulletP, bulletA); //bullet vs bullet
-		collisionBO(bulletP, ovni, lastOvniDespawnTime, gameStats); //bullet vs ovni
+		collisionBO(bulletP, ovni, *lastOvniDespawnTime, gameStats); //bullet vs ovni
 	}
 	collisionBS(bulletP, bulletA, shields);//shield vs bullet
 	collisionBP(bulletA, player);//player vs bullet
