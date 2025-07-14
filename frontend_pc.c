@@ -304,32 +304,32 @@ int main() {
 
                         for (int j = 0; j < NUM_SHIELDS; j++) {//dibuja los escudos dependiendo su vida VER IMAGENES, TAMANO, Y POSICION
                         
-	                    if (shields[j].health > 0) {
+			                if (shields[j].health > 0) {
 
-		                int index;
-		                
-	                        if (shields[j].health > 12)
-		                    index = 0;
-                        
-	                        else if (shields[j].health > 9)
-		                    index = 1;
-		                        
-	                        else if (shields[j].health > 6)
-		                    index = 2;
-	                        
-	                        else if (shields[j].health > 3)
-		                    index = 3;
-	                        
-	                        else if (shields[j].health > 0)
-		                    index = 4;
+				            int index;
+				            
+			                    if (shields[j].health > 12)
+				                index = 0;
 		                    
-	                        else
-		                    index=5;
-                    
-	                        if (index<5)
-		                    al_draw_bitmap(shield[index], shields[j].coord.coordX, shields[j].coord.coordY, 0);
-	                    }
-	                }
+			                    else if (shields[j].health > 9)
+				                index = 1;
+				                    
+			                    else if (shields[j].health > 6)
+				                index = 2;
+			                    
+			                    else if (shields[j].health > 3)
+				                index = 3;
+			                    
+			                    else if (shields[j].health > 0)
+				                index = 4;
+				                
+			                    else
+				                index=5;
+		                
+			                    if (index<5)
+				                al_draw_bitmap(shield[index], shields[j].coord.coordX, shields[j].coord.coordY, 0);
+			                }
+			            }
 
                         al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); //dibuja al jugador
                         
@@ -388,7 +388,7 @@ int main() {
                      
                         al_flip_display();
 
-	                collisionDetect (&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clkO);
+	               		collisionDetect (&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clkO);
 
                         updateAliensBlock (aliens, &aliensBlock);
 
@@ -406,31 +406,9 @@ int main() {
                             alienShoot(&alienBullet, shooter, gameStats.level, &aliensBlock, lastRowToPrint, shooterRow);
                         }
                         
-                        updateOvni (&ovni, clock(), &clkO, rand() % 1001);
+	                        updateOvni (&ovni, clock(), &clkO, rand() % 1001);
 
-
-
-					                /*bool allDead = true;
-
-					                for (int i = 0; i < ALIEN_ROWS; i++) {
-						                for (int j = 0; j < ALIEN_COLS; j++) {
-							                if (aliens[i][j].alive) {
-								                allDead = false;
-								                break;  // ya con uno vivo, no hace falta seguir
-							                }
-						                }
-						                if (!allDead) break;
-					                }
-
-					                if (allDead) {
-						                // SUBIR DE NIVEL
-						                gameStats.level++;
-						                initPlayer(&player);
-						                initAliensBlock(&aliensBlock);
-						                initAliensArray(aliens);
-						                initShieldsArray(shields);
-					                }*/
-					                
+       
                             newLevelCheck (aliens, &aliensBlock, &player, shields, &gameStats);  
                     }
                     break;
