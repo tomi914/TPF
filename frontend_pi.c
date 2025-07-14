@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <time.h> //para el clock
 #include <unistd.h> //para el usleep
-#include<stdbool.h>
-#include<stdint.h>
-#include<stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 //LIBRERIAS LOCALES
 #include "./libs/joydisp/joydrv.h" 
@@ -25,7 +25,7 @@ int main(void){
     ovni_t ovni;
     alien_t * shooter;
     joyinfo_t info;
-	joy_init();
+    joy_init();
     clock_t clkP = clock(); //clock pause
     clock_t clkS = clock(); //clock select
     clock_t clkO; //clock ovni
@@ -36,8 +36,8 @@ int main(void){
     bool restart = false;
     bool quit = false;
     srand(time(NULL)); // Inicializa el generador con el tiempo actual
-	dcoord_t myPoint;
-	disp_init();	//inicializa el display
+    dcoord_t myPoint;
+    disp_init();	//inicializa el display
     int lastRowToPrint = -1;
     clock_t clkB = 0; //tiempos para el movimiento de los aliens
     clock_t clkA = 0;
@@ -239,4 +239,5 @@ int main(void){
     disp_update();
     return 0;
 }
+
     
