@@ -233,6 +233,9 @@ int main(void){
             case GAME_STATE_EXIT:
                 quit = true;
                 break;
+
+	    case GAME_STATE_SCORE_SCREEN:
+                break;
         }
     }
     disp_clear();
