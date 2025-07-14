@@ -1,4 +1,4 @@
-# PARA CREAR EJECUTABLE PC:
+ # PARA CREAR EJECUTABLE PC:
 # make pc=1
 
 # PARA CREAR EJECUTABLE PI:
@@ -41,4 +41,4 @@ frontend_pc.o: frontend_pc.c backend.h constantes_pc.h entidades.h
 endif
 
 clean:
-	rm -f *.o space_invaders_pc space_invaders_pi
+	rm -f *.o space_invaders_pc space_invaders_pi backend frontend_pc frontend_pi inputOutputPi
