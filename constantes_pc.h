@@ -98,5 +98,7 @@
 #define SHIELD_HEALTH 15
 #define HITBOX PLAYER_SIZE_X/2
 
+#define MAX_TOP_SCORES 10
+
 
 #endif //CONSTANTES_PC_H

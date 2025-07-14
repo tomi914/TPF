@@ -79,7 +79,11 @@ typedef enum {
 // PROTOTIPOS
 //void handleGameState(bool keys[], int *selectedOption, GameState *gameState, ALLEGRO_BITMAP *imagenes[]);
 void drawMenu(ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType type);
-void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameState, MenuType type, player_t * player, aliensBlock_t * aliensBlock, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], stats_t * gameStats);
+void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameState, MenuType type, player_t * player, aliensBlock_t * aliensBlock, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], stats_t * gameStats, int * playerRankFlag);
+int compararScores(const void *a, const void *b);
+int top10Scores(int score);
+
+
 
 int main() {
 
@@ -91,7 +95,7 @@ int main() {
 
     al_install_keyboard(); // Habilitamos el uso del teclado
     al_init_image_addon();// Habilitamos el uso de imágenes
-    al_init_font_addon(); // Inicializamos fuentes (creo que no vamos a usar)
+    al_init_font_addon(); // Inicializamos fuentes
     al_init_ttf_addon(); // Inicializamos tipos de fuentes 
 
     // Creamos la ventana de tamaño SCREEN_W x SCREEN_H, que va a ser el display
@@ -127,6 +131,7 @@ int main() {
     
     
     // Variables del juego
+    int playerRankFlag = 0;
     player_t player;
     ALLEGRO_BITMAP *image[9];
     ALLEGRO_BITMAP *shield[7];
@@ -174,8 +179,11 @@ int main() {
 		    return -1;
 		}
 		
-	ALLEGRO_FONT *font = al_load_ttf_font("PressStart2P-Regular.ttf", 14, 0);
-	if (!font) {
+	ALLEGRO_FONT *fontScoreSmall = al_load_ttf_font("PressStart2P-Regular.ttf", 20, 0);
+	ALLEGRO_FONT *fontScoreMedium = al_load_ttf_font("PressStart2P-Regular.ttf", 40, 0);
+	ALLEGRO_FONT *fontScoreBig = al_load_ttf_font("PressStart2P-Regular.ttf", 60, 0);
+	
+	if (!fontScoreSmall || !fontScoreMedium || !fontScoreBig) {
 		fprintf(stderr, "No se pudo cargar la fuente\n");
 		return -1;
 	}
@@ -255,7 +263,7 @@ int main() {
             
     	switch (gameState) {
 		    case GAME_STATE_START:
-		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_START, &player, &aliensBlock, aliens, shields, &gameStats);
+		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_START, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
 		        drawMenu(imagenes, selectedOption, MENU_TYPE_START);
 		        break;
 		        
@@ -352,7 +360,7 @@ int main() {
 				    al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); //dibuja al jugador
 					char scoreText[30];
 					sprintf(scoreText, "Score: %d", gameStats.actualScore);
-					al_draw_text(font, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText);//dibuja el score
+					al_draw_text(fontScoreSmall, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText);//dibuja el score
 						
 						
 					if (ovni.visible) {
@@ -461,39 +469,85 @@ int main() {
 		        break;
 
 		    case GAME_STATE_PAUSED:
-		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_PAUSE, &player, &aliensBlock, aliens, shields, &gameStats);
+		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_PAUSE, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
 		        drawMenu(imagenes, selectedOption, MENU_TYPE_PAUSE);
 		        break;
 
 		    case GAME_STATE_GAMEOVER:
-		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_GAMEOVER, &player, &aliensBlock, aliens, shields, &gameStats);
+		        handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_GAMEOVER, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
 		        drawMenu(imagenes, selectedOption, MENU_TYPE_GAMEOVER);
 		        break;
 		        
 		        
 		    case GAME_STATE_SCORE_SCREEN:
 				al_clear_to_color(al_map_rgb(0, 0, 0));
-				
-				char scoreText[50];
-				sprintf(scoreText, "SCORE: %d", gameStats.actualScore);
+  
+                                char scoreText[50];
+                                sprintf(scoreText, "SCORE: %d", gameStats.actualScore);
+                                
+                                int playerRank;
+                                
+                                if (!playerRankFlag)
+                                {
+                                    playerRank = top10Scores(gameStats.actualScore);
+                                    playerRankFlag++;
+                                
+                                }
+                                
+                                if (1 <= playerRank && playerRank <= 10) {
+                                
+                                    //SCORE
+                                    
+                                    // Imprimo el score en blanco centrado horizontalmente y en la parte de abajo de la pantalla
+                                    int scoreTextWidth = al_get_text_width(fontScoreMedium, scoreText);
+                                    int scoreTextHeight = al_get_font_line_height(fontScoreMedium);
+                                    al_draw_text(fontScoreMedium, al_map_rgb(255, 255, 255), 
+                                                (SCREEN_W - scoreTextWidth) / 2, 
+                                                (SCREEN_H - 2 * scoreTextHeight), 
+                                                0, scoreText);
+                                                
+                                    // FELICITACIONES por haber alcanzado el TOP 10
+                                    
+                                    char congrats [] = "Congratulations! You ranked in the Top 10!";
+                                  
+                                    // Imprimo el string de felicitaciones en blanco centrado horizontalmente y en la parte de arriba de la pantalla
+                                    int congratsTextWidth = al_get_text_width(fontScoreSmall, congrats);
+                                    int congratsTextHeight = al_get_font_line_height(fontScoreSmall);
+                                    al_draw_text(fontScoreSmall, al_map_rgb(255, 255, 255),
+                                                (SCREEN_W - congratsTextWidth) / 2, 2 * congratsTextHeight,
+                                                 0, congrats);
+                                                 
+                                    char placementText[20];
+                                    sprintf (placementText, "You placed #%d", playerRank);
+                                    
+                                    // Imprimo "#<playerRank>" en verde centrado horizontalmente y verticalmente en la pantalla
+                                    int placementTextWidth = al_get_text_width(fontScoreBig, placementText);
+                                    int placementTextHeight = al_get_font_line_height(fontScoreBig);
+                                    al_draw_text(fontScoreBig, al_map_rgb(0, 255, 0),
+                                                (SCREEN_W - placementTextWidth) / 2, 
+                                                (SCREEN_H - placementTextHeight) / 2,
+                                                 0, placementText);
+                                    
+                                }
+                                
+                                else {
+                                
+                                    int scoreTextWidth = al_get_text_width(fontScoreBig, scoreText);
+                                    int scoreTextHeight = al_get_font_line_height(fontScoreBig);
 
-				// Centrar horizontal y verticalmente
-				int textWidth = al_get_text_width(font, scoreText);
-				int textHeight = al_get_font_line_height(font);
-
-				al_draw_text(font, al_map_rgb(255, 255, 255),
-						     (SCREEN_W - textWidth) / 2,
-						     (SCREEN_H - textHeight) / 2,
-						     0, scoreText);
-
-				// Mostrar por 3 segundos
-				if (al_get_time() - timeScoreScreenStart >= 3.0) {
-					gameState = GAME_STATE_GAMEOVER;
-					selectedOption = GAMEOVER_OPTION_RESTART; // reinicia la selección
-				}
-
-    		break;
-
+                                    al_draw_text(fontScoreBig, al_map_rgb(255, 255, 255),
+		                                (SCREEN_W - scoreTextWidth) / 2,
+		                                (SCREEN_H - scoreTextHeight) / 2,
+		                                0, scoreText);
+                                }
+                                    
+                                    
+                                // Mostrar por 4 segundos
+                                if (al_get_time() - timeScoreScreenStart >= 4.0) {
+                                    gameState = GAME_STATE_GAMEOVER;
+                                    selectedOption = GAMEOVER_OPTION_RESTART; // reinicia la selección
+                                }
+                                break;
 			}
 			
 		        // Muestra en pantalla todo lo que se dibujó desde la última vez
@@ -516,7 +570,7 @@ int main() {
 
 // Funciones MENÚ
 /* Esta función se va a encargar de seleccionar las opciones, de acuerdo a que teclas presione el usuario y en que tipo de menú se encuentre.*/
-void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameState, MenuType type, player_t * player, aliensBlock_t * aliensBlock, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], stats_t * gameStats) {
+void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameState, MenuType type, player_t * player, aliensBlock_t * aliensBlock, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], stats_t * gameStats, int * playerRankFlag) {
     
     int numOptions; // Cada menú tiene una cantidad distinta de opciones
     
@@ -526,7 +580,6 @@ void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameSta
       case MENU_TYPE_GAMEOVER: numOptions = 2; break;
       default: numOptions = 0; break;
     }
-    
     
     // Acá vamos moviendo el cursor.
     if (keys[ALLEGRO_KEY_UP]) { // Si se presiona la tecla hacia arriba, nos movemos una opción hacia arriba.
@@ -566,6 +619,7 @@ void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameSta
                     initAliensArray(aliens);
                     initShieldsArray(shields);
                     initGameStats(gameStats);
+                    *playerRankFlag = 0;
                 } 
                 
                 else if (*selectedOption == PAUSE_OPTION_QUIT) { // Se presiona QUIT
@@ -593,6 +647,7 @@ void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameSta
                     initAliensArray(aliens);
                     initShieldsArray(shields);
                     initGameStats(gameStats);
+                    *playerRankFlag = 0;
                 } 
                 
                 else if (*selectedOption == GAMEOVER_OPTION_QUIT) { // Se presiona la tecla QUIT
@@ -633,3 +688,60 @@ void drawMenu(ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType 
     }
     
 }
+
+
+//hay que llamarla cuando se pierde, devuelve en que ranking del top 10 quedo o un -1 si no esta en el top 10
+//recibe un puntero al archivo donde estan almacenados los scores
+int top10Scores(int score){
+	
+	//agrego mi score al final del archivo
+	FILE *scoresFile_a = fopen("scoresFile", "a+");
+	if(scoresFile_a){								//Si se abrio correctamente
+		fprintf(scoresFile_a, "%d\n", score);		
+	}
+	fflush(scoresFile_a);		
+	fclose(scoresFile_a);
+	
+	//reservo memoria en el heap para hacer un arreglo de scores y guardo todos los scores en el arreglo
+	int * scoresArray = (int*)calloc((MAX_TOP_SCORES+1),sizeof(int));
+	FILE *scoresFile_r = fopen("scoresFile", "r");
+	fseek(scoresFile_r, 0, SEEK_SET);			//me vuelvo a ubicar en el incio del archivo 
+	if(scoresArray){						//Si se reservo correctamente
+		int i; 
+		for(i=0; i<MAX_TOP_SCORES+1; i++){
+			fscanf(scoresFile_r, "%d", &scoresArray[i]);	//alamceno los scores en el arreglo
+		}
+	} 
+	fflush(scoresFile_r);		
+	fclose(scoresFile_r);
+	
+	//ordeno el arreglo de mayor a menor con qsort
+	qsort((void*)scoresArray, MAX_TOP_SCORES+1, sizeof(int), compararScores);
+	
+	//guardo el arreglo nuevamente en el archivo (solo los mejores 10) 
+	FILE *scoresFile_w = fopen("scoresFile", "w");
+	if(scoresFile_w){								//Si se abrio correctamente
+		int i; 
+		for(i=0; i<MAX_TOP_SCORES; i++){
+			fprintf(scoresFile_w, "%d\n", scoresArray[i]);
+		}		
+	}
+	fflush(scoresFile_w);		
+	fclose(scoresFile_w);
+	
+	//reviso si mi score esta dentro del top 10, si es asi, devuelvo en que top
+	int ranking; 
+	for(ranking=1; ranking<=MAX_TOP_SCORES; ranking++){
+		if(score == scoresArray[ranking-1]){
+			free(scoresArray);
+			return ranking; 
+		}
+	}
+	free(scoresArray);
+	return -1; 
+}
+
+int compararScores(const void *a, const void *b) {
+	return (*(int *)b - *(int *)a);  // Orden descendente
+}
+
