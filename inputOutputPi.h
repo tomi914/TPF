@@ -7,7 +7,7 @@ int getDirY(joyinfo_t* joy, clock_t* last); //si se mueve hacia arriba o hacia a
 bool getClick(joyinfo_t* joy); 
 bool getPause(joyinfo_t* joy, clock_t* last); //pausa
 void drawSymbol(int x); 
+void drawDigit(int xInicial, int yInicial, int digit);
 void drawNum(int xInicial, int yInicial, int num);
-//FUNCION DESCOMPONER NUMERO PARA MOSTRAR EL SCORE EN DISPLAY
 
 #endif
