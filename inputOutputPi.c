@@ -252,10 +252,10 @@ void drawSymbol(int x) {
     }
 }
 
-void drawNum(int xInicial, int yInicial, int num) {
+void drawDigit(int xInicial, int yInicial, int digit){ //dibujar un digito (queda en el buffer)
     int (*arr)[3] = NULL;  // puntero a matriz de 3 columnas
 
-    switch (num) {
+    switch (digit) {
         case 0: arr = cero; break;
         case 1: arr = uno; break;
         case 2: arr = dos; break;
@@ -278,4 +278,16 @@ void drawNum(int xInicial, int yInicial, int num) {
             }
         }
     }
+}
+
+void drawNum(int xInicial, int yInicial, int num){ //dibujar un nunmero de cuatro digitos (queda en el buffer)
+    int mil = num / 1000;
+    int cen = (num % 1000) / 100;
+    int dec = (num % 100) / 10;
+    int uni = num % 10;
+
+    drawDigit(xInicial, yInicial, mil);
+    drawDigit(xInicial + 4, yInicial, cen);
+    drawDigit(xInicial + 8, yInicial, dec);
+    drawDigit(xInicial + 12, yInicial, uni);
 }
