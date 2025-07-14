@@ -1,68 +1,73 @@
-//el tipo de alien (A,B o C) no influye en las medidas. 
+#ifndef CONSTANTES_PI_H
+#define CONSTANTES_PI_H
 
-#define ALIEN_ROWS 4  // Cantidad de FILAS de ALIENS.
-#define ALIEN_COLS 5  // Cantidad de COLUMNAS de ALIENS.
-#define DISPLAY_HIGH 16	// ALTURA del display en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define DISPLAY_LENGTH 16 // LARGO del display en coordenadas (Como depende del display (front-end), lo definimos en el make) 
-#define ALIEN_A_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_A_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_B_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_B_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo ALTO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_C_SIZE_X 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define ALIEN_C_SIZE_Y 1 // Cuantos ocupa un ALIEN a lo LARGO en coordenadas (Como depende del display (front-end), lo definimos en el make)
-#define A_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens
-#define A_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens
-#define B_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens
-#define B_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens
-#define C_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens
-#define C_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens
-#define INIT_ALIENS_MARGIN_X 60	//margen para donde arrancan los aliens
-#define INIT_ALIENS_MARGIN_Y 40	//margen para donde arrancan los aliens
-#define JUMP_SIZE_X	1			//salto para los movimientos
-#define JUMP_SIZE_Y 1			//salto para los movimientos
-#define DISPLAY_MARGIN_X 1	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
-#define PLAYER_SIZE_X 3
-#define PLAYER_SIZE_Y 1
-#define INIT_PLAYER_Y 14	//en que coordenada Y va  a estar
-#define BULLET_SIZE_X 1
-#define BULLET_SIZE_Y 1
-#define NUM_SHIELDS 4	//cantidad de escudos 
-//ojo que en la raspberry no cambia el tamaño de los escudos
-#define SHIELD_INIT_SIZE_X 1	//tamaño inicial de los escudos
-#define SHIELD_INIT_SIZE_Y 1	//tamaño inicial de los escudos
-#define SHIELD_INIT_Y 12 //en que coordenada en Y ubicamos los escudos
-#define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
-#define SHIELD_X 0
-#define SPEED_PLAYER 0.05 
-#define SPEED_BULLET_PLAYER 0.09
-#define SHIELD_1_SIZE_X 1
-#define SHIELD_2_SIZE_X 1
-#define SHIELD_3_SIZE_X 1
-#define SHIELD_4_SIZE_X 1
-#define SHIELD_5_SIZE_X 1
+//DISPLAY
+#define DISPLAY_HIGH 16		// ALTURA del display en coordenadas
+#define DISPLAY_LENGTH 16 	// LARGO del display en coordenadas 
+#define DISPLAY_MARGIN_X 1	// Margen en coordenadas entre los limites del display real y el display utilizable
+#define DISPLAY_MARGIN_Y 1	// Margen en coordenadas entre los limites del display real y el display utilizable
+//ALIENS
+#define ALIEN_ROWS 4  			// Cantidad de FILAS de ALIENS.
+#define ALIEN_COLS 5  			// Cantidad de COLUMNAS de ALIENS.
+#define ALIEN_A_SIZE_X 1 		// LARGO en coordenadas que ocupa un ALIEN del tipo A
+#define ALIEN_A_SIZE_Y 1 		// ALTO en coordenadas que ocupa un ALIEN del tipo A
+#define ALIEN_B_SIZE_X 1		// LARGO en coordenadas que ocupa un ALIEN del tipo B
+#define ALIEN_B_SIZE_Y 1 		// ALTO en coordenadas que ocupa un ALIEN del tipo B
+#define ALIEN_C_SIZE_X 1 		// LARGO en coordenadas que ocupa un ALIEN del tipo C
+#define ALIEN_C_SIZE_Y 1 		// ALTO en coordenadas que ocupa un ALIEN del tipo C 
+#define ALIEN_EXTREME 2			// QUE ES ESTO?
+#define A_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens del tipo A
+#define A_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens del tipo A
+#define B_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens del tipo B
+#define B_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens del tipo B
+#define C_INIT_JUMP_SIZE_X 1	// Salto necesario para inicializar centrados los aliens del tipo C
+#define C_INIT_JUMP_SIZE_Y 1	// Salto necesario para inicializar centrados los aliens del tipo C
+#define INIT_ALIENS_MARGIN 0	// CREO QUE NO SE USA
+#define JUMP_SIZE_X	1			// Salto en coordenadas para cada movimiento del bloque de aliens
+#define JUMP_SIZE_Y 1			// Salto en coordenadas para cada movimiento del bloque de aliens
 
-#define POINTS_ALIEN_A 10
-#define POINTS_ALIEN_B 20
-#define POINTS_ALIEN_C 30
-#define LEVEL_POINTS(level) (100*(level))
+//PLAYER
+#define INIT_PLAYER_Y 14		// Coordenada Y de inicializacion del jugador
+#define INIT_PLAYER_MARGIN_X 0	// Coordenada X de inicializacion del jugador   CAMBIAR NOMBRE PARA QUE COINCIDA 
+#define PLAYER_SIZE_X 3			// Tamaño del jugador
+#define PLAYER_SIZE_Y 1			// Tamaño del jugador
+#define SPEED_PLAYER 0.05		// Velocidad de desplazamiento lateral del jugador	
 
-#define OVNI_SIZE_X 1
-#define OVNI_SIZE_Y 1
-#define INIT_OVNI_MARGIN_X 1
-#define INIT_OVNI_MARGIN_Y -1
-#define SPEED_OVNI  0.009// Aumenta la velocidad con el nivel
-#define OVNI_SPAWN_INTERVAL 2 //Define el tiempo entre que desaparece un ovni y aparece el otro.
-#define BULLET_INDEX(n) (((n) - 1) % 16) // Devuelve un numero entre 0 y 15 de acuerdo a la bala que se disparó
+//SHIELDS
+#define NUM_SHIELDS 4			// Cantidad de escudos
+#define SHIELD_INIT_Y 12 		// Coordenada Y de inicializacion de los escudos
+#define INIT_SHIELDS_MARGIN_X 0	// QUE ES ESTO?
+#define SHIELD_INIT_X_JUMP 3 	// Calculo de espaciado en X para la inicializacion de escudos
+#define SHIELD_INIT_SIZE_X 1	// Tamaño inicial de los escudos
+#define SHIELD_INIT_SIZE_Y 1	// Tamaño inicial de los escudos
+#define SHIELD_HEALTH 6			// Cuantas vidas tiene cada escudo
+#define FACTOR_CORRECTOR 1		// Factor de correcion para inicializar los esudos PONER NOMBRE EN INGLES
 
-#define INIT_ALIENS_MARGIN 0
-#define INIT_SHIELDS_MARGIN_X 0
-#define FACTOR_CORRECTOR 1
-#define INIT_PLAYER_MARGIN_X 0
-#define PLAYER_LIMIT_X 0
-#define BULLET_SPEED_ADJUSTMENT 300
-#define SHIELD_HEALTH 6
-#define HITBOX 0
-#define SHOOT_FREQ(level) (80-(level)*5)
-#define ALIEN_EXTREME 2
+//BULLETS
+#define BULLET_SIZE_X 1				// Tamaño de las balas
+#define BULLET_SIZE_Y 1				// Tamaño de las balas
+#define SPEED_BULLET_PLAYER 0.09 	// Velocidad de la bala del player
+#define BULLET_SPEED_ADJUSTMENT 300 //QUE HACE?
 
+//OVNI
+#define OVNI_SIZE_X 1				// Tamaño del ovni
+#define OVNI_SIZE_Y 1				// Tamaño del ovni
+#define INIT_OVNI_MARGIN_X 1		// Coordenada de inicializacion del ovni
+#define INIT_OVNI_MARGIN_Y -1		// Coordenada de inicializacion del ovni
+#define SPEED_OVNI 0.009  			// Aumenta la velocidad con el nivel
+#define OVNI_SPAWN_INTERVAL 2 		//Define el tiempo entre que desaparece un ovni y aparece el otro.
+
+//GAMESTATS
+#define POINTS_ALIEN_A 30		// Puntaje obtenido por matar al alien A
+#define POINTS_ALIEN_B 20		// Puntaje obtenido por matar al alien B
+#define POINTS_ALIEN_C 10		// Puntaje obtenido por matar al alien C
+#define LEVEL_POINTS(level) (100*(level))	// Puntaje obtenido por subir de nivel
+
+
+//FALTA COMENTAR Y CLASIFICAR
+#define HITBOX 0 //QUE HACE?
+#define SHIELD_X 0 			//para q ande la pi tmbien      que hace?			
+#define SHOOT_FREQ(level) (80-(level)*5)	//SE TERMINA HACIENDO NEGATIVO A PARTIR DEL NIVEL 16
+#define PLAYER_LIMIT_X 0		//HACE FALTA USARLA? EN PC NO
+
+#endif //CONSTANTES_PC_H
