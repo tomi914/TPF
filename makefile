@@ -1,5 +1,5 @@
 # PARA CREAR EJECUTABLE PC:
-# make space_invaders_pc pc=1
+# make pc=1
 
 # PARA CREAR EJECUTABLE PI:
 # make space_invaders_pi pi=1
@@ -23,7 +23,7 @@ space_invaders_pi: frontend_pi.o backend.o inputOutputPi.o
 
 ifdef pi
 backend.o: backend.c backend.h constantes_pi.h entidades.h
-	$(CC) $(FLAGSO) backend.c
+	$(CC) $(FLAGSO) backend.c -Dpi
 
 inputOutputPi.o: inputOutputPi.c inputOutputPi.h
 	$(CC) $(FLAGSO) inputOutputPi.c
@@ -33,11 +33,11 @@ frontend_pi.o: frontend_pi.c backend.h constantes_pi.h entidades.h inputOutputPi
 endif
 
 ifdef pc
-backend.o: backend.c backend.h constantes_pc.h entidades.h
-	$(CC) $(FLAGSO) backend.c
+backend.o: backend.c constantes_pc.h entidades.h backend.h
+	$(CC) $(FLAGSO) backend.c -Dpc
 
 frontend_pc.o: frontend_pc.c backend.h constantes_pc.h entidades.h
-	$(CC) $(FLAGSO) frontend_pc.c
+	$(CC) $(FLAGSO) frontend_pc.c 
 endif
 
 clean:
