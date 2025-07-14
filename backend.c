@@ -1,9 +1,17 @@
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h> //para el clock
 #include "entidades.h"
+
+#ifdef pi
+#include "constantes_pi.h"
+#endif
+#ifdef pc
 #include "constantes_pc.h"
+#endif
+
 #include "backend.h"
 
 //inicializar en el front: 
@@ -15,7 +23,7 @@
 //	- stats_t gameStats
 
 
-//**********************||FUNCIONES DE USO GENERAL||******************************
+//******************************************************************||FUNCIONES DE USO GENERAL||**************************************************************************************
 int getAlienWidthByRow(int row){
 	if (row >= 4) return ALIEN_C_SIZE_X;
 	if (row >= 2) return ALIEN_B_SIZE_X;
@@ -31,7 +39,7 @@ int getAlienHeightByRow(int row){
 float getAlienBulletSpeed(int level){
 	return ((4 + (((level) - 1) / 2))/(float)BULLET_SPEED_ADJUSTMENT); 
 }
-//**********************||FUNCIONES DE INICIALIZACION||******************************
+//******************************************************************||FUNCIONES DE INICIALIZACION||**************************************************************************************
 
 //Inicializo el bloque de aliens
 void initAliensBlock(aliensBlock_t * aliensBlock){ 
@@ -105,7 +113,7 @@ void initOvni(ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime)
     *LastOvniDespawnTime = currentTime; //Se comienza a contar desde el instante actual, para que luego aparezca el ovni.
 }
 
-//**********************||FUNCIONES DE ACTUALIZACION||******************************
+//******************************************************************||FUNCIONES DE ACTUALIZACION||**************************************************************************************
 
 //Actualizo los datos del bloque de aliens 
 void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock){
@@ -238,7 +246,7 @@ void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * clkO, int random)
     }
 }
 
-//**********************||FUNCIONES DE COLISIONES||******************************
+//******************************************************************||FUNCIONES DE COLISIONES||**************************************************************************************
 
 /*	verifica superposicion de rectangulos
 	A y B entidades a analizar
@@ -485,7 +493,7 @@ void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIE
 	collisionAP (player, aliens, aliensBlock);//alien vs player
 }
 
-//**********************||FUNCIONES DE DISPAROS||******************************
+//******************************************************************||FUNCIONES DE DISPAROS||**************************************************************************************
 
 /* 
 Función que elige que alien va a ser el que va a disparar.
@@ -578,7 +586,7 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot){
         speed = 0;
     }
 }
-//**********************||FUNCIONES DE MOVIMIENTO||******************************
+//******************************************************************||FUNCIONES DE MOVIMIENTO||**************************************************************************************
 
 //Muevo el bloque de aliens
 //HACER QUE LA VELOCIDAD DEL MOVIMIENTO DEPENDA DEL NIVEL
