@@ -32,23 +32,25 @@
 #define PLAYER_SIZE_X 50		// Tamaño del jugador
 #define PLAYER_SIZE_Y 56		// Tamaño del jugador
 #define SPEED_PLAYER 10			// Velocidad de desplazamiento lateral del jugador
-#define PLAYER_LIMIT_X PLAYER_SIZE_X	// 
+#define PLAYER_LIMIT_X PLAYER_SIZE_X	// Para calculo de limite con el borde derecho
+#define HITBOX PLAYER_SIZE_X/2 	// Corrige coordenadas
 
 //SHIELDS
 #define NUM_SHIELDS 4			// Cantidad de escudos
 #define SHIELD_INIT_Y 600 		// Coordenada Y de inicializacion de los escudos
-#define INIT_SHIELDS_MARGIN_X (DISPLAY_MARGIN_X +(SHIELD_INIT_X_JUMP - SHIELD_INIT_SIZE_X) / 2 + SHIELD_X)
+#define INIT_SHIELDS_MARGIN_X (DISPLAY_MARGIN_X +(SHIELD_INIT_X_JUMP - SHIELD_INIT_SIZE_X) / 2 + SHIELD_X)	//Ajuste de inicializacion
 #define SHIELD_INIT_X_JUMP (((DISPLAY_LENGTH)-(DISPLAY_MARGIN_X*2))/4) 	// Calculo de espaciado en X para la inicializacion de escudos
 #define SHIELD_INIT_SIZE_X 80	// Tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 60	// Tamaño inicial de los escudos
 #define SHIELD_HEALTH 15		// Cuantas vidas tiene cada escudo
-#define FACTOR_CORRECTOR 0		// Factor de correcion para inicializar los esudos
+#define CORRECTION_FACTOR 0		// Factor de correcion para inicializar los esudos
+#define SHIELD_X 80 			// Correccion para inicializacion de escudos
 
 //BULLETS
 #define BULLET_SIZE_X 4			// Tamaño de las balas
 #define BULLET_SIZE_Y 15		// Tamaño de las balas
 #define SPEED_BULLET_PLAYER 5 	// Velocidad de la bala del player
-#define BULLET_SPEED_ADJUSTMENT 1	// QUE HACE?
+#define BULLET_SPEED_ADJUSTMENT 1	// Ajusta velocidad de la bala
 
 //OVNI
 #define OVNI_SIZE_X 99				// Tamaño del ovni
@@ -77,8 +79,7 @@
 #define FPS 100				// Taza de refrezco de buffer/pantalla
 
 //FALTA COMENTAR Y CLASIFICAR
-#define HITBOX PLAYER_SIZE_X/2 //que hace?
-#define SHIELD_X 80 			//para q ande la pi tmbien      que hace?			
+			
 #define SHOOT_FREQ(level) (80-(level)*5)	//SE TERMINA HACIENDO NEGATIVO A PARTIR DEL NIVEL 16						NO MODIFICA NADA
 
 #endif //CONSTANTES_PC_H

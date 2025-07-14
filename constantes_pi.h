@@ -31,17 +31,20 @@
 #define INIT_PLAYER_MARGIN_X 0	// Coordenada X de inicializacion del jugador   CAMBIAR NOMBRE PARA QUE COINCIDA 
 #define PLAYER_SIZE_X 3			// Tamaño del jugador
 #define PLAYER_SIZE_Y 1			// Tamaño del jugador
+#define PLAYER_LIMIT_X 0		// No se usa en esta interfaz
 #define SPEED_PLAYER 0.05		// Velocidad de desplazamiento lateral del jugador	
+#define HITBOX 0 				//Corrige coordenadas
 
 //SHIELDS
 #define NUM_SHIELDS 4			// Cantidad de escudos
 #define SHIELD_INIT_Y 12 		// Coordenada Y de inicializacion de los escudos
-#define INIT_SHIELDS_MARGIN_X 0	// QUE ES ESTO?
+#define INIT_SHIELDS_MARGIN_X 0	// No se usa en esta interfaz
 #define SHIELD_INIT_X_JUMP 3 	// Calculo de espaciado en X para la inicializacion de escudos
 #define SHIELD_INIT_SIZE_X 1	// Tamaño inicial de los escudos
 #define SHIELD_INIT_SIZE_Y 1	// Tamaño inicial de los escudos
 #define SHIELD_HEALTH 6			// Cuantas vidas tiene cada escudo
-#define FACTOR_CORRECTOR 1		// Factor de correcion para inicializar los esudos PONER NOMBRE EN INGLES
+#define CORRECTION_FACTOR 1		// Factor de correcion para inicializar los esudos
+#define SHIELD_X 0 				// No se usa en esta interfaz
 
 //BULLETS
 #define BULLET_SIZE_X 1				// Tamaño de las balas
@@ -65,9 +68,9 @@
 
 
 //FALTA COMENTAR Y CLASIFICAR
-#define HITBOX 0 //QUE HACE?
-#define SHIELD_X 0 			//para q ande la pi tmbien      que hace?			
+
+			
 #define SHOOT_FREQ(level) (80-(level)*5)	//SE TERMINA HACIENDO NEGATIVO A PARTIR DEL NIVEL 16
-#define PLAYER_LIMIT_X 0		//HACE FALTA USARLA? EN PC NO
+
 
 #endif //CONSTANTES_PC_H

@@ -77,7 +77,7 @@ void initShieldsArray(shield_t shields[NUM_SHIELDS]){	//recibe un puntero al arr
 	for(i=0;i<NUM_SHIELDS;i++){
 		shields[i].health = SHIELD_HEALTH; 
 		shields[i].coord.coordY = SHIELD_INIT_Y; 
-		shields[i].coord.coordX = INIT_SHIELDS_MARGIN_X + (SHIELD_INIT_X_JUMP * (i+FACTOR_CORRECTOR)) - SHIELD_X; 
+		shields[i].coord.coordX = INIT_SHIELDS_MARGIN_X + (SHIELD_INIT_X_JUMP * (i+CORRECTION_FACTOR)) - SHIELD_X; 
 		shields[i].sizeX = SHIELD_INIT_SIZE_X;
 		shields[i].sizeY = SHIELD_INIT_SIZE_Y;
 	}
