@@ -15,6 +15,7 @@
 #define ALIEN_B_SIZE_Y 41 		// ALTO en coordenadas que ocupa un ALIEN del tipo B
 #define ALIEN_C_SIZE_X 60 		// LARGO en coordenadas que ocupa un ALIEN del tipo C
 #define ALIEN_C_SIZE_Y 40 		// ALTO en coordenadas que ocupa un ALIEN del tipo C 
+#define ALIEN_EXTREME DISPLAY_MARGIN_X
 #define A_INIT_JUMP_SIZE_X 20	// Salto necesario para inicializar centrados los aliens del tipo A
 #define A_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo A
 #define B_INIT_JUMP_SIZE_X 14	// Salto necesario para inicializar centrados los aliens del tipo B
