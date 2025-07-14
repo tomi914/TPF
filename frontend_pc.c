@@ -12,70 +12,6 @@
 #include "constantes_pc.h"
 #include "backend.h"
 
-
-// Identifico cada imagen con un número para poder cargarlas en el arreglo
-enum {
-    IMG_FONDO = 0,
-    
-    IMG_LOGO = 1,
-    
-    IMG_PLAY_ON = 2,
-    IMG_PLAY_OFF = 3,
-    
-    IMG_RESUME_ON = 4,
-    IMG_RESUME_OFF = 5,
-    
-    IMG_RESTART_ON = 6,
-    IMG_RESTART_OFF = 7,
-    
-    IMG_RESTART_ON_GAMEOVER = 8,
-    IMG_RESTART_OFF_GAMEOVER = 9,
-    
-    IMG_QUIT_ON = 10,
-    IMG_QUIT_OFF = 11,
-    
-    IMG_TOTAL = 12
-};
-
-// Tenemos 3 TIPOS distintos de MENÚ
-typedef enum{
-    MENU_TYPE_START = 0,
-    MENU_TYPE_PAUSE = 1,
-    MENU_TYPE_GAMEOVER = 2
-} MenuType;
-
-
-// Cada menu va a tener una cantidad específica de OPCIONES
-
-// Menú de INICIO
-typedef enum{
-  START_OPTION_PLAY = 0,
-  START_OPTION_QUIT = 1
-} StartMenuOption;
-
-// Menú de PAUSA
-typedef enum{
-  PAUSE_OPTION_RESUME = 0,
-  PAUSE_OPTION_RESTART = 1,
-  PAUSE_OPTION_QUIT = 2
-} PauseMenuOption;
-
-// Menú de GAMEOVER
-typedef enum{
-  GAMEOVER_OPTION_RESTART = 0,
-  GAMEOVER_OPTION_QUIT = 1
-} GameoverMenuOption;
-
-// Tenemos 5 ESTADOS de JUEGO
-typedef enum {
-    GAME_STATE_START = 0,
-    GAME_STATE_PLAYING = 1,
-    GAME_STATE_PAUSED = 2,
-    GAME_STATE_GAMEOVER = 3,
-    GAME_STATE_EXIT = 4,
-    GAME_STATE_SCORE_SCREEN = 5
-} GameState;
-
 // PROTOTIPOS
 //void handleGameState(bool keys[], int *selectedOption, GameState *gameState, ALLEGRO_BITMAP *imagenes[]);
 void drawMenu(ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType type);
@@ -99,7 +35,7 @@ int main() {
     al_init_ttf_addon(); // Inicializamos tipos de fuentes 
 
     // Creamos la ventana de tamaño SCREEN_W x SCREEN_H, que va a ser el display
-    ALLEGRO_DISPLAY *display = al_create_display(SCREEN_W, SCREEN_H);
+    ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_LENGTH, DISPLAY_HIGH);
     if (!display) {
         fprintf(stderr, "Error al crear display\n");
         return -1;
@@ -438,7 +374,7 @@ int main() {
 
 
 
-					bool allDead = true;
+					/*bool allDead = true;
 
 					for (int i = 0; i < ALIEN_ROWS; i++) {
 						for (int j = 0; j < ALIEN_COLS; j++) {
@@ -457,7 +393,9 @@ int main() {
 						initAliensBlock(&aliensBlock);
 						initAliensArray(aliens);
 						initShieldsArray(shields);
-					}
+					}*/
+					
+					newLevelCheck(aliens, &aliensBlock, &player, shields, &gameStats);
 
 
 					
@@ -502,8 +440,8 @@ int main() {
                                     int scoreTextWidth = al_get_text_width(fontScoreMedium, scoreText);
                                     int scoreTextHeight = al_get_font_line_height(fontScoreMedium);
                                     al_draw_text(fontScoreMedium, al_map_rgb(255, 255, 255), 
-                                                (SCREEN_W - scoreTextWidth) / 2, 
-                                                (SCREEN_H - 2 * scoreTextHeight), 
+                                                (DISPLAY_LENGTH - scoreTextWidth) / 2, 
+                                                (DISPLAY_HIGH - 2 * scoreTextHeight), 
                                                 0, scoreText);
                                                 
                                     // FELICITACIONES por haber alcanzado el TOP 10
@@ -514,7 +452,7 @@ int main() {
                                     int congratsTextWidth = al_get_text_width(fontScoreSmall, congrats);
                                     int congratsTextHeight = al_get_font_line_height(fontScoreSmall);
                                     al_draw_text(fontScoreSmall, al_map_rgb(255, 255, 255),
-                                                (SCREEN_W - congratsTextWidth) / 2, 2 * congratsTextHeight,
+                                                (DISPLAY_LENGTH - congratsTextWidth) / 2, 2 * congratsTextHeight,
                                                  0, congrats);
                                                  
                                     char placementText[20];
@@ -524,8 +462,8 @@ int main() {
                                     int placementTextWidth = al_get_text_width(fontScoreBig, placementText);
                                     int placementTextHeight = al_get_font_line_height(fontScoreBig);
                                     al_draw_text(fontScoreBig, al_map_rgb(0, 255, 0),
-                                                (SCREEN_W - placementTextWidth) / 2, 
-                                                (SCREEN_H - placementTextHeight) / 2,
+                                                (DISPLAY_LENGTH - placementTextWidth) / 2, 
+                                                (DISPLAY_HIGH - placementTextHeight) / 2,
                                                  0, placementText);
                                     
                                 }
@@ -536,8 +474,8 @@ int main() {
                                     int scoreTextHeight = al_get_font_line_height(fontScoreBig);
 
                                     al_draw_text(fontScoreBig, al_map_rgb(255, 255, 255),
-		                                (SCREEN_W - scoreTextWidth) / 2,
-		                                (SCREEN_H - scoreTextHeight) / 2,
+		                                (DISPLAY_LENGTH - scoreTextWidth) / 2,
+		                                (DISPLAY_HIGH - scoreTextHeight) / 2,
 		                                0, scoreText);
                                 }
                                     

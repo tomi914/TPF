@@ -22,13 +22,14 @@
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo B
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens del tipo C
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo C
-#define INIT_ALIENS_MARGIN_Y (OVNI_SIZE_Y+JUMP_SIZE_Y)	// Coordenada Y de inicializacion del bloque de aliens
+#define INIT_ALIENS_MARGIN (OVNI_SIZE_Y+JUMP_SIZE_Y)	// Coordenada Y de inicializacion del bloque de aliens
+//#define INIT_ALIENS_MARGIN INIT_ALIENS_MARGIN_Y
 #define JUMP_SIZE_X	20			// Salto en coordenadas para cada movimiento del bloque de aliens
 #define JUMP_SIZE_Y 20			// Salto en coordenadas para cada movimiento del bloque de aliens
 
 //PLAYER
 #define INIT_PLAYER_Y 672		// Coordenada Y de inicializacion del jugador
-#define INIT_PLAYER_X 50	
+#define INIT_PLAYER_MARGIN_X 50	
 #define PLAYER_SIZE_X 50		// Tamaño del jugador
 #define PLAYER_SIZE_Y 56		// Tamaño del jugador
 

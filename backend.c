@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h> //para el clock
 #include "entidades.h"
-#include "constantes_pi.h"
+#include "constantes_pc.h"
 #include "backend.h"
 
 //inicializar en el front: 
@@ -17,7 +17,7 @@
 
 //**********************||FUNCIONES DE USO GENERAL||******************************
 int getAlienWidthByRow(int row){
-	if (row >= 4) return ALIENz_C_SIZE_X;
+	if (row >= 4) return ALIEN_C_SIZE_X;
 	if (row >= 2) return ALIEN_B_SIZE_X;
 	return ALIEN_A_SIZE_X;
 }
