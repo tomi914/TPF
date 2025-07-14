@@ -358,8 +358,8 @@ int main() {
 					}
 
 				    al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); //dibuja al jugador
-					char scoreText[30];
-					sprintf(scoreText, "Score: %d", gameStats.actualScore);
+					char scoreText[40];
+					sprintf(scoreText, "Score: %d     Level: %d", gameStats.actualScore, gameStats.level);
 					al_draw_text(fontScoreSmall, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText);//dibuja el score
 						
 						
