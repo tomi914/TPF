@@ -23,7 +23,7 @@
 #define DISPLAY_MARGIN_X 1	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define DISPLAY_MARGIN_Y 1 	//margen en coordenadas que deseamos tener para no chocarnos con los bordes del display
 #define PLAYER_SIZE_X 3
-#define PLAYER_SIZE_Y 2
+#define PLAYER_SIZE_Y 1
 #define INIT_PLAYER_Y 14	//en que coordenada Y va  a estar
 #define BULLET_SIZE_X 1
 #define BULLET_SIZE_Y 1
@@ -35,7 +35,7 @@
 #define SHIELD_INIT_X_JUMP 3 //cuantas coordenadas hay de espaciado entre cada escudo
 #define SHIELD_X 0
 #define SPEED_PLAYER 0.05 
-#define SPEED_BULLET_PLAYER 0.05
+#define SPEED_BULLET_PLAYER 0.09
 #define SHIELD_1_SIZE_X 1
 #define SHIELD_2_SIZE_X 1
 #define SHIELD_3_SIZE_X 1
@@ -60,7 +60,9 @@
 #define FACTOR_CORRECTOR 1
 #define INIT_PLAYER_MARGIN_X 0
 #define PLAYER_LIMIT_X 0
-#define BULLET_SPEED_ADJUSTMENT 1000
+#define BULLET_SPEED_ADJUSTMENT 300
 #define SHIELD_HEALTH 6
 #define HITBOX 0
 #define SHOOT_FREQ(level) (80-(level)*5)
+#define ALIEN_EXTREME 2
+
