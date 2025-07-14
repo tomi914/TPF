@@ -44,7 +44,7 @@ int main(void){
     int offsetX;
     float interval; 
 
-    gameState game = GAME_STATE_START; 
+    GameState game = GAME_STATE_START; 
 
     while(!quit){
         switch(game){
