@@ -399,7 +399,7 @@ int main() {
                         
 	                updateOvni (&ovni, clock(), &clkO, rand() % 1001); // Actualiza estado del ovni
 
-                        newLevelCheck (aliens, &aliensBlock, &player, shields, &gameStats);  // Verifica si se paso de nivel y reinicia entidades de ser necesario
+			newLevelCheck(aliens, &aliensBlock, &player, shields, &gameStats, &playerBullet, &alienBullet);  // Verifica si se paso de nivel y reinicia entidades de ser necesario
                     }
                     break;
                 } 
