@@ -206,7 +206,7 @@ int main(void){
 					game = GAME_STATE_GAMEOVER;
 				}
 				//Verifica si se debe subir de nivel
-				newLevelCheck(alien, &block, &player, shield, &stats);
+				newLevelCheck(alien, &block, &player, shield, &stats, &pBullet, &aBullet);
 				break;
 
 			case GAME_STATE_PAUSED:	//menu de pausa
