@@ -6,6 +6,7 @@
 #define DISPLAY_LENGTH 16 	// LARGO del display en coordenadas 
 #define DISPLAY_MARGIN_X 1	// Margen en coordenadas entre los limites del display real y el display utilizable
 #define DISPLAY_MARGIN_Y 1	// Margen en coordenadas entre los limites del display real y el display utilizable
+
 //ALIENS
 #define ALIEN_ROWS 4  			// Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 5  			// Cantidad de COLUMNAS de ALIENS.
@@ -34,7 +35,7 @@
 #define PLAYER_SIZE_Y 1			// Tamaño del jugador
 #define PLAYER_LIMIT_X 0		// No se usa en esta interfaz
 #define SPEED_PLAYER 0.05		// Velocidad de desplazamiento lateral del jugador	
-#define HITBOX 0 				//Corrige coordenadas
+#define HITBOX 0 				//Corrige coordenadas en la colision
 
 //SHIELDS
 #define NUM_SHIELDS 4			// Cantidad de escudos
