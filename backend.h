@@ -13,7 +13,7 @@ void initOvni(ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime)
 //FUNCIONES DE ACTUALIZACIÓN
 void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock);
 void shieldsUpdate(shield_t shields[NUM_SHIELDS]);
-void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats);
+void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats, bullet_t *playerBullet, bullet_t *alienBullet);
 void updateOvni (ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime, int random);
 //FUNCIONES DE COLISIONES
 void collisionDetect(bullet_t * bulletP, bullet_t * bulletA, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], ovni_t * ovni, shield_t shields[NUM_SHIELDS], aliensBlock_t * aliensBlock, player_t * player, stats_t * gameStats, uint8_t printedRow, clock_t *lastOvniDespawnTime);
