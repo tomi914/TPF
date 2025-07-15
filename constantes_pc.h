@@ -33,7 +33,7 @@
 #define INIT_PLAYER_MARGIN_X 50	
 #define PLAYER_SIZE_X 50		// Tamaño del jugador
 #define PLAYER_SIZE_Y 56		// Tamaño del jugador
-#define SPEED_PLAYER 10			// Velocidad de desplazamiento lateral del jugador
+#define SPEED_PLAYER 5		// Velocidad de desplazamiento lateral del jugador
 #define PLAYER_LIMIT_X PLAYER_SIZE_X	// Para calculo de limite con el borde derecho
 #define HITBOX PLAYER_SIZE_X/2 	// Corrige coordenadas
 
