@@ -41,4 +41,4 @@ frontend_pc.o: frontend_pc.c backend.h constantes_pc.h entidades.h
 endif
 
 clean:
-	rm -f *.o space_invaders_pc space_invaders_pi backend frontend_pc frontend_pi inputOutputPi
+	rm -f *.o space_invaders_pc space_invaders_pi backend frontend_pc frontend_pi inputOutputPi #Borrar objetos y ejecutables

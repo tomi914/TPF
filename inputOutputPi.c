@@ -227,7 +227,7 @@ int getDirY(joyinfo_t* joy, clock_t* last){ //Si muevo para arriba o para abajo 
 void drawSymbol(int x) {
     int i, j;
     dcoord_t point;
-    int (*arr)[16] = NULL;  // puntero a una fila de 16 enteros
+    int (*arr)[16] = NULL; 
 
     switch (x) {
         case 0:
@@ -253,7 +253,7 @@ void drawSymbol(int x) {
 }
 
 void drawDigit(int xInicial, int yInicial, int digit){ //dibujar un digito (queda en el buffer)
-    int (*arr)[3] = NULL;  // puntero a matriz de 3 columnas
+    int (*arr)[3] = NULL;  
 
     switch (digit) {
         case 0: arr = cero; break;

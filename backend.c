@@ -5,7 +5,7 @@
 #include <time.h>
 #include "entidades.h"
 
-#ifdef pi
+#ifdef pi // Depende del llamado al make
 	#include "constantes_pi.h"
 #endif
 #ifdef pc

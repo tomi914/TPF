@@ -10,7 +10,7 @@ void initAliensArray(alien_t aliens[ALIEN_ROWS][ALIEN_COLS]);
 void initShieldsArray(shield_t shields[NUM_SHIELDS]);
 void initGameStats(stats_t * gameStats);
 void initOvni(ovni_t * ovni, clock_t currentTime, clock_t * LastOvniDespawnTime);
-//FUNCIONES DE ACTUALIZACION
+//FUNCIONES DE ACTUALIZACIÓN
 void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock);
 void shieldsUpdate(shield_t shields[NUM_SHIELDS]);
 void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats);

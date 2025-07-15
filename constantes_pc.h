@@ -6,6 +6,7 @@
 #define DISPLAY_LENGTH 1000 	// LARGO del display en coordenadas 
 #define DISPLAY_MARGIN_X 50		// Margen en coordenadas entre los limites del display real y el display utilizable
 #define DISPLAY_MARGIN_Y 100	// Margen en coordenadas entre los limites del display real y el display utilizable
+
 //ALIENS
 #define ALIEN_ROWS 5  			// Cantidad de FILAS de ALIENS.
 #define ALIEN_COLS 11  			// Cantidad de COLUMNAS de ALIENS.
@@ -15,16 +16,17 @@
 #define ALIEN_B_SIZE_Y 41 		// ALTO en coordenadas que ocupa un ALIEN del tipo B
 #define ALIEN_C_SIZE_X 60 		// LARGO en coordenadas que ocupa un ALIEN del tipo C
 #define ALIEN_C_SIZE_Y 40 		// ALTO en coordenadas que ocupa un ALIEN del tipo C 
-#define ALIEN_EXTREME DISPLAY_MARGIN_X	// QUE ES ESTO?
+#define ALIEN_EXTREME DISPLAY_MARGIN_X	// Margen para movimiento aliens con el desfase
 #define A_INIT_JUMP_SIZE_X 20	// Salto necesario para inicializar centrados los aliens del tipo A
 #define A_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo A
 #define B_INIT_JUMP_SIZE_X 14	// Salto necesario para inicializar centrados los aliens del tipo B
 #define B_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo B
 #define C_INIT_JUMP_SIZE_X 10	// Salto necesario para inicializar centrados los aliens del tipo C
 #define C_INIT_JUMP_SIZE_Y 10	// Salto necesario para inicializar centrados los aliens del tipo C
-#define INIT_ALIENS_MARGIN (OVNI_SIZE_Y+JUMP_SIZE_Y)	// CREO QUE NO SE USA
+#define INIT_ALIENS_MARGIN (OVNI_SIZE_Y+JUMP_SIZE_Y)	// Margen de inicializacion de aliens
 #define JUMP_SIZE_X	20			// Salto en coordenadas para cada movimiento del bloque de aliens
 #define JUMP_SIZE_Y 20			// Salto en coordenadas para cada movimiento del bloque de aliens
+#define SHOOT_FREQ(level) (80-(level)*5)	//SE TERMINA HACIENDO NEGATIVO A PARTIR DEL NIVEL 16	
 
 //PLAYER
 #define INIT_PLAYER_Y 672		// Coordenada Y de inicializacion del jugador
@@ -72,14 +74,9 @@
 #define LIVES_POSITION_Y (DISPLAY_HIGH - PLAYER_SIZE_Y - 10)	// Coordenada para ubicar las naves que indican la vida restante
 #define LIVES_SPACING 10 		// Espaciado para ubicar las naves que indican la vida restante
 
-
 //FRONTEND
 #define DELAY_START 1		// Tiempo de demora para que los aliens hagan su primer movimiento
 #define DELAY_ROW 0.2		// Tiempo entre cada desplazamiento de fila
-#define FPS 100				// Taza de refrezco de buffer/pantalla
-
-//FALTA COMENTAR Y CLASIFICAR
-			
-#define SHOOT_FREQ(level) (80-(level)*5)	//SE TERMINA HACIENDO NEGATIVO A PARTIR DEL NIVEL 16						NO MODIFICA NADA
+#define FPS 100				// Taza de refrezco de buffer/pantalla			
 
 #endif //CONSTANTES_PC_H
