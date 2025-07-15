@@ -32,10 +32,4 @@ void playerShoot(bullet_t *playerBullet, player_t *player, bool *tryShoot);
 void playerMove(int dire, player_t * player);
 void blockMove(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock);
 
-
-//FUNCIONES DE USO GENERAL --- HAY QUE DEJARLAS ACA?
-//static int getAlienWidthByRow(int row);
-//static int getAlienHeightByRow(int row); 
-//char rectangleOverlap(uint16_t AX, uint16_t AW, uint16_t BX, uint16_t BW, uint16_t AY, uint16_t AH, uint16_t BY, uint16_t BH);
-
 #endif // BACKEND_H
