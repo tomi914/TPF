@@ -498,7 +498,7 @@ void alienShoot(bullet_t * bullet, alien_t * alien, int level, aliensBlock_t * a
 	
 	// Si no esta activa la bala de los aliens, analiza si es momento de crear una
 	if (!bullet->active) {	//mientas mas alto el nivel, mas balas tiran los aliens
-		if(frameCounter >= SHOOT_FREQ(level)){
+		if((frameCounter >= SHOOT_FREQ(level) && SHOOT_FREQ(level)>0) || (frameCounter >= SHOOT_FREQ(15) && SHOOT_FREQ(level)<0)){
 			bullet->active = true;
 			// Coordenadas reales ajustadas para disparo centrado y desde la base
 			bullet->coord.coordX = alien->coord.coordX + offsetX + alienWidth / 2;
