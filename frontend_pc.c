@@ -21,7 +21,7 @@
 
 void handleScoreScreenState (ALLEGRO_FONT *fontScoreSmall, ALLEGRO_FONT *fontScoreMedium, ALLEGRO_FONT *fontScoreBig, stats_t *gameStats, GameState *gameState, double *timeScoreScreenStart, int *selectedOption, int *playerRankFlag);
                                         
-void drawMenu(ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType type);
+void drawMenu(ALLEGRO_BITMAP *menuImage[IMG_TOTAL_MENU], int selectedOption, MenuType type);
 
 void handleMenuInput (bool keys[], int *selectedOption, GameState *currentGameState, MenuType type, player_t * player, aliensBlock_t * aliensBlock, alien_t aliens[ALIEN_ROWS][ALIEN_COLS], shield_t shields[NUM_SHIELDS], 
                     stats_t * gameStats, int * playerRankFlag);
@@ -104,13 +104,35 @@ int main() {
     int playerRankFlag = 0; 
     
     
-    //========================================================   IMÁGENES  ====================================================
+    // ==================== CARGAMOS LAS IMÁGENES ==========================
     
+    // Imágenes del MENÚ
+    ALLEGRO_BITMAP * menuImage[IMG_TOTAL_MENU]; // Arreglo donde se cargarán las imágenes del MENÚ
+    
+    int i;
+    
+    for (i = 0; i < IMG_TOTAL_MENU; i++) {
+    
+        // Cargamos el nombre y el acceso a cada imagen en un arreglo (path)
+        char pathMenu[50];
+        sprintf(pathMenu, "imagenes/menuImage%d.png", i);
+        
+        // Con sus paths, cargamos las IMAGENES del MENÚ en el arreglo 'menuImage'
+        menuImage[i] = al_load_bitmap(pathMenu);
+        
+        // Si hubo un error al cargarlas
+        if (!menuImage[i]) {
+            fprintf(stderr, "Error cargando imagen de menú: %s\n", pathMenu);
+            return -1;
+        }
+    }
+    
+    
+    // Imágenes de ALIENS, OVNI, BALAS y PLAYER
     ALLEGRO_BITMAP *image[9];
     ALLEGRO_BITMAP *shield[7];
     ALLEGRO_BITMAP *bulletImg;
-	
-    // IMAGENES de aliens, balas y player.
+    
     char img[50];
     for (int i = 0; i < 9; i++) { // Utilizando su 
 	    sprintf(img, "imagenes/img%d.png", i);
@@ -122,7 +144,7 @@ int main() {
 	}
 	
     for (int i = 1; i < 6; i++) {
-	    sprintf(img, "imagenes/imagenesNuevas/Shield%d.png", i);
+	    sprintf(img, "imagenes/Shield%d.png", i);
        shield[i-1] = al_load_bitmap(img);
 	    if (!shield[i-1]) {
 	        fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
@@ -130,38 +152,13 @@ int main() {
 	    }
     }
     
-    bulletImg = al_load_bitmap("imagenes/imagenesNuevas/bullet.png");
+    bulletImg = al_load_bitmap("imagenes/bullet.png");
     if (!bulletImg) {
         fprintf(stderr, "Error: no se pudo cargar la imagen %s\n", img);
         return -1;
     }
-		
-    // Creamos un arreglo donde vamos a guardar las imágenes, para mayor practicidad.
-    ALLEGRO_BITMAP * imagenes[IMG_TOTAL]; 
-
-    const char *rutas[IMG_TOTAL] = { // (CARPETA es una macro definida que indica 'carpeta/')
-         "imagenes/fondo.png",
-         "imagenes/spaceInvaders.png",
-         "imagenes/playG.png",
-         "imagenes/playW.png",
-         "imagenes/resumeG.png",
-         "imagenes/resumeW.png",
-         "imagenes/restartG.png",
-         "imagenes/restartW.png",
-         "imagenes/restartBigG.png",
-         "imagenes/restartBigW.png",
-         "imagenes/quitG.png",
-         "imagenes/quitW.png"
-    };
     
-    // Cargamos cada imagen del array rutas al array imagenes.
-    for (int i = 0; i < IMG_TOTAL; i++) {
-        imagenes[i] = al_load_bitmap(rutas[i]);
-        if (!imagenes[i]) {
-            fprintf(stderr, "Error cargando imagen: %s\n", rutas[i]);
-            return -1;
-        }
-    }
+
     
     //==================================  FUENTES  ===========================================
     
@@ -231,37 +228,32 @@ int main() {
     	
             case GAME_STATE_START:
                 handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_START, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
-                drawMenu(imagenes, selectedOption, MENU_TYPE_START);
+                drawMenu(menuImage, selectedOption, MENU_TYPE_START);
                 break;
                 
             case GAME_STATE_PLAYING:
                 switch (ev.type) {
 
                     case ALLEGRO_EVENT_TIMER: {
-                        // ======= ACTUALIZACIONES =======
-                        if (keys[ALLEGRO_KEY_LEFT]) {
+                    
+                        if (keys[ALLEGRO_KEY_LEFT])   // [<]: Para mover el jugador hacia la IZQUIERDA
                             playerMove(-1, &player);
-                        }
                         
-                        if (keys[ALLEGRO_KEY_RIGHT]) {
+                        if (keys[ALLEGRO_KEY_RIGHT])  // [>]: Para mover el jugador hacia la DERECHA
                             playerMove(1, &player);
-                        }
                         
-                        if (keys[ALLEGRO_KEY_UP]) {
+                        if (keys[ALLEGRO_KEY_UP])     // [^]: Para activar DISPARO del jugador
                             tryShoot = true;
-                        }
                         
-                        if (keys[ALLEGRO_KEY_SPACE]) {
+                        if (keys[ALLEGRO_KEY_SPACE])  // [   ]: Para PAUSAR el juego
                             gameState= GAME_STATE_PAUSED;
-                        }
+                    
+                        if (keys[ALLEGRO_KEY_ESCAPE]) // [esc] Para SALIR del juego
+                            gameState = GAME_STATE_EXIT; 
                         
-                        if (keys[ALLEGRO_KEY_ESCAPE]) { // Se presiona QUIT
-                            gameState = GAME_STATE_EXIT; // Se cambia el estado del juego a EXIT
-                        }
-                        
-                        playerShoot(&playerBullet, &player, &tryShoot);
+                        playerShoot(&playerBullet, &player, &tryShoot); // Dispara cuando corresponde
 
-                        // Movimiento aliens fila por fila
+                        // Movimiento aliens de acuerdo a su posición y nivel actual
                        if (gameStats.level<17){
 		                    if((aliensBlock.coord.coordY)<240){
 		                    interval = 0.1 - (gameStats.level -1) /200.;
@@ -276,14 +268,15 @@ int main() {
 		                    interval = 0.02;
 	                    }
 	                    
-                        // Movimiento aliens fila por fila
-                        double actualTime = al_get_time();
-                        if (lastRowToPrint == -1 && actualTime - timeLastMovAlien >= interval) {
+                        
+                        double actualTime = al_get_time(); // Tomamos el tiempo actual para determinar si ya pasó suficiente tiempo para mover los aliens
+                        
+                        if (lastRowToPrint == -1 && actualTime - timeLastMovAlien >= interval) { // Si no se está imprimiendo una fila y pasó el intervalo, comenzamos a imprimir desde la última fila
                             lastRowToPrint = ALIEN_ROWS - 1;
                             timeLastRow = actualTime;
                         }
-
-                        if (lastRowToPrint >= 0 && actualTime - timeLastRow >= interval) {
+                        
+                        if (lastRowToPrint >= 0 && actualTime - timeLastRow >= interval) { // Imprimimos fila por fila con cierto intervalo
                         
                             if (lastRowToPrint == 0) {
                                 alienFrameFila[0] = !alienFrameFila[0];
@@ -292,17 +285,18 @@ int main() {
                                 timeLastMovAlien = actualTime;
                             } 
                             
-                            else {
-                                alienFrameFila[lastRowToPrint] = !alienFrameFila[lastRowToPrint];
+                            else { // Si no se está imprimiendo una fila y pasó el intervalo, comenzamos a imprimir desde la última fila
+                            alienFrameFila[lastRowToPrint] = !alienFrameFila[lastRowToPrint];
                                 lastRowToPrint--;
                                 timeLastRow = actualTime;
                             }
                         }
 
-                        // ======= DIBUJO =======
-                        al_clear_to_color(al_map_rgb(0, 0, 0));
+                        //======================== DIBUJO  DE ELEMENTOS ===========================
+                        
+                        al_clear_to_color(al_map_rgb(0, 0, 0)); // Pantalla en negro.
 
-                        for (int j = 0; j < NUM_SHIELDS; j++) {//dibuja los escudos dependiendo su vida VER IMAGENES, TAMANO, Y POSICION
+                        for (int j = 0; j < NUM_SHIELDS; j++) { // Dibuja los escudos dependiendo su vida 
                         
 			                if (shields[j].health > 0) {
 
@@ -331,38 +325,35 @@ int main() {
 			                }
 			            }
 
-                        al_draw_bitmap(image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); //dibuja al jugador
+                        al_draw_bitmap (image[7], player.coord.coordX - PLAYER_SIZE_X / 2, player.coord.coordY, 0); // Dibuja al JUGADOR
                         
                         char scoreText[40];
                         sprintf(scoreText, "Score: %d     Level: %d", gameStats.actualScore, gameStats.level);
-                        al_draw_text(fontScoreSmall, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText);//dibuja el score
+                        al_draw_text(fontScoreSmall, al_map_rgb(0, 255, 0), SCORE_POSITION_X, SCORE_POSITION_Y, 0, scoreText); // Dibuja el SCORE
                             
                             
                         if (ovni.visible) 
-                            al_draw_bitmap(image[6], ovni.coord.coordX, ovni.coord.coordY, 0);//dibuja el ovni
+                            al_draw_bitmap(image[6], ovni.coord.coordX, ovni.coord.coordY, 0); // Dibuja el OVNI
                             
-                        for (int i = 0; i < player.health; i++) {
+                        for (int i = 0; i < player.health; i++) { // Dibuja las vidas restantes como naves
                             int drawX = LIVES_POSITION_X + i * (PLAYER_SIZE_X + LIVES_SPACING);
                             al_draw_bitmap(image[7], drawX, LIVES_POSITION_Y, 0);
                         }
 
-                        if (player.health==0){
+                        if (player.health==0){ // Si se queda sin vida, se muestra el score y se comienza a contar el tiempo
                             gameState = GAME_STATE_SCORE_SCREEN;
-                            timeScoreScreenStart = al_get_time();  // Guardás el tiempo de inicio
-                        }//poner condicion que se termine el juego, sino se castean las vidas
-
-
-	                    
+                            timeScoreScreenStart = al_get_time(); 
+                        }
 
 
                         if (playerBullet.active)
-                            al_draw_bitmap(bulletImg, playerBullet.coord.coordX, playerBullet.coord.coordY, 0);//dibuja la bala del jugador
+                            al_draw_bitmap(bulletImg, playerBullet.coord.coordX, playerBullet.coord.coordY, 0); // Dibuja la bala del jugador
 
                         if (alienBullet.active)
-                            al_draw_bitmap(bulletImg, alienBullet.coord.coordX, alienBullet.coord.coordY, 0);//dibuja la bala del alien
+                            al_draw_bitmap(bulletImg, alienBullet.coord.coordX, alienBullet.coord.coordY, 0); // Dibuja la bala del alien
                            
                         for (int i = 0; i < ALIEN_ROWS; i++) {
-                            for (int j = 0; j < ALIEN_COLS; j++) { //dibuja los aliens y su desfase
+                            for (int j = 0; j < ALIEN_COLS; j++) { // Dibuja los aliens y su desfase
                                 if (!aliens[i][j].alive){
                                	    continue;
 		                }
@@ -388,28 +379,27 @@ int main() {
                      
                         al_flip_display();
 
-	               		collisionDetect (&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clkO);
+	               	collisionDetect (&playerBullet, &alienBullet, aliens, &ovni, shields, &aliensBlock, &player, &gameStats, lastRowToPrint, &clkO); // Detecta colisiones
 
-                        updateAliensBlock (aliens, &aliensBlock);
+                        updateAliensBlock (aliens, &aliensBlock); // Actualiza el estado del bloque de aliens (sus limites y dirección)
 
-                        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player);//elije alien a disparar
+                        alien_t *shooter = selectAlienShooter(aliens, &aliensBlock, &player); // Selecciona un alien para disparar
                         
                         if (shooter != NULL) {
                             int shooterRow = -1;
-                            for (int i = 0; i < ALIEN_ROWS; i++) {
+                            for (int i = 0; i < ALIEN_ROWS; i++) { // Determina la fila del alien seleccionado
                                 for (int j = 0; j < ALIEN_COLS; j++) {
                                     if (&aliens[i][j] == shooter)
                                         shooterRow = i;
                                 }
                             }
                             
-                            alienShoot(&alienBullet, shooter, gameStats.level, &aliensBlock, lastRowToPrint, shooterRow);
+                            alienShoot(&alienBullet, shooter, gameStats.level, &aliensBlock, lastRowToPrint, shooterRow); // Realiza el disparo del alien
                         }
                         
-	                        updateOvni (&ovni, clock(), &clkO, rand() % 1001);
+	                updateOvni (&ovni, clock(), &clkO, rand() % 1001); // Actualiza estado del ovni
 
-       
-                            newLevelCheck (aliens, &aliensBlock, &player, shields, &gameStats);  
+                        newLevelCheck (aliens, &aliensBlock, &player, shields, &gameStats);  // Verifica si se paso de nivel y reinicia entidades de ser necesario
                     }
                     break;
                 } 
@@ -417,12 +407,12 @@ int main() {
 
             case GAME_STATE_PAUSED:
                 handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_PAUSE, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
-                drawMenu(imagenes, selectedOption, MENU_TYPE_PAUSE);
+                drawMenu(menuImage, selectedOption, MENU_TYPE_PAUSE);
                 break;
 
             case GAME_STATE_GAMEOVER:
                 handleMenuInput(keys, &selectedOption, &gameState, MENU_TYPE_GAMEOVER, &player, &aliensBlock, aliens, shields, &gameStats, &playerRankFlag);
-                drawMenu(imagenes, selectedOption, MENU_TYPE_GAMEOVER);
+                drawMenu(menuImage, selectedOption, MENU_TYPE_GAMEOVER);
                 break;
                 
             case GAME_STATE_SCORE_SCREEN:
@@ -438,9 +428,9 @@ int main() {
 }
 
     // Destruimos los recursos de Allegro
-    for (int i = 0; i < IMG_TOTAL; i++) {
-        if (imagenes[i])
-            al_destroy_bitmap(imagenes[i]);
+    for (int i = 0; i < IMG_TOTAL_MENU; i++) {
+        if (menuImage[i])
+            al_destroy_bitmap(menuImage[i]);
     }
     al_destroy_timer(timer);
     al_destroy_event_queue(event_queue);
@@ -553,31 +543,32 @@ void handleMenuInput(bool keys[], int *selectedOption, GameState *currentGameSta
     -Imagen 1: Palabra en VERDE (ON), que se va a activar cundo estemos seleccionando la opción.
     -Imagen 2: Palabra en BLANCO (OFF), que se va a activar cuando NO estemos seleccionando la opción. */
     
-void drawMenu (ALLEGRO_BITMAP *imagenes[IMG_TOTAL], int selectedOption, MenuType type) { 
+void drawMenu(ALLEGRO_BITMAP *menuImage[IMG_TOTAL_MENU], int selectedOption, MenuType type) { 
 
     al_clear_to_color(al_map_rgb(0, 0, 0)); // Se pone el fondo en negro.
-    
-    al_draw_bitmap(imagenes[IMG_FONDO], 100, 0, 0); // Agregamos el marco para el menú, junto a los aliens y las naves de decoración.
-    
-    al_draw_bitmap(imagenes[IMG_LOGO], 300, 50, 0); // Agregamos el cartel de Space Invaders.
 
-    if (type == MENU_TYPE_START) { // Si estamos en el MENÚ de INICIO. Sobre una opción -> verde, sino -> blanco.
-            al_draw_bitmap(selectedOption == START_OPTION_PLAY ? imagenes[IMG_PLAY_ON] : imagenes[IMG_PLAY_OFF], 311, 412, 0); 
-            al_draw_bitmap(selectedOption == START_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
+    if (type == MENU_TYPE_START) { // Si estamos en el MENÚ de INICIO
+            al_draw_bitmap (menuImage [IMG_START_END_BACKGROUND], 000, 0, 0);
+            al_draw_bitmap (selectedOption == START_OPTION_PLAY ? menuImage[IMG_PLAY_ON] : menuImage[IMG_PLAY_OFF], 311, 412, 0);
+            al_draw_bitmap (selectedOption == START_OPTION_QUIT ? menuImage[IMG_QUIT_ON] : menuImage[IMG_QUIT_OFF], 367, 625, 0);
     }
     
-    else if (type == MENU_TYPE_PAUSE) { // Si estamos en el MENÚ de PAUSA. Sobre una opción -> verde, sino -> blanco.
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESUME ? imagenes[IMG_RESUME_ON] : imagenes[IMG_RESUME_OFF], 264, 325, 0);
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_RESTART ? imagenes[IMG_RESTART_ON] : imagenes[IMG_RESTART_OFF], 252, 475, 0);
-        al_draw_bitmap(selectedOption == PAUSE_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
+    else if (type == MENU_TYPE_PAUSE) { // Si estamos en el MENÚ de PAUSA
+        al_draw_bitmap (menuImage[IMG_PAUSE_BACKGROUND], 100, 0, 0);
+        al_draw_bitmap (selectedOption == PAUSE_OPTION_RESUME ? menuImage[IMG_RESUME_ON] : menuImage[IMG_RESUME_OFF], 264, 325, 0);
+        al_draw_bitmap (selectedOption == PAUSE_OPTION_RESTART ? menuImage[IMG_RESTART_ON] : menuImage[IMG_RESTART_OFF], 252, 475, 0);
+        al_draw_bitmap (selectedOption == PAUSE_OPTION_QUIT ? menuImage[IMG_QUIT_ON] : menuImage[IMG_QUIT_OFF], 367, 625, 0);
     }
     
-    else if (type == MENU_TYPE_GAMEOVER) { // Si estamos en el MENÚ de GAMEOVER. Sobre una opción -> verde, sino -> blanco.
-        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_RESTART ? imagenes[IMG_RESTART_ON_GAMEOVER] : imagenes[IMG_RESTART_OFF_GAMEOVER], 194, 427, 0);
-        al_draw_bitmap(selectedOption == GAMEOVER_OPTION_QUIT ? imagenes[IMG_QUIT_ON] : imagenes[IMG_QUIT_OFF], 367, 625, 0);
+    else if (type == MENU_TYPE_GAMEOVER) { // Si estamos en el MENÚ de GAMEOVER
+        al_draw_bitmap (menuImage[IMG_START_END_BACKGROUND], 000, 0, 0);
+        al_draw_bitmap (selectedOption == GAMEOVER_OPTION_RESTART ? menuImage[IMG_RESTART_ON_GAMEOVER] : menuImage[IMG_RESTART_OFF_GAMEOVER], 194, 427, 0);
+        al_draw_bitmap (selectedOption == GAMEOVER_OPTION_QUIT ? menuImage[IMG_QUIT_ON] : menuImage[IMG_QUIT_OFF], 367, 625, 0);
     }
     
+    al_draw_bitmap(menuImage[IMG_LOGO], 300, 50, 0); // Agregamos el cartel de Space Invaders.
 }
+
 
 
 

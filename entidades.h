@@ -53,29 +53,22 @@ typedef struct{ // Almacena la información general del ovni.
 	coord_t coord;
 }ovni_t;
 
-// Identifico cada imagen con un número para poder cargarlas en el arreglo
-
+// Imágenes del MENÚ
 enum {
-    IMG_FONDO,
-    
+    IMG_START_END_BACKGROUND,
+    IMG_PAUSE_BACKGROUND,
     IMG_LOGO,
-    
     IMG_PLAY_ON,
     IMG_PLAY_OFF,
-    
     IMG_RESUME_ON,
     IMG_RESUME_OFF,
-    
     IMG_RESTART_ON,
     IMG_RESTART_OFF,
-    
     IMG_RESTART_ON_GAMEOVER,
     IMG_RESTART_OFF_GAMEOVER,
-    
     IMG_QUIT_ON,
     IMG_QUIT_OFF,
-    
-    IMG_TOTAL
+    IMG_TOTAL_MENU
 };
 
 // Tenemos 3 TIPOS distintos de MENÚ
