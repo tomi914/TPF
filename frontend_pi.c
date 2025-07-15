@@ -258,5 +258,3 @@ int main(void){
 	disp_update();
 	return 0;
 }
-
-    
