@@ -143,19 +143,16 @@ int main(void){
 				if((lastRowToPrint == -1 && ((double)(clock() - clkB) / CLOCKS_PER_SEC) >= interval)){
 						lastRowToPrint = ALIEN_ROWS - 1; // empieza desde la fila de abajo
 						clkA = clock();
-						printf("1\n");
 				}
 				if((lastRowToPrint >= 0 && ((double)(clock() - clkA) / CLOCKS_PER_SEC) >= interval)){
 					if(lastRowToPrint == 0){
 						blockMove(alien, &block); 
 						lastRowToPrint = -1;
 						clkB = clock();
-						printf("2, %d\n", block.coord.coordX);
 					}
 					else{
 						lastRowToPrint--;
 						clkA = clock();
-						printf("3\n");
 					}
 				}  
 				//Dibuja cada alien vivo en su lugar correspondiente
