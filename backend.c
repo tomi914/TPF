@@ -148,7 +148,7 @@ void updateAliensBlock(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * a
 }
 
 //Verifica si se debe pasar al siguiente nivel (si murieron todos los aliens)
-void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats){
+void newLevelCheck(alien_t aliens[ALIEN_ROWS][ALIEN_COLS], aliensBlock_t * aliensBlock, player_t * player, shield_t shields[NUM_SHIELDS], stats_t * gameStats, bullet_t *playerBullet, bullet_t *alienBullet){
 
 	bool allDead = true;
 
